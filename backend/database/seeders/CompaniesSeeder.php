@@ -31,7 +31,7 @@ class CompaniesSeeder extends Seeder
                 'name' => 'ООО "ТехноСофт"',
                 'description' => 'Разработка программного обеспечения и IT-решений для бизнеса. Специализируемся на веб-разработке, мобильных приложениях и системной интеграции.',
                 'website' => 'https://technosoft.ru',
-                'size' => '50-100',
+                'size' => 20,
                 'city' => 'Москва',
                 'country' => 'Россия',
                 'logo_url' => 'https://example.com/logos/technosoft.png'
@@ -41,7 +41,7 @@ class CompaniesSeeder extends Seeder
                 'name' => 'АО "Медицинские технологии"',
                 'description' => 'Производство и поставка медицинского оборудования. Инновационные решения для здравоохранения и диагностики.',
                 'website' => 'https://medtech.ru',
-                'size' => '200-500',
+                'size' => 4000,
                 'city' => 'Санкт-Петербург',
                 'country' => 'Россия',
                 'logo_url' => 'https://example.com/logos/medtech.png'
@@ -51,7 +51,7 @@ class CompaniesSeeder extends Seeder
                 'name' => 'ИП "Консалтинг Плюс"',
                 'description' => 'Консалтинговые услуги в области управления персоналом, бизнес-аналитики и стратегического планирования.',
                 'website' => 'https://consulting-plus.ru',
-                'size' => '10-50',
+                'size' => 59,
                 'city' => 'Екатеринбург',
                 'country' => 'Россия',
                 'logo_url' => 'https://example.com/logos/consulting.png'

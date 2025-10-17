@@ -63,9 +63,12 @@ class UsersSeeder extends Seeder
         ];
 
         foreach ($users as $userData) {
-            User::create($userData);
+            User::updateOrCreate(
+                ['email' => $userData['email']],
+                $userData
+            );
         }
 
-        $this->command->info('Создано ' . count($users) . ' пользователей (3 работодателя, 2 соискателя)');
+        $this->command->info('Обработано ' . count($users) . ' пользователей (3 работодателя, 2 соискателя)');
     }
 }
