@@ -22,8 +22,7 @@ class CompanyController extends Controller
         $this->companyAction = new CompanyAction();
     }
 
-    public function store(CompanyStoreRequest $request): JsonResponse
-    {
+    public function store(CompanyStoreRequest $request): JsonResponse {
         $user = $request->user();
         
         if (!$user) {
@@ -104,8 +103,7 @@ class CompanyController extends Controller
         }
     }
 
-    public function update(int $id, CompanyUpdateRequest $request): JsonResponse
-    {
+    public function update(int $id, CompanyUpdateRequest $request): JsonResponse {
         try {
             $companyId = $this->companyAction->updateCompany($id, $request->validated());
             return (new ParentResponse(
@@ -133,6 +131,40 @@ class CompanyController extends Controller
             ];
             return (new ParentResponse(
                 error: new Error(code: $e->getCode(), message: 'Непредвиденная ошибка при обновлении компании'),
+                httpStatus: 500,
+                debugInfo: $debugInfo,
+                status: StatusEnum::FAIL,
+            ))->toResponse();
+        }
+    }
+
+    public function destroy(int $id): JsonResponse {
+        try {
+            $this->companyAction->deleteCompany($id);
+            return (new ParentResponse(
+                httpStatus: 204,
+                status: StatusEnum::OK,
+            ))->toResponse();
+        } catch (NotFoundCompanyException $e) {
+            $debugInfo = [
+                'error' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ];
+            return (new ParentResponse(
+                error: new Error(code: $e->getCode(), message: 'Компания не найдена'),
+                httpStatus: 404,
+                debugInfo: $debugInfo,
+                status: StatusEnum::FAIL,
+            ))->toResponse();
+        } catch (\Throwable $e) {
+            $debugInfo = [
+                'error' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ];
+            return (new ParentResponse(
+                error: new Error(code: $e->getCode(), message: 'Непредвиденная ошибка при удалении компании'),
                 httpStatus: 500,
                 debugInfo: $debugInfo,
                 status: StatusEnum::FAIL,
