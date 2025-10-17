@@ -27,6 +27,10 @@ function WebRouter() {
 
   const ChatPage = React.lazy(() => import('../../../pages/Chat/'));
 
+  const VacanciesPage = React.lazy(() => import('../../../pages/Vacancies/'));
+
+  const InternshipsPage = React.lazy(() => import('../../../pages/Internships/'));
+
   return (
       <Router basename={'/'}>
         <Header />
@@ -67,6 +71,16 @@ function WebRouter() {
                 <Route path="/chat" element={
                   <Suspense fallback={renderFallback()}>
                     <ChatPage />
+                  </Suspense>
+                } />
+                <Route path="/vacancies" element={
+                  <Suspense fallback={renderFallback()}>
+                    <VacanciesPage />
+                  </Suspense>
+                } />
+                <Route path="/internships" element={
+                  <Suspense fallback={renderFallback()}>
+                    <InternshipsPage />
                   </Suspense>
                 } />
                 <Route path="*" element={<NotFound />} />
