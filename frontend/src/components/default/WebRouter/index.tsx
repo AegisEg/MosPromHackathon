@@ -76,14 +76,14 @@ function AppRoutes() {
             </Suspense>
           } />
           <Route path="*" element={<NotFound />} />
-        </Routes>
-        <Route path="/protected" element={
+          <Route path="/protected" element={
             <Suspense fallback={renderFallback()}>
                 <ProtectedRoute>
                     <div>Protected content</div>
                 </ProtectedRoute>
             </Suspense>
         } />
+        </Routes>
       </div>
       {showHeaderAndFooter && <Footer />}
     </>
