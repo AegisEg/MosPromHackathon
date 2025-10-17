@@ -82,6 +82,10 @@ export default function Select({
         border: error ? '2px solid #FF3B30' : '2px solid #C7C7CC',
       },
     }),
+    menuPortal: (provided: any) => ({
+      ...provided,
+      zIndex: 9999,
+    }),
     menu: (provided: any) => ({
       ...provided,
       background: '#FFFFFF',
@@ -89,6 +93,9 @@ export default function Select({
       borderRadius: '12px',
       overflow: 'hidden',
       marginTop: '4px',
+      minWidth: '100%',
+      width: 'max-content',
+      maxWidth: 'calc(100vw - 40px)',
     }),
     menuList: (provided: any) => ({
       ...provided,
@@ -96,6 +103,8 @@ export default function Select({
       display: 'grid',
       gridTemplateColumns: 'repeat(2, 1fr)',
       gap: '12px',
+      maxHeight: 'none',
+      overflow: 'visible',
     }),
     option: (provided: any, state: any) => ({
       ...provided,
@@ -238,6 +247,9 @@ export default function Select({
           styles={customStyles}
           theme={customTheme}
           noOptionsMessage={() => 'Ничего нет'}
+          menuPortalTarget={document.body}
+          menuPosition="absolute"
+          menuPlacement="auto"
         />
       </div>
       
