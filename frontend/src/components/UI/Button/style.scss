@@ -41,4 +41,8 @@
         line-height: 27px;
         letter-spacing: 0%;
     }
+
+    &:disabled {
+        cursor: not-allowed;
+    }
 }
