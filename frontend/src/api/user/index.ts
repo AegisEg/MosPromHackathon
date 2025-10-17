@@ -18,8 +18,12 @@ export const registerUser = (payload: RegistrationPayload) => {
 
 export const authorizeUser = (payload: AuthorizationPayload) => {
     return api
-        .post('auth/login', {})
-        .then((response: Response<AuthorizationResponse>) => {
-            return response.data.data;
+        .post('auth/login', payload)
+        .then((response) => {
+            return response.data;
+        })
+        .catch((error) => {
+            console.error('Login error:', error);
+            throw error;
         });
 }
