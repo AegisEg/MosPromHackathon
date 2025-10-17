@@ -92,7 +92,10 @@ export default function Select({
     }),
     menuList: (provided: any) => ({
       ...provided,
-      padding: 0,
+      padding: '20px',
+      display: 'grid',
+      gridTemplateColumns: 'repeat(2, 1fr)',
+      gap: '12px',
     }),
     option: (provided: any, state: any) => ({
       ...provided,
@@ -101,10 +104,9 @@ export default function Select({
       padding: '12px 16px',
       cursor: 'pointer',
       transition: 'all 0.2s ease',
-      borderBottom: '1px solid rgba(72, 72, 74, 0.2)',
-      '&:last-child': {
-        borderBottom: 'none',
-      },
+      border: '1px solid #C7C7CC',
+      borderRadius: '8px',
+      textAlign: 'center',
       '&:active': {
         backgroundColor: '#48484A',
         color: '#FFFFFF',
@@ -169,6 +171,14 @@ export default function Select({
     noOptionsMessage: (provided: any) => ({
       ...provided,
       color: '#48484A',
+      textAlign: 'center',
+      padding: '20px',
+      fontSize: '16px',
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
+      width: '100%',
+      gridColumn: '1 / -1',
     }),
     loadingMessage: (provided: any) => ({
       ...provided,
@@ -227,6 +237,7 @@ export default function Select({
           onBlur={handleBlur}
           styles={customStyles}
           theme={customTheme}
+          noOptionsMessage={() => 'Ничего нет'}
         />
       </div>
       
