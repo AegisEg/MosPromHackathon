@@ -41,18 +41,38 @@ class CompanyAction {
             'country' => $company->country,
             'logo_url' => $company->logo_url,
             'user_id' => $company->user_id,
-            'created_at' => $company->created_at,
-            'updated_at' => $company->updated_at,
         ];
         return $company;
     }
 
-    public function updateCompany(int $id, array $companyArray): void {
+    public function updateCompany(int $id, array $companyArray): int {
         $company = Companies::find($id);
-        $company->update($companyArray);
+        if (!$company) {
+            throw new NotFoundCompanyException();
+        }
+        DB::beginTransaction();
+        try {
+            $company->update($companyArray);
+            DB::commit();
+            return $company->id;
+        } catch (Throwable $e) {
+            DB::rollBack();
+            throw $e;
+        }
     }
     
     public function deleteCompany(int $id): void {
-        Companies::find($id)->delete();
+        $company = Companies::find($id);
+        if (!$company) {
+            throw new NotFoundCompanyException();
+        }
+        DB::beginTransaction();
+        try {
+            $company->delete();
+            DB::commit();
+        } catch (Throwable $e) {
+            DB::rollBack();
+            throw $e;
+        }
     }
 }
