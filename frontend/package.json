@@ -1,0 +1,91 @@
+{
+  "name": "hakaton",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "@emotion/react": "11.14.0",
+    "@emotion/styled": "11.14.1",
+    "@fontsource/roboto": "^5.2.8",
+    "@mui/icons-material": "^7.3.4",
+    "@mui/material": "^7.3.4",
+    "@mui/styled-engine-sc": "^7.3.3",
+    "@testing-library/dom": "10.4.1",
+    "@testing-library/jest-dom": "6.9.1",
+    "@testing-library/react": "16.3.0",
+    "@testing-library/user-event": "13.5.0",
+    "@types/jest": "27.5.2",
+    "@types/node": "16.18.126",
+    "@types/react": "19.2.0",
+    "@types/react-dom": "19.2.0",
+    "@zag-js/date-picker": "^1.26.2",
+    "@zag-js/react": "^1.26.2",
+    "axios": "^1.12.2",
+    "dayjs": "^1.11.18",
+    "dotenv": "17.2.3",
+    "i18next": "^25.6.0",
+    "i18next-browser-languagedetector": "^8.2.0",
+    "i18next-http-backend": "^3.0.2",
+    "mini-css-extract-plugin": "2.9.4",
+    "postcss-loader": "8.2.0",
+    "react": "19.2.0",
+    "react-dnd": "^16.0.1",
+    "react-dnd-html5-backend": "^16.0.1",
+    "react-dom": "19.2.0",
+    "react-i18next": "^16.0.1",
+    "react-imask": "^7.6.1",
+    "react-is": "18.3.1",
+    "react-redux": "9.2.0",
+    "react-router-dom": "7.9.3",
+    "react-scripts": "0.0.0",
+    "react-select": "^5.10.2",
+    "react-tabs": "^6.1.0",
+    "react-toastify": "^11.0.5",
+    "recharts": "^3.2.1",
+    "redux": "5.0.1",
+    "redux-thunk": "3.1.0",
+    "reselect": "5.1.1",
+    "sass": "1.93.2",
+    "sass-loader": "16.0.5",
+    "styled-components": "^6.1.19",
+    "web-vitals": "2.1.4"
+  },
+  "scripts": {
+    "start": "webpack serve --mode development",
+    "build": "webpack --mode production",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "devDependencies": {
+    "css-loader": "7.1.2",
+    "file-loader": "6.2.0",
+    "html-webpack-plugin": "5.6.4",
+    "process": "0.11.10",
+    "style-loader": "4.0.0",
+    "ts-loader": "9.5.4",
+    "typescript": "5.9.3",
+    "webpack": "5.102.0",
+    "webpack-cli": "6.0.1",
+    "webpack-dev-server": "5.2.2"
+  },
+  "overrides": {
+    "react-is": "18.3.1"
+  }
+}

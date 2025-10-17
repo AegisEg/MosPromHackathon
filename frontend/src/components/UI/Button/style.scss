@@ -1,0 +1,44 @@
+.button {
+    padding: 10px;
+    border-radius: 8px;
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 26px;
+    letter-spacing: 0.46px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+
+    &.red {
+        background: #D00E46;
+
+        &, * {
+            color: #fff;
+        }
+    }
+
+    &.black {
+        background: #393649;
+
+        &, * {
+            color: #fff;
+        }
+    }
+
+    &.gray {
+        background: #F0F0F0;
+
+        &, * {
+            color: #000000;
+        }
+    }
+
+    &, * {
+        font-weight: 500;
+        font-size: 18px;
+        line-height: 27px;
+        letter-spacing: 0%;
+    }
+}

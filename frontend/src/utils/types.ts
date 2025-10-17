@@ -1,0 +1,6 @@
+export enum LoadStatus {
+  NOT_LOADING = 'NOT_LOADING',
+  IN_PROGRESS = 'IN_PROGRESS',
+  SUCCESS = 'SUCCESS',
+  ERROR = 'ERROR',
+}

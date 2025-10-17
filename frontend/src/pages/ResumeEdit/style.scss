@@ -1,0 +1,101 @@
+.resume-edit {
+  &__title {
+    font-size: 48px;
+    font-weight: 700;
+    line-height: 1.2;
+    color: #48484A;
+    margin: 0 0 16px 0;
+    text-align: center;
+  }
+
+  &__description {
+    font-size: 18px;
+    line-height: 1.6;
+    color: #48484A;
+    margin: 0 0 40px 0;
+    text-align: center;
+  }
+
+  &__form {
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+  }
+
+  &__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 24px;
+  }
+
+  &__toggle-wrapper {
+    display: flex;
+    align-items: center;
+    padding-top: 32px;
+  }
+
+  &__actions {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    padding: 24px 0;
+    flex-wrap: wrap;
+  }
+}
+
+// Адаптивность
+@media (max-width: 768px) {
+  .resume-edit {
+    &__title {
+      font-size: 32px;
+    }
+
+    &__description {
+      font-size: 16px;
+      margin-bottom: 32px;
+    }
+
+    &__grid {
+      grid-template-columns: 1fr;
+      gap: 20px;
+    }
+
+    &__toggle-wrapper {
+      padding-top: 0;
+    }
+
+    &__form {
+      gap: 32px;
+    }
+
+    &__actions {
+      flex-direction: column;
+      
+      button {
+        width: 100%;
+      }
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .resume-edit {
+    &__title {
+      font-size: 24px;
+      margin-bottom: 12px;
+    }
+
+    &__description {
+      font-size: 14px;
+      margin-bottom: 24px;
+    }
+
+    &__grid {
+      gap: 16px;
+    }
+
+    &__form {
+      gap: 24px;
+    }
+  }
+}

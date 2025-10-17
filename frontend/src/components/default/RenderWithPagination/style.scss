@@ -1,0 +1,12 @@
+.render_with_pagination {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+
+    &__buttons {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 10px;
+    }
+}

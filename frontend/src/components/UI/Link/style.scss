@@ -1,0 +1,20 @@
+.link {
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 100%;
+    letter-spacing: 0%;
+    padding: 2px;
+    text-transform: uppercase;
+    text-decoration: underline;
+
+    &, * {
+        color: #393649;
+        transition: all 0.3s ease;
+    }
+
+    &:hover {
+        &, * {
+            color: #BA0048;
+        }
+    }
+}

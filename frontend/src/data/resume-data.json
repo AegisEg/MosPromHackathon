@@ -1,0 +1,61 @@
+{
+  "full_name": "Иванов Иван Иванович",
+  "email": "ivanov@example.com",
+  "date_of_birth": "1990-05-15",
+  "city": "Москва",
+  "country": "Россия",
+  "phone": "+7 (999) 123-45-67",
+  "about": "Опытный специалист с большим опытом работы в IT-индустрии. Стремлюсь к постоянному профессиональному развитию и применению новых технологий.",
+  "profession_id": 1,
+  "education": "Высшее",
+  "salary": 150000,
+  "status": true,
+  "photo": "https://via.placeholder.com/150",
+  "skills": ["UX",
+  "UI",
+  "Figma",
+  "Usability",
+  "Дизайн системы",
+  "Прототипирование",
+  "WEB-Design"],
+  "educations": [
+    {
+      "institution_name": "Московский Государственный Университет",
+      "degree": "Бакалавр",
+      "specialization": "Информационные технологии",
+      "start_date": "2008-09-01",
+      "end_date": "2012-06-30"
+    },
+    {
+      "institution_name": "Московский Государственный Университет",
+      "degree": "Магистр",
+      "specialization": "Программная инженерия",
+      "start_date": "2012-09-01",
+      "end_date": "2014-06-30"
+    }
+  ],
+  "experiences": [
+    {
+      "company_name": "ООО «ТехноСофт»",
+      "position": "Junior Developer",
+      "start_date": "2014-07-01",
+      "end_date": "2016-12-31",
+      "description": "Разработка и поддержка веб-приложений на React и Node.js"
+    },
+    {
+      "company_name": "АО «ДиджиталПро»",
+      "position": "Middle Developer",
+      "start_date": "2017-01-15",
+      "end_date": "2020-03-31",
+      "description": "Проектирование архитектуры приложений, разработка микросервисов, менторство junior-разработчиков"
+    },
+    {
+      "company_name": "ООО «ИнновТех»",
+      "position": "Senior Developer",
+      "start_date": "2020-04-01",
+      "end_date": null,
+      "description": "Руководство командой разработки, архитектурное проектирование, внедрение best practices"
+    }
+  ]
+}
+

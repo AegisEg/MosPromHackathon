@@ -1,0 +1,235 @@
+.custom-toggle {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: fit-content;
+
+  &__container {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    user-select: none;
+    position: relative;
+  }
+
+  &__input {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+    height: 0;
+    width: 0;
+  }
+
+  &__switch {
+    position: relative;
+    width: 48px;
+    height: 28px;
+    background: transparent;
+    border: 2px solid #C7C7CC;
+    border-radius: 14px;
+    transition: all 0.3s ease;
+    flex-shrink: 0;
+  }
+
+  &__slider {
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 20px;
+    height: 20px;
+    background: #C7C7CC;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  }
+
+  &__label {
+    font-size: 16px;
+    line-height: 24px;
+    color: #C7C7CC;
+    transition: color 0.3s ease;
+  }
+
+  // Hover эффект
+  &:hover:not(&--disabled):not(&--error):not(&--checked) {
+    .custom-toggle__switch {
+      border-color: #48484A;
+    }
+
+    .custom-toggle__slider {
+      background: #48484A;
+    }
+
+    .custom-toggle__label {
+      color: #48484A;
+    }
+  }
+
+  &__error {
+    font-size: 12px;
+    line-height: 16px;
+    color: #FF3B30;
+    margin-left: 60px;
+    animation: slideDown 0.2s ease;
+  }
+
+  // Размеры
+  &--small {
+    .custom-toggle__switch {
+      width: 40px;
+      height: 24px;
+      border-radius: 12px;
+    }
+
+    .custom-toggle__slider {
+      width: 16px;
+      height: 16px;
+      top: 2px;
+      left: 2px;
+    }
+
+    .custom-toggle__label {
+      font-size: 14px;
+    }
+
+    .custom-toggle__error {
+      margin-left: 52px;
+    }
+  }
+
+  &--large {
+    .custom-toggle__switch {
+      width: 56px;
+      height: 32px;
+      border-radius: 16px;
+    }
+
+    .custom-toggle__slider {
+      width: 24px;
+      height: 24px;
+      top: 2px;
+      left: 2px;
+    }
+
+    .custom-toggle__label {
+      font-size: 18px;
+    }
+
+    .custom-toggle__error {
+      margin-left: 68px;
+    }
+  }
+
+  // Состояние checked
+  &--checked:not(&--error) {
+    .custom-toggle__switch {
+      background: #48484A;
+      border-color: #48484A;
+    }
+
+    .custom-toggle__slider {
+      transform: translateX(22px);
+      background: #FFFFFF;
+    }
+
+    .custom-toggle__label {
+      color: #48484A;
+    }
+
+    &.custom-toggle--small .custom-toggle__slider {
+      transform: translateX(18px);
+    }
+
+    &.custom-toggle--large .custom-toggle__slider {
+      transform: translateX(26px);
+    }
+  }
+
+  // Состояние error
+  &--error {
+    .custom-toggle__switch {
+      border-color: #FF3B30;
+    }
+
+    .custom-toggle__slider {
+      background: #FF3B30;
+    }
+
+    .custom-toggle__label {
+      color: #FF3B30;
+    }
+
+    &.custom-toggle--checked {
+      .custom-toggle__switch {
+        background: #48484A;
+        border-color: #FF3B30;
+      }
+
+      .custom-toggle__slider {
+        background: #FFFFFF;
+        transform: translateX(22px);
+      }
+
+      &.custom-toggle--small .custom-toggle__slider {
+        transform: translateX(18px);
+      }
+
+      &.custom-toggle--large .custom-toggle__slider {
+        transform: translateX(26px);
+      }
+    }
+  }
+
+  // Состояние disabled
+  &--disabled {
+    .custom-toggle__container {
+      cursor: not-allowed;
+      opacity: 0.5;
+    }
+
+    .custom-toggle__switch {
+      cursor: not-allowed;
+    }
+  }
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// Адаптивность
+@media (max-width: 768px) {
+  .custom-toggle {
+    &__switch {
+      width: 44px;
+      height: 26px;
+    }
+
+    &__slider {
+      width: 20px;
+      height: 20px;
+    }
+
+    &--checked .custom-toggle__slider {
+      transform: translateX(18px);
+    }
+
+    &__label {
+      font-size: 14px;
+    }
+
+    &__error {
+      font-size: 11px;
+      margin-left: 56px;
+    }
+  }
+}
+

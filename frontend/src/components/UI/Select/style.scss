@@ -1,0 +1,102 @@
+.custom-select {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+
+  &, * {
+    transition: all 0.2s ease;
+  }
+
+  &__label {
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 20px;
+    color: #C7C7CC;
+    transition: color 0.3s ease;
+    cursor: default;
+  }
+
+  // Hover на весь контейнер
+  &:hover:not(&--disabled):not(&--error) {
+    .custom-select__label {
+      color: #48484A;
+    }
+  }
+
+  // Состояние фокуса
+  &--focused:not(&--error) {
+    .custom-select__label {
+      color: #48484A;
+    }
+  }
+
+  // Состояние с заполненным значением
+  &--has-value:not(&--error):not(&--focused) {
+    .custom-select__label {
+      color: #48484A;
+    }
+  }
+
+  &__required {
+    color: #FF3B30;
+    margin-left: 4px;
+  }
+
+  &__wrapper {
+    position: relative;
+    width: 100%;
+  }
+
+  &__error {
+    font-size: 12px;
+    line-height: 16px;
+    color: #FF3B30;
+    margin-top: -4px;
+    animation: slideDown 0.2s ease;
+  }
+
+  &--error {
+    .custom-select__label {
+      color: #FF3B30;
+    }
+  }
+
+  &--disabled {
+    cursor: not-allowed;
+
+    .custom-select__label {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .custom-select__wrapper {
+      pointer-events: none;
+      opacity: 0.5;
+    }
+  }
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// Адаптивность
+@media (max-width: 768px) {
+  .custom-select {
+    &__label {
+      font-size: 13px;
+    }
+
+    &__error {
+      font-size: 11px;
+    }
+  }
+}
