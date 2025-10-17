@@ -112,7 +112,8 @@ function ResumeEdit() {
   
   return (
     <div className="resume-edit">
-    <div className="wrapper">
+      <div className="container">
+        <div className="wrapper">
         <h1 className="resume-edit__title">Редактирование резюме</h1>
         <p className="resume-edit__description">
           Заполните информацию о себе для создания резюме
@@ -315,10 +316,11 @@ function ResumeEdit() {
               Сохранить резюме
             </Button>
             <Button onClick={() => window.history.back()}>
-              Отмена
-            </Button>
-          </div>
-        </form>
+                Отмена
+              </Button>
+            </div>
+          </form>
+        </div>
       </div>
     </div>
   );

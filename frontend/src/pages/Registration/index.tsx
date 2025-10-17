@@ -99,11 +99,11 @@ const Registration: React.FC<RegistrationProps> = () => {
 
     return (
         <div className="registration-page">
-            <div className="wrapper">
-                <h1 className="main-page__title">
-                    <Text>registrationTitle</Text>
-                </h1>
-                <div className="inner-wrapper">
+            <div className="container">
+                <div className="wrapper">
+                    <h1 className="main-page__title">
+                        <Text>registrationTitle</Text>
+                    </h1>
                     <Input
                         label="Фамилия"
                         placeholder="Иванов"
@@ -221,6 +221,9 @@ const Registration: React.FC<RegistrationProps> = () => {
                         isDisabled={userRoleId.isDisabled}
                         required
                     />
+                    <Button>
+                        Зарегистрироваться
+                    </Button>
                 </div>
                 <Button onClick={handleRegister} disabled={!isValidateSuccess}>
                     Зарегистрироваться

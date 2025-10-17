@@ -19,42 +19,44 @@ function Authorization() {
     
     return (
         <div className="authorization-page">
-            <div className="wrapper">
-                <div className="authorization-page__content">
-                    <h1 className="authorization-page__title">
-                        Авторизация
-                    </h1>
-                    <Input
-                        label="Электронная почта"
-                        placeholder="example@mail.com"
-                        value={email.value}
-                        onChange={(value) => setEmail({ ...email, value, success: true, error: '' })}
-                        error={email.error}
-                        disabled={email.isDisabled}
-                        required
-                    />
-                    <Password 
-                        label="Пароль"
-                        placeholder="********"
-                        value={password.value}
-                        onChange={(value) => setPassword({ ...password, value, success: true, error: '' })}
-                        error={password.error}
-                        disabled={password.isDisabled}
-                        required
-                    />
-                    <div className="authorization-page__buttons">
-                        <Button
-                            onClick={() => navigate('/')}
-                            variant={ButtonType.GRAY}
-                        >
-                            Вернуться
-                        </Button>
-                        <Button
-                            onClick={handleLogin}
-                            disabled={email.isDisabled || password.isDisabled}
-                        >
-                            Войти
-                        </Button>
+            <div className="container">
+                <div className="wrapper">
+                    <div className="authorization-page__content">
+                        <h1 className="authorization-page__title">
+                            Авторизация
+                        </h1>
+                        <Input
+                            label="Электронная почта"
+                            placeholder="example@mail.com"
+                            value={email.value}
+                            onChange={(value) => setEmail({ ...email, value, success: true, error: '' })}
+                            error={email.error}
+                            disabled={email.isDisabled}
+                            required
+                        />
+                        <Password 
+                            label="Пароль"
+                            placeholder="********"
+                            value={password.value}
+                            onChange={(value) => setPassword({ ...password, value, success: true, error: '' })}
+                            error={password.error}
+                            disabled={password.isDisabled}
+                            required
+                        />
+                        <div className="authorization-page__buttons">
+                            <Button
+                                onClick={() => navigate('/')}
+                                variant={ButtonType.GRAY}
+                            >
+                                Вернуться
+                            </Button>
+                            <Button
+                                onClick={handleLogin}
+                                disabled={email.isDisabled || password.isDisabled}
+                            >
+                                Войти
+                            </Button>
+                        </div>
                     </div>
                 </div>
             </div>

@@ -3,7 +3,13 @@ import './style.scss';
 
 function Error() {
   return (
-    <div className='error'>Error</div>
+    <div className='error'>
+      <div className="container">
+        <div className="wrapper">
+          Error
+        </div>
+      </div>
+    </div>
   );
 }
 

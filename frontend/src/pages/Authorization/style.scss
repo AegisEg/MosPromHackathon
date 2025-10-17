@@ -2,12 +2,12 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    margin: 50px 0;
 
     &__content {
         display: flex;
         flex-direction: column;
         gap: 16px;
-        min-width: 600px;
     }
 
     &__title {
