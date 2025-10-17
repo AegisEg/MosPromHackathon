@@ -1,5 +1,4 @@
 import React, {useEffect, useState} from "react";
-import { useTranslation } from "react-i18next";
 import Text from '../../components/UI/Text';
 import Input from "../../components/UI/Input";
 import Button from "../../components/UI/Button"
@@ -8,12 +7,15 @@ import Select from "../../components/UI/Select";
 import {resetValidation, validateEmail, validatePassword, validateValue} from "../../utils/validation";
 import { registerUser } from "../../api/user";
 import { showErrorToast } from "../../utils/toast";
-import { ErrorResponse } from "../../api/types";
+import { saveTokenToStorage } from "../../redux/user/actions";
+import { useTypedDispatch } from "../../redux/store";
+import { useNavigate } from "react-router-dom";
 
 interface RegistrationProps {}
 
 const Registration: React.FC<RegistrationProps> = () => {
-    const { i18n } = useTranslation();
+    const dispatch = useTypedDispatch();
+    const navigate = useNavigate();
 
     const userRoleOptions = [
         { value: '1', label: 'Работодатель' },
@@ -69,22 +71,30 @@ const Registration: React.FC<RegistrationProps> = () => {
     }, [name.success, surname.success, patronymic.success, email.success, password.success, confirmPassword.success, userRoleId.success]);
 
 
-    const handleRegister = () => {
-        showErrorToast('error');
-        console.log('try fetch api')
-        registerUser({
-            role: userRoleId.value,
-            first_name: name.value,
-            last_name: surname.value,
-            middle_name: patronymic.value,
-            email: email.value,
-            password: password.value,
-        }).then((result) => {
+    const handleRegister = async () => {
+        try {
+            const result = await registerUser({
+                role: userRoleId.value,
+                first_name: name.value,
+                last_name: surname.value,
+                middle_name: patronymic.value,
+                email: email.value,
+                password: password.value,
+            });
+            
             console.log('result', result);
-        }).catch((error: ErrorResponse) => {
+            
+            // Сохраняем токен в Redux и localStorage
+            if (result && result.token) {
+                dispatch(saveTokenToStorage(result.token));
+                showErrorToast('Регистрация прошла успешно!');
+                navigate('/protected');
+            }
+        } catch (error: any) {
             console.log('error', error);
-            showErrorToast(error.response?.data.error.message || 'Произошла ошибка при регистрации');
-        });
+            const errorMessage = error.response?.data?.error?.message || 'Произошла ошибка при регистрации';
+            showErrorToast(errorMessage);
+        } 
     }
 
     return (

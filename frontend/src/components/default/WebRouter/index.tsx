@@ -5,6 +5,7 @@ import Loader from '../Loader/';
 import Header from '../Header/';
 import Footer from '../Footer/';
 import NotFound from '../NotFound/';
+import ProtectedRoute from '../ProtectedRoute';
 
 function WebRouter() {
   function renderFallback() {
@@ -81,6 +82,13 @@ function WebRouter() {
                 <Route path="/internships" element={
                   <Suspense fallback={renderFallback()}>
                     <InternshipsPage />
+                  </Suspense>
+                } />
+                <Route path="/protected" element={
+                  <Suspense fallback={renderFallback()}>
+                    <ProtectedRoute>
+                      <div>Protected content</div>
+                    </ProtectedRoute>
                   </Suspense>
                 } />
                 <Route path="*" element={<NotFound />} />
