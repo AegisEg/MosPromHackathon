@@ -6,6 +6,7 @@ import Textarea from '../../components/UI/Textarea';
 import Toggle from '../../components/UI/Toggle';
 import Button from '../../components/UI/Button';
 import DateInput from '../../components/UI/DateInput';
+import FileUpload from '../../components/UI/FileUpload';
 import type { 
   Education, 
   Experience, 
@@ -105,6 +106,17 @@ function ResumeEdit() {
     { value: 'Figma', label: 'Figma' },
   ];
 
+  const handlePhotoUpload = (file: File) => {
+    console.log('Uploaded photo file:', file);
+    // Здесь можно добавить логику загрузки файла на сервер
+    // После загрузки можно обновить photo.value с URL загруженного файла
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setPhoto({ ...photo, value: reader.result as string, success: true, error: '' });
+    };
+    reader.readAsDataURL(file);
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     console.log('Form submitted');
@@ -131,7 +143,6 @@ function ResumeEdit() {
                 onChange={(value) => setLastName({ ...lastName, value, success: true, error: '' })}
                 error={lastName.error}
                 disabled={lastName.isDisabled}
-                required
               />
               <Input
                 label="Имя"
@@ -140,7 +151,6 @@ function ResumeEdit() {
                 onChange={(value) => setFirstName({ ...firstName, value, success: true, error: '' })}
                 error={firstName.error}
                 disabled={firstName.isDisabled}
-                required
               />
               <Input
                 label="Отчество"
@@ -158,7 +168,6 @@ function ResumeEdit() {
                 onChange={(value) => setEmail({ ...email, value, success: true, error: '' })}
                 error={email.error}
                 disabled={email.isDisabled}
-                required
               />
               <DateInput
                 label="Дата рождения"
@@ -167,7 +176,6 @@ function ResumeEdit() {
                 onChange={(value) => setDateOfBirth({ ...dateOfBirth, value, success: true, error: '' })}
                 error={dateOfBirth.error}
                 disabled={dateOfBirth.isDisabled}
-                required
               />
               <Input
                 label="Телефон"
@@ -177,7 +185,6 @@ function ResumeEdit() {
                 onChange={(value) => setPhone({ ...phone, value, success: true, error: '' })}
                 error={phone.error}
                 disabled={phone.isDisabled}
-                required
               />
               <Input
                 label="Город"
@@ -186,7 +193,6 @@ function ResumeEdit() {
                 onChange={(value) => setCity({ ...city, value, success: true, error: '' })}
                 error={city.error}
                 disabled={city.isDisabled}
-                required
               />
               <Input
                 label="Страна"
@@ -195,7 +201,6 @@ function ResumeEdit() {
                 onChange={(value) => setCountry({ ...country, value, success: true, error: '' })}
                 error={country.error}
                 disabled={country.isDisabled}
-                required
               />
             </div>
           </div>
@@ -212,7 +217,6 @@ function ResumeEdit() {
                 placeholder="Выберите профессию"
                 error={professionId.error}
                 isDisabled={professionId.isDisabled}
-                required
               />
               <Select
                 label="Образование"
@@ -222,7 +226,6 @@ function ResumeEdit() {
                 placeholder="Выберите уровень образования"
                 error={education.error}
                 isDisabled={education.isDisabled}
-                required
               />
               <Input
                 label="Желаемая зарплата"
@@ -286,13 +289,11 @@ function ResumeEdit() {
           {/* Фото */}
           <div className="inner-wrapper">
             <div className="inner-wrapper_title">Фотография</div>
-            <Input
-              label="Ссылка на фото"
-              placeholder="https://example.com/photo.jpg"
-              value={photo.value}
-              onChange={(value) => setPhoto({ ...photo, value, success: true, error: '' })}
-              error={photo.error}
-              disabled={photo.isDisabled}
+            <FileUpload
+              currentImage={photo.value}
+              onFileSelect={handlePhotoUpload}
+              accept="image/*"
+              maxSize={5}
             />
           </div>
 

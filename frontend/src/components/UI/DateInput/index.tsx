@@ -13,7 +13,6 @@ interface DateProps {
   onFocus?: () => void;
   disabled?: boolean;
   error?: string;
-  required?: boolean;
   className?: string;
   dateFormat?: 'DD.MM.YYYY' | 'MM.DD.YYYY' | 'YYYY-MM-DD';
 }
@@ -27,7 +26,6 @@ export default function DateInput({
   onFocus,
   disabled = false,
   error,
-  required = false,
   className = '',
   dateFormat = 'DD.MM.YYYY',
 }: DateProps) {
@@ -87,7 +85,6 @@ export default function DateInput({
         {label && (
           <label className="custom-date__label" {...api.getLabelProps()}>
             {label}
-            {required && <span className="custom-date__required">*</span>}
           </label>
         )}
 

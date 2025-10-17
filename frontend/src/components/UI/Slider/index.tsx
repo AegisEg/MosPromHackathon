@@ -5,7 +5,6 @@ import './style.scss';
 interface SliderProps extends Omit<MuiSliderProps, 'color'> {
   label?: string;
   error?: string;
-  required?: boolean;
   formatValue?: (value: number) => string;
 }
 
@@ -60,7 +59,6 @@ const StyledSlider = styled(MuiSlider, {
 export default function Slider({
   label,
   error,
-  required = false,
   formatValue,
   className = '',
   min = 0,
@@ -90,7 +88,6 @@ export default function Slider({
       {label && (
         <label className="custom-slider__label">
           {label}
-          {required && <span className="custom-slider__required">*</span>}
         </label>
       )}
 

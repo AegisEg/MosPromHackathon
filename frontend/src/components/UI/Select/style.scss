@@ -12,35 +12,24 @@
     font-weight: 500;
     font-size: 14px;
     line-height: 20px;
-    color: #C7C7CC;
+    color: #FFFFFF;
     transition: color 0.3s ease;
     cursor: default;
   }
 
-  // Hover на весь контейнер
-  &:hover:not(&--disabled):not(&--error) {
-    .custom-select__label {
-      color: #48484A;
-    }
-  }
 
   // Состояние фокуса
   &--focused:not(&--error) {
     .custom-select__label {
-      color: #48484A;
+      color: #FFFFFF;
     }
   }
 
   // Состояние с заполненным значением
   &--has-value:not(&--error):not(&--focused) {
     .custom-select__label {
-      color: #48484A;
+      color: #FFFFFF;
     }
-  }
-
-  &__required {
-    color: #FF3B30;
-    margin-left: 4px;
   }
 
   &__wrapper {
@@ -57,22 +46,13 @@
   }
 
   &--error {
-    .custom-select__label {
-      color: #FF3B30;
-    }
   }
 
   &--disabled {
     cursor: not-allowed;
 
-    .custom-select__label {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
-
     .custom-select__wrapper {
       pointer-events: none;
-      opacity: 0.5;
     }
   }
 }
