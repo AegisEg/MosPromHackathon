@@ -30,6 +30,9 @@ class DatabaseSeeder extends Seeder
             
             // Вакансии
             VacanciesSeeder::class,
+            
+            // Стажировки
+            InternshipsSeeder::class,
         ]);
     }
 }

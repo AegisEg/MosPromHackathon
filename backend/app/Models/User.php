@@ -91,4 +91,11 @@ class User extends Authenticatable
     public function vacancies() {
         return $this->hasMany(Vacancies::class);
     }
+
+    /**
+     * Связь со стажировками пользователя
+     */
+    public function internships() {
+        return $this->hasMany(Internship::class);
+    }
 }
