@@ -1,6 +1,10 @@
 <?php
 declare(strict_types=1);
 
+use App\Domain\SharedKernel\Midllewares\AdminMiddleware;
+use App\Domain\SharedKernel\Midllewares\CompanyMiddleware;
+use App\Domain\SharedKernel\Midllewares\InstituteMiddleware;
+use App\Domain\SharedKernel\Midllewares\SeekerMiddleware;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -15,7 +19,12 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        //
+        $middleware->alias([
+            'admin'     => AdminMiddleware::class,
+            'company'   => CompanyMiddleware::class,
+            'institute' => InstituteMiddleware::class,
+            'seeker'    => SeekerMiddleware::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->renderable(function (AuthenticationException $e, $request) {

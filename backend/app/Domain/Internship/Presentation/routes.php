@@ -9,7 +9,7 @@ Route::group(['prefix' => 'internships'], function () {
         ->name('internships.show');
     Route::group(['middleware' => ['auth:sanctum']], function () {
         Route::post('/', [InternshipController::class, 'create'])
-            ->name('internships.create');
+            ->name('internships.create')->middleware('institute');
         Route::put('/{idInternship}', [InternshipController::class, 'update'])
             ->name('internships.update');
         Route::delete('/{idInternship}', [InternshipController::class, 'delete'])
