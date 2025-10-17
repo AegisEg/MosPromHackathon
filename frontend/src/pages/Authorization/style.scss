@@ -1,0 +1,36 @@
+.authorization-page {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    &__content {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        min-width: 600px;
+    }
+
+    &__title {
+        font-weight: 500;
+        font-size: 36px;
+        line-height: 16px;
+        color: #393649;
+        text-align: center;
+        margin-bottom: 34px;
+    }
+
+    & .custom-input {
+        margin-bottom: 12px;
+    }
+
+    & .authorization-page__buttons {
+        margin-top: 22px;
+        display: flex;
+        gap: 12px;
+        align-items: center;
+
+        & .button {
+            width: 100%;
+        }
+    }
+}

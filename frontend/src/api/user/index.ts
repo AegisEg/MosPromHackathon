@@ -5,11 +5,12 @@ import {AuthorizationPayload, AuthorizationResponse, RegistrationPayload, Regist
 
 export const registerUser = (payload: RegistrationPayload) => {
     return api
-        .post('auth/register', {})
+        .post('auth/register', payload)
         .then((response: Response<RegistrationResponse>) => {
+            console.log('response', response.data);
             return response.data.data;
-        });
-}
+        })
+    }
 
 export const authorizeUser = (payload: AuthorizationPayload) => {
     return api
