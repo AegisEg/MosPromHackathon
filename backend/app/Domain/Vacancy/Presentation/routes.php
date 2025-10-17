@@ -9,7 +9,7 @@ Route::group(['prefix' => 'vacancies'], function () {
         ->name('vacancies.show');
     Route::group(['middleware' => ['auth:sanctum']], function () {
         Route::post('/', [VacancyController::class, 'create'])
-            ->name('vacancies.create');
+            ->name('vacancies.create')->middleware('company');
         Route::put('/{idVacancy}', [VacancyController::class, 'update'])
             ->name('vacancies.update');
         Route::delete('/{idVacancy}', [VacancyController::class, 'delete']);

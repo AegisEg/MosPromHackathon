@@ -19,7 +19,9 @@ import { DefaultValue } from '../../types/default.types';
 
 function ResumeEdit() {
   // Основная информация
-  const [fullName, setFullName] = useState<DefaultValue<string>>({ value: '', success: false, error: '', isDisabled: false });
+  const [lastName, setLastName] = useState<DefaultValue<string>>({ value: '', success: false, error: '', isDisabled: false });
+  const [firstName, setFirstName] = useState<DefaultValue<string>>({ value: '', success: false, error: '', isDisabled: false });
+  const [middleName, setMiddleName] = useState<DefaultValue<string>>({ value: '', success: false, error: '', isDisabled: false });
   const [email, setEmail] = useState<DefaultValue<string>>({ value: '', success: false, error: '', isDisabled: false });
   const [dateOfBirth, setDateOfBirth] = useState<DefaultValue<string>>({ value: '', success: false, error: '', isDisabled: false });
   const [city, setCity] = useState<DefaultValue<string>>({ value: '', success: false, error: '', isDisabled: false });
@@ -122,13 +124,30 @@ function ResumeEdit() {
             <div className="inner-wrapper_title">Основная информация</div>
             <div className="resume-edit__grid">
               <Input
-                label="ФИО"
-                placeholder="Иванов Иван Иванович"
-                value={fullName.value}
-                onChange={(value) => setFullName({ ...fullName, value, success: true, error: '' })}
-                error={fullName.error}
-                disabled={fullName.isDisabled}
+                label="Фамилия"
+                placeholder="Иванов"
+                value={lastName.value}
+                onChange={(value) => setLastName({ ...lastName, value, success: true, error: '' })}
+                error={lastName.error}
+                disabled={lastName.isDisabled}
                 required
+              />
+              <Input
+                label="Имя"
+                placeholder="Иван"
+                value={firstName.value}
+                onChange={(value) => setFirstName({ ...firstName, value, success: true, error: '' })}
+                error={firstName.error}
+                disabled={firstName.isDisabled}
+                required
+              />
+              <Input
+                label="Отчество"
+                placeholder="Иванович"
+                value={middleName.value}
+                onChange={(value) => setMiddleName({ ...middleName, value, success: true, error: '' })}
+                error={middleName.error}
+                disabled={middleName.isDisabled}
               />
               <Input
                 label="Email"

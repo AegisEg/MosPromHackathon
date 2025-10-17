@@ -40,5 +40,12 @@
         font-size: 18px;
         line-height: 27px;
         letter-spacing: 0%;
+        text-align: center;
+        justify-content: center;
+        align-items: center;
+    }
+
+    &:disabled {
+        cursor: not-allowed;
     }
 }

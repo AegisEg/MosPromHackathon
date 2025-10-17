@@ -20,7 +20,7 @@ Route::group(['prefix' => 'resume'], function () {
 
     Route::group(['middleware' => ['auth:sanctum']], function () {
         Route::post('/store', [ResumeController::class, 'store'])
-            ->name('resume.store');
+            ->name('resume.store')->middleware('seeker');
         Route::patch('/update/{id}', [ResumeController::class, 'update'])
             ->name('resume.update');
         Route::delete('/delete/{id}', [ResumeController::class, 'destroy'])

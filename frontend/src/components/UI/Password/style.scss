@@ -1,0 +1,164 @@
+.custom-password {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+
+  &__label {
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 20px;
+    color: #C7C7CC;
+    transition: color 0.3s ease;
+    cursor: default;
+  }
+
+  &__required {
+    color: #FF3B30;
+    margin-left: 4px;
+  }
+
+  &__wrapper {
+    position: relative;
+    width: 100%;
+  }
+
+  &__field {
+    width: 100%;
+    padding: 12px 16px;
+    font-size: 16px;
+    line-height: 24px;
+    color: #C7C7CC;
+    background: transparent;
+    border: 2px solid #C7C7CC;
+    border-radius: 12px;
+    outline: none;
+    transition: all 0.3s ease;
+    font-family: inherit;
+    cursor: pointer;
+
+    &::placeholder {
+      color: #C7C7CC;
+      transition: color 0.3s ease;
+    }
+
+    &:focus {
+      border-color: #48484A;
+      color: #48484A;
+      background: transparent;
+      cursor: text;
+
+      &::placeholder {
+        color: #48484A;
+      }
+    }
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      background: transparent;
+    }
+  }
+
+  // Hover на весь контейнер
+  &:hover:not(&--disabled):not(&--error) {
+    .custom-password__label {
+      color: #48484A;
+    }
+
+    .custom-password__field:not(:disabled) {
+      border-color: #48484A;
+      color: #48484A;
+
+      &::placeholder {
+        color: #48484A;
+      }
+    }
+  }
+
+  // Состояние фокуса
+  &--focused:not(&--error) {
+    .custom-password__label {
+      color: #48484A;
+    }
+
+    .custom-password__field {
+      border-color: #48484A;
+      color: #48484A;
+    }
+  }
+
+  // Состояние с заполненным значением
+  &--has-value:not(&--error):not(&--focused) {
+    .custom-password__label {
+      color: #48484A;
+    }
+
+    .custom-password__field {
+      border-color: #48484A;
+      color: #48484A;
+    }
+  }
+
+  &__error {
+    font-size: 12px;
+    line-height: 16px;
+    color: #FF3B30;
+    margin-top: -4px;
+    animation: slideDown 0.2s ease;
+  }
+
+  &--error {
+    .custom-password__field {
+      border-color: #FF3B30;
+      
+      &:focus {
+        border-color: #FF3B30;
+      }
+    }
+
+    .custom-password__label {
+      color: #FF3B30;
+    }
+  }
+
+  &--disabled {
+    .custom-password__label {
+      opacity: 0.5;
+    }
+  }
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// Адаптивность
+@media (max-width: 768px) {
+  .custom-password {
+    &__field {
+      font-size: 14px;
+      padding: 10px 14px;
+
+      &::placeholder {
+        font-size: 14px;
+      }
+    }
+
+    &__label {
+      font-size: 13px;
+    }
+
+    &__error {
+      font-size: 11px;
+    }
+  }
+}
+

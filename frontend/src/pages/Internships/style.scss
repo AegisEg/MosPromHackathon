@@ -1,0 +1,21 @@
+.internships-page {
+  padding: 40px 20px;
+
+  &__title {
+    font-size: 48px;
+    font-weight: 700;
+    line-height: 1.2;
+    color: #E5E5EA;
+    margin: 0 0 16px 0;
+    text-align: center;
+  }
+
+  &__description {
+    font-size: 18px;
+    line-height: 1.6;
+    color: #8E8E93;
+    margin: 0 0 60px 0;
+    text-align: center;
+  }
+}
+

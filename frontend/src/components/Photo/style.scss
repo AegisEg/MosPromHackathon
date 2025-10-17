@@ -33,5 +33,20 @@
         display: flex;
         align-items: center;
         justify-content: center;
+        transition: all 0.2s ease;
+
+        &:hover {
+            background: #B50C3C;
+            transform: scale(1.05);
+        }
+
+        &:active {
+            transform: scale(0.95);
+        }
     }
+}
+
+.photo-modal {
+    width: 600px;
+    max-width: 90vw;
 }

@@ -1,10 +1,14 @@
-import React, { useState } from "react";
+import React, {useEffect, useState} from "react";
 import { useTranslation } from "react-i18next";
 import Text from '../../components/UI/Text';
 import Input from "../../components/UI/Input";
 import Button from "../../components/UI/Button"
 import { DefaultValue } from "../../types/default.types";
 import Select from "../../components/UI/Select";
+import {resetValidation, validateEmail, validatePassword, validateValue} from "../../utils/validation";
+import { registerUser } from "../../api/user";
+import { showErrorToast } from "../../utils/toast";
+import { ErrorResponse } from "../../api/types";
 
 interface RegistrationProps {}
 
@@ -47,6 +51,42 @@ const Registration: React.FC<RegistrationProps> = () => {
      */
     const [userRoleId, setUserRoleId] = useState<DefaultValue<number>>({ value: 0, success: false, error: '', isDisabled: false });
 
+    /**
+     * Валидность формы
+     */
+    const [isValidateSuccess, setIsValidateSuccess] = useState<boolean>(false);
+
+
+    useEffect(() => {
+        if(name.success && surname.success && patronymic.success &&
+            email.success && password.success && confirmPassword.success &&
+            userRoleId.success) {
+            setIsValidateSuccess(true)
+        } else {
+            setIsValidateSuccess(false)
+
+        }
+    }, [name.success, surname.success, patronymic.success, email.success, password.success, confirmPassword.success, userRoleId.success]);
+
+
+    const handleRegister = () => {
+        showErrorToast('error');
+        console.log('try fetch api')
+        registerUser({
+            role: userRoleId.value,
+            first_name: name.value,
+            last_name: surname.value,
+            middle_name: patronymic.value,
+            email: email.value,
+            password: password.value,
+        }).then((result) => {
+            console.log('result', result);
+        }).catch((error: ErrorResponse) => {
+            console.log('error', error);
+            showErrorToast(error.response?.data.error.message || 'Произошла ошибка при регистрации');
+        });
+    }
+
     return (
         <div className="registration-page">
             <div className="wrapper">
@@ -59,6 +99,16 @@ const Registration: React.FC<RegistrationProps> = () => {
                         placeholder="Иванов"
                         value={surname.value}
                         onChange={(value) => setSurname({ ...surname, value, success: true, error: '' })}
+                        onBlur={() => {
+                            validateValue({
+                                value: surname.value,
+                                setField: setSurname,
+                                needValidate: true,
+                            })
+                        }}
+                        onFocus={() => {
+                            resetValidation(surname, setSurname)
+                        }}
                         error={surname.error}
                         disabled={surname.isDisabled}
                         required
@@ -68,6 +118,16 @@ const Registration: React.FC<RegistrationProps> = () => {
                         placeholder="Иван"
                         value={name.value}
                         onChange={(value) => setName({ ...name, value, success: true, error: '' })}
+                        onBlur={() => {
+                            validateValue({
+                                value: name.value,
+                                setField: setName,
+                                needValidate: true,
+                            })
+                        }}
+                        onFocus={() => {
+                            resetValidation(name, setName)
+                        }}
                         error={name.error}
                         disabled={name.isDisabled}
                         required
@@ -77,6 +137,14 @@ const Registration: React.FC<RegistrationProps> = () => {
                         placeholder="Иванович"
                         value={patronymic.value}
                         onChange={(value) => setPatronymic({ ...patronymic, value, success: true, error: '' })}
+                        onBlur={() => validateValue({
+                            value: patronymic.value,
+                            setField: setPatronymic,
+                            needValidate: true,
+                        })}
+                        onFocus={() => {
+                            resetValidation(patronymic, setPatronymic)
+                        }}
                         error={patronymic.error}
                         disabled={patronymic.isDisabled}
                         required
@@ -87,6 +155,17 @@ const Registration: React.FC<RegistrationProps> = () => {
                         placeholder="example@mail.com"
                         value={email.value}
                         onChange={(value) => setEmail({ ...email, value, success: true, error: '' })}
+                        onBlur={() => {
+                            validateValue({
+                                value: email.value,
+                                setField: setEmail,
+                                validateFnc: validateEmail,
+                                needValidate: true,
+                            })
+                        }}
+                        onFocus={() => {
+                            resetValidation(email, setEmail)
+                        }}
                         error={email.error}
                         disabled={email.isDisabled}
                         required
@@ -97,6 +176,17 @@ const Registration: React.FC<RegistrationProps> = () => {
                         placeholder="********"
                         value={password.value}
                         onChange={(value) => setPassword({ ...password, value, success: true, error: '' })}
+                        onBlur={() => {
+                            validateValue({
+                                value: password.value,
+                                setField: setPassword,
+                                validateFnc: validatePassword,
+                                needValidate: true,
+                            })
+                        }}
+                        onFocus={() => {
+                            resetValidation(password, setPassword)
+                        }}
                         error={password.error}
                         disabled={password.isDisabled}
                         required
@@ -108,7 +198,7 @@ const Registration: React.FC<RegistrationProps> = () => {
                         value={confirmPassword.value}
                         onChange={(value) => setConfirmPassword({ ...confirmPassword, value, success: true, error: '' })}
                         error={confirmPassword.error}
-                        disabled={confirmPassword.isDisabled}
+                        disabled={!password.value && !password.success}
                         required
                     />
                     <Select
@@ -122,7 +212,7 @@ const Registration: React.FC<RegistrationProps> = () => {
                         required
                     />
                 </div>
-                <Button>
+                <Button onClick={handleRegister} disabled={!isValidateSuccess}>
                     Зарегистрироваться
                 </Button>
             </div>
