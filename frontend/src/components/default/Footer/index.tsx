@@ -1,10 +1,10 @@
-import React from 'react';
+import React, { forwardRef } from 'react';
 import './style.scss';
 import Logo from '../Logo';
 
-function Footer() {
+const Footer = forwardRef<HTMLElement>((props, ref) => {
   return (
-    <div className="footer">
+    <footer className="footer" ref={ref}>
       <div className="container">
         <div className="footer_wrapper">
           <div className="footer_wrapper_item">
@@ -132,8 +132,10 @@ function Footer() {
           </div>
         </div>
       </div>
-    </div>
+    </footer>
   );
-}
+});
+
+Footer.displayName = 'Footer';
 
 export default Footer;
