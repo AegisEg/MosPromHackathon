@@ -14,7 +14,6 @@ services:
           - "host.docker.internal:host-gateway"
         environment:
             APP_URL: ${APP_URL}
-            LARAVEL_PORT_NUMBER: 80
             DB_DATABASE: ${DB_DATABASE}
             DB_HOST: ${DB_HOST}
             DB_USERNAME: ${DB_USERNAME}
@@ -39,7 +38,7 @@ services:
             context: ./nginx
         container_name: MosPromHrNginx
         ports:
-          - 80:80
+          - 81:80
         depends_on:
             - php
         restart: unless-stopped
