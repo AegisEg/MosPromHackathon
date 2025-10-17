@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Models;
 
@@ -21,14 +22,15 @@ class Internship extends Model
 
     protected $casts = [
         'start_date_period' => DateTimeImmutableCast::class,
-        'end_date_period' => DateTimeImmutableCast::class,
+        'end_date_period'   => DateTimeImmutableCast::class,
+        'created_at'        => DateTimeImmutableCast::class,
+        'updated_at'        => DateTimeImmutableCast::class,
     ];
 
     /**
      * Получить пользователя, которому принадлежит стажировка
      */
-    public function user(): BelongsTo
-    {
+    public function user(): BelongsTo {
         return $this->belongsTo(User::class);
     }
 }
