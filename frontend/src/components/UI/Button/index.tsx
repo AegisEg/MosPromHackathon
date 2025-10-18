@@ -1,5 +1,6 @@
 import * as React from 'react';
 import './style.scss';
+import LoaderSmall from '../../default/LoaderSmall';
 
 export enum ButtonType {
   RED = 'red',
@@ -14,6 +15,7 @@ interface ButtonProps {
   disabled?: boolean;
   children?: React.ReactNode;
   variant?: ButtonType;
+  loading?: boolean;
   type?: 'button' | 'submit' | 'reset';
   className?: string;
 }
@@ -24,16 +26,17 @@ export default function Button({
   children, 
   variant = ButtonType.RED,
   type = 'button',
-  className = ''
+  className = '',
+  loading = false
 }: ButtonProps) {
   return (
     <button 
       onClick={onClick} 
-      disabled={disabled}
+      disabled={disabled || loading}
       type={type}
       className={`button ${variant} ${className}`}
     >
-      {children}
+      {loading ? <LoaderSmall /> : children}
     </button>
   );
 }

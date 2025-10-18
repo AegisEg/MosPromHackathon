@@ -17,6 +17,12 @@
         &, * {
             color: #fff;
         }
+
+        .loader-small {
+            .lds-spinner div:after {
+                background: #fff !important;
+            }
+        }
     }
 
     &.black {
@@ -25,6 +31,12 @@
         &, * {
             color: #fff;
         }
+
+        .loader-small {
+            .lds-spinner div:after {
+                background: #fff !important;
+            }
+        }
     }
 
     &.gray {
@@ -32,6 +44,12 @@
 
         &, * {
             color: #000000;
+        }
+
+        .loader-small {
+            .lds-spinner div:after {
+                background: #000000 !important;
+            }
         }
     }
 
@@ -75,6 +93,5 @@
 
     &:disabled {
         cursor: default;
-        background-color: #929292;
     }
 }

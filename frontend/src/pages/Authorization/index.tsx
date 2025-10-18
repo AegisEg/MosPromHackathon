@@ -26,6 +26,7 @@ function Authorization() {
     const [email, setEmail] = useState<DefaultValue<string>>({ value: '', success: false, error: '', isDisabled: false });
     const [password, setPassword] = useState<DefaultValue<string>>({ value: '', success: false, error: '', isDisabled: false });
     const [isValidateSuccess, setIsValidateSuccess] = useState<boolean>(false);
+    const [isLoading, setIsLoading] = useState<boolean>(false);
 
     const handleRedirect = useCallback(() => {
         if (token && status === LoadStatus.SUCCESS) {
@@ -52,6 +53,7 @@ function Authorization() {
 
     const handleLogin = useCallback(async () => {
         try {
+            setIsLoading(true);
             const response = await authorizeUser({
                 email: email.value,
                 password: password.value,
@@ -72,6 +74,8 @@ function Authorization() {
             console.error('Login error:', error);
             const errorMessage = error.response?.data?.error?.message || error.message || 'Произошла ошибка при авторизации';
             showErrorToast(errorMessage);
+        } finally {
+            setIsLoading(false);
         }
     }, [email.value, password.value, dispatch, navigate]);
 
@@ -136,6 +140,8 @@ function Authorization() {
                             <Button
                                 onClick={handleLogin}
                                 disabled={!isValidateSuccess}
+                                loading={isLoading}
+                                className="big"
                             >
                                 Войти
                             </Button>

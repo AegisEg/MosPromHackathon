@@ -31,6 +31,8 @@ const Registration: React.FC<RegistrationProps> = () => {
         { value: '4', label: 'Институт' },
     ];
 
+    const [isLoading, setIsLoading] = useState<boolean>(false);
+
     /**
      * Имя
      */
@@ -80,6 +82,7 @@ const Registration: React.FC<RegistrationProps> = () => {
 
     const handleRegister = async () => {
         try {
+            setIsLoading(true);
             const result = await registerUser({
                 role: userRoleId.value,
                 first_name: name.value,
@@ -100,7 +103,9 @@ const Registration: React.FC<RegistrationProps> = () => {
         } catch (error: any) {
             const errorMessage = error.response?.data?.error?.message || 'Произошла ошибка при регистрации';
             showErrorToast(errorMessage);
-        } 
+        } finally {
+            setIsLoading(false);
+        }
     }
 
     useEffect(() => {
@@ -234,7 +239,7 @@ const Registration: React.FC<RegistrationProps> = () => {
                             >
                                 Войти
                             </Button>
-                            <Button onClick={handleRegister} disabled={!isValidateSuccess} className="big">
+                            <Button onClick={handleRegister} disabled={!isValidateSuccess} className="big" loading={isLoading}>
                                 Зарегистрироваться
                             </Button>
                         </div>

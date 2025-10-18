@@ -49,9 +49,9 @@
         align-items: center;
 
         & .button {
-            flex: 1 1 auto;
+            flex: 0 1 auto;
 
-            & .big {
+            &.big {
                 flex: 1 0 auto;
             }
         }

@@ -13,7 +13,6 @@ function Main() {
             <h1 className="main-page__title">
               Выберите нужный раздел для продолжения работы
             </h1>
-          
             <div className="main-page__cards">
               <div 
                 className="main-page__card"

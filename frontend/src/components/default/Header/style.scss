@@ -17,12 +17,19 @@
     &_nav {
         gap: 6px;
         margin-left: 12px;
-        
+
+        li {
+            &.hidden {
+                display: none;
+            }
+        }
+
         a {
             display: flex;
             align-items: center;
             justify-content: center;
             padding: 3px;
+            text-align: center;
 
             &.active {
                 color: #D00E46;
