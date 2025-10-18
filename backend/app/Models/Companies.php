@@ -44,4 +44,12 @@ class Companies extends Model
     {
         return $this->hasMany(Vacancies::class);
     }
+
+    /**
+     * Связь с откликами на стажировки от компании
+     */
+    public function internshipResponds()
+    {
+        return $this->hasMany(InternshipRespond::class, 'company_id', 'id');
+    }
 }

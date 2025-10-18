@@ -98,4 +98,11 @@ class User extends Authenticatable
     public function internships() {
         return $this->hasMany(Internship::class);
     }
+
+    /**
+     * Институты, где пользователь является владельцем (роль INSTITUTE)
+     */
+    public function institutes() {
+        return $this->hasMany(Internship::class, 'institute_id', 'id');
+    }
 }
