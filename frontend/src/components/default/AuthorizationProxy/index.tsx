@@ -9,17 +9,10 @@ import { useNavigate } from "react-router-dom";
 import './style.scss';
 
 export const AuthorizationProxy = () => {
-    const dispatch = useTypedDispatch();
     const navigate = useNavigate();
-
-    const {token, status} = useSelector(selectAuthData);
+    
     const {data: userData, status: userDataStatus} = useSelector(selectUserData);
 
-    useEffect(() => {
-        if (token && status === LoadStatus.SUCCESS) {
-            dispatch(getUserDataAction());
-        }
-    }, [token, status, dispatch]);
 
     useEffect(() => {
         if (userData && userDataStatus === LoadStatus.SUCCESS) {
