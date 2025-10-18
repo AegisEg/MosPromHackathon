@@ -44,7 +44,6 @@ export const getUserDataAction = createAsyncThunk(
     async (_, { rejectWithValue }) => {
         try {
             const response = await getUserData();
-            console.log('userDataString', response);
             return { userData: response };
         } catch (error) {
             return rejectWithValue('Ошибка при получении данных пользователя');

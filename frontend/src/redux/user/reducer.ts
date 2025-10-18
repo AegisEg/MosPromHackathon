@@ -64,7 +64,6 @@ const authReducer = createReducer(initialState, (builder) => {
         state.userData.status = LoadStatus.IN_PROGRESS;
     })
     .addCase(getUserDataAction.fulfilled, (state, action) => {
-        console.log('action.payload', action.payload);
         state.userData.data = action.payload.userData;
         state.userData.status = LoadStatus.SUCCESS;
     })

@@ -12,12 +12,17 @@ import { useTypedDispatch } from "../../redux/store";
 import { useNavigate } from "react-router-dom";
 import regBackground from "../../assets/reg_back.png";
 import './style.scss';
+import { useSelector } from "react-redux";
+import { selectAuthData } from "../../redux/user/selectors";
+import { LoadStatus } from "../../utils/types";
 
 interface RegistrationProps {}
 
 const Registration: React.FC<RegistrationProps> = () => {
     const dispatch = useTypedDispatch();
     const navigate = useNavigate();
+
+    const {token, status} = useSelector(selectAuthData);
 
     const userRoleOptions = [
         { value: '1', label: 'Работодатель' },
@@ -98,6 +103,12 @@ const Registration: React.FC<RegistrationProps> = () => {
             showErrorToast(errorMessage);
         } 
     }
+
+    useEffect(() => {
+        if (token && status === LoadStatus.SUCCESS) {
+            navigate('/auth-proccess');
+        }
+    }, [token, status, navigate]);
 
     return (
         <div className="registration-page" style={{ backgroundImage: `url(${regBackground})` }}>
