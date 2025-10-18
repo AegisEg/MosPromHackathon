@@ -40,7 +40,8 @@ const authReducer = createReducer(initialState, (builder) => {
         })
         .addCase(getTokenFromStorage.fulfilled, (state, action) => {
             state.authData.token = action.payload.token;
-            state.authData.status = !!action.payload.token ? LoadStatus.SUCCESS : LoadStatus.NOT_LOADING;
+            // SUCCESS означает что проверка завершена (независимо от наличия токена)
+            state.authData.status = LoadStatus.SUCCESS;
         })
         .addCase(getTokenFromStorage.rejected, (state, action) => {
             state.authData.status = LoadStatus.ERROR;
@@ -60,16 +61,16 @@ const authReducer = createReducer(initialState, (builder) => {
         });
 
     builder
-    .addCase(getUserDataAction.pending, (state) => {
-        state.userData.status = LoadStatus.IN_PROGRESS;
-    })
-    .addCase(getUserDataAction.fulfilled, (state, action) => {
-        state.userData.data = action.payload.userData;
-        state.userData.status = LoadStatus.SUCCESS;
-    })
-    .addCase(getUserDataAction.rejected, (state, action) => {
-        state.userData.status = LoadStatus.ERROR;
-    });
+        .addCase(getUserDataAction.pending, (state) => {
+            state.userData.status = LoadStatus.IN_PROGRESS;
+        })
+        .addCase(getUserDataAction.fulfilled, (state, action) => {
+            state.userData.data = action.payload.userData;
+            state.userData.status = LoadStatus.SUCCESS;
+        })
+        .addCase(getUserDataAction.rejected, (state, action) => {
+            state.userData.status = LoadStatus.ERROR;
+        });
 });
 
 export default authReducer;

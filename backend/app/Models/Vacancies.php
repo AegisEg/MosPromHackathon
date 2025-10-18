@@ -66,4 +66,18 @@ class Vacancies extends Model
     public function user() {
         return $this->belongsTo(User::class);
     }
+
+    /**
+     * Связь многие ко многим с резюме через избранное
+     */
+    public function favoriteResumes() {
+        return $this->belongsToMany(Resume::class, 'favorites', 'vacancy_id', 'resume_id');
+    }
+
+    /**
+     * Связь с избранными резюме
+     */
+    public function favorites() {
+        return $this->hasMany(Favorite::class);
+    }
 }

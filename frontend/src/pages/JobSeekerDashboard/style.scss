@@ -2,24 +2,11 @@
     flex: 1 1 auto;
     display: flex;
     margin: 50px 0;
-    background: linear-gradient(135deg, #f5f7fa 0%, #e9ecef 100%);
-    min-height: calc(100vh - 100px);
-
-    .container {
-        width: 100%;
-        max-width: 1400px;
-        margin: 0 auto;
-        padding: 0 20px;
-    }
-
-    .wrapper {
-        padding: 40px 0;
-    }
 
     &__title {
         font-weight: 600;
         font-size: 42px;
-        color: #2d3748;
+        color: #393649;
         margin-bottom: 40px;
         text-align: left;
     }
@@ -37,32 +24,18 @@
     border-radius: 16px;
     padding: 28px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-    transition: all 0.3s ease;
-
-    &:hover {
-        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
-    }
 
     &__title {
         font-weight: 600;
         font-size: 24px;
-        color: #2d3748;
+        color: #393649;
         margin-bottom: 24px;
         padding-bottom: 16px;
         border-bottom: 2px solid #e2e8f0;
     }
 
-    &__content {
-        // Содержимое карточки
-    }
-
     &--stat {
         padding: 20px;
-        cursor: pointer;
-
-        &:hover {
-            transform: translateY(-2px);
-        }
     }
 }
 
@@ -92,13 +65,13 @@
     &__label {
         font-weight: 600;
         font-size: 15px;
-        color: #4a5568;
+        color: #393649;
         min-width: 180px;
     }
 
     &__value {
         font-size: 15px;
-        color: #2d3748;
+        color: #393649;
         
         &--status {
             padding: 4px 12px;
@@ -123,15 +96,15 @@
     width: 120px;
     height: 120px;
     border-radius: 50%;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: #BA0048;
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 48px;
     font-weight: 600;
-    color: #ffffff;
+    color: #FFFFFF;
     text-transform: uppercase;
-    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+    box-shadow: 0 4px 12px rgba(186, 0, 72, 0.3);
 }
 
 // Статистика
@@ -154,26 +127,8 @@
         align-items: center;
         justify-content: center;
         flex-shrink: 0;
-
-        &--blue {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: #ffffff;
-        }
-
-        &--green {
-            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
-            color: #ffffff;
-        }
-
-        &--purple {
-            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
-            color: #667eea;
-        }
-
-        &--orange {
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-            color: #ffffff;
-        }
+        background: #BA0048;
+        color: #FFFFFF;
     }
 
     &__info {
@@ -183,83 +138,26 @@
     &__value {
         font-size: 32px;
         font-weight: 700;
-        color: #2d3748;
+        color: #393649;
         line-height: 1.2;
     }
 
     &__label {
         font-size: 14px;
-        color: #718096;
+        color: #393649;
         margin-top: 4px;
     }
 }
 
 // Быстрые действия
 .quick-actions {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 16px;
-}
-
-.quick-action-btn {
     display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
     gap: 12px;
-    padding: 24px 16px;
-    background: linear-gradient(135deg, #f5f7fa 0%, #e9ecef 100%);
-    border: 2px solid transparent;
-    border-radius: 12px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    font-family: inherit;
+    flex-wrap: wrap;
 
-    &:hover {
-        background: #ffffff;
-        border-color: #667eea;
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
-    }
-
-    &__icon {
-        font-size: 32px;
-        line-height: 1;
-    }
-
-    &__text {
-        font-size: 14px;
-        font-weight: 500;
-        color: #2d3748;
-    }
-}
-
-// Пустая активность
-.activity-empty {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 60px 20px;
-    text-align: center;
-
-    &__icon {
-        font-size: 64px;
-        margin-bottom: 16px;
-        opacity: 0.5;
-    }
-
-    &__text {
-        font-size: 18px;
-        font-weight: 600;
-        color: #4a5568;
-        margin-bottom: 8px;
-    }
-
-    &__subtext {
-        font-size: 14px;
-        color: #718096;
-        max-width: 400px;
+    .button {
+        flex: 1 1 auto;
+        min-width: 200px;
     }
 }
 
@@ -296,7 +194,11 @@
     }
 
     .quick-actions {
-        grid-template-columns: repeat(2, 1fr);
+        flex-direction: column;
+
+        .button {
+            min-width: 100%;
+        }
     }
 
     .dashboard-card {

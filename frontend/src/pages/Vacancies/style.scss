@@ -15,24 +15,20 @@
   // Wrapper для правильного позиционирования фильтра
   &__wrapper {
     display: flex;
+    flex-direction: column;
     gap: 24px;
-    align-items: flex-start;
     position: relative;
   }
 
   // Sidebar с фильтрами
   &__filters {
-    width: 312px;
-    position: sticky;
-    top: 20px;
-    margin-left: calc(-312px - 24px);
-    align-self: flex-start;
+    width: 100%;
+    position: relative;
     background: #FFFFFF;
     border: 2px solid #C7C7CC;
     border-radius: 16px;
     padding: 24px;
-    max-height: calc(100vh - 40px);
-    overflow-y: auto;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   }
   
   &__filters-title {
@@ -44,21 +40,26 @@
     margin: 0 0 24px 0;
   }
 
-  &__filters-group {
-    margin-bottom: 20px;
+  &__filters-content {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    align-items: end;
+  }
 
-    &:last-of-type {
-      margin-bottom: 0;
-    }
+  &__filters-group {
+    margin-bottom: 0;
   }
 
   &__filters-actions {
     margin-top: 24px;
     padding-top: 24px;
     border-top: 1px solid #C7C7CC;
+    display: flex;
+    gap: 12px;
 
     .button {
-      width: 100%;
+      flex: 1;
     }
   }
 
@@ -122,70 +123,249 @@
 }
 
 // Адаптивность
-@media (max-width: 1600px) {
-  .vacancies-page {
-    &__filters {
-      left: 20px;
-      position: fixed;
-    }
-  }
-}
-
 @media (max-width: 1200px) {
   .vacancies-page {
     &__list {
       grid-template-columns: repeat(2, 1fr);
     }
-  }
-}
 
-@media (max-width: 1024px) {
-  .vacancies-page {
-    &__wrapper {
-      flex-direction: column;
-    }
-
-    &__filters {
-      width: 100%;
-      position: relative;
-      left: auto;
-      top: auto;
-      margin-left: 0;
-    }
-
-    &__filters-sticky {
-      position: relative;
-      top: auto;
-      max-height: none;
+    &__filters-content {
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 16px;
     }
   }
 }
 
 @media (max-width: 768px) {
   .vacancies-page {
-    &__title {
-      font-size: 28px;
+    &__filters-content {
+      grid-template-columns: 1fr;
+      gap: 16px;
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .vacancies-page {
+    margin: 20px 0;
+
+    &__content {
+      padding: 0 16px;
     }
 
     &__filters {
-      padding: 20px;
+      padding: 16px;
+      border-radius: 12px;
     }
 
     &__filters-title {
-      font-size: 20px;
+      font-size: 18px;
+      margin-bottom: 16px;
+    }
+
+    &__filters-actions {
+      margin-top: 16px;
+      padding-top: 16px;
+      flex-direction: column;
+      gap: 8px;
+
+      .button {
+        flex: none;
+      }
     }
 
     &__list {
       grid-template-columns: 1fr;
+      gap: 12px;
     }
   }
 
   .vacancy-card {
-    padding: 20px;
+    padding: 16px;
+    border-radius: 12px;
+
+    &__header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 8px;
+    }
 
     &__title {
-      font-size: 18px;
+      font-size: 16px;
+      margin-bottom: 8px;
     }
+
+    &__salary {
+      margin-left: 0;
+      font-size: 14px;
+    }
+
+    &__profession {
+      font-size: 13px;
+    }
+
+    &__description {
+      font-size: 14px;
+    }
+
+    &__details {
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    &__employment,
+    &__experience,
+    &__status {
+      font-size: 11px;
+      padding: 3px 6px;
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .vacancies-page {
+    &__filters {
+      padding: 12px;
+      margin-bottom: 12px;
+    }
+
+    &__filters-title {
+      font-size: 16px;
+      margin-bottom: 12px;
+    }
+
+    &__filters-group {
+      margin-bottom: 12px;
+    }
+
+    &__filters-actions {
+      margin-top: 12px;
+      padding-top: 12px;
+      flex-direction: column;
+      gap: 8px;
+
+      .button {
+        flex: none;
+      }
+    }
+  }
+
+  .vacancy-card {
+    padding: 12px;
+
+    &__title {
+      font-size: 15px;
+    }
+
+    &__salary {
+      font-size: 13px;
+    }
+
+    &__profession {
+      font-size: 12px;
+    }
+
+    &__description {
+      font-size: 13px;
+    }
+  }
+}
+
+// Новые стили для обновленных карточек вакансий
+.vacancy-card {
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 12px;
+  }
+
+  &__salary {
+    font-size: 16px;
+    font-weight: 600;
+    color: #8E8E93;
+    margin-top: 12px;
+    white-space: nowrap;
+  }
+
+  &__profession {
+    font-size: 14px;
+    color: #8E8E93;
+    margin: 0 0 12px 0;
+    font-weight: 500;
+  }
+
+  &__details {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: center;
+    margin-top: 16px;
+  }
+
+  &__employment,
+  &__experience {
+    font-size: 12px;
+    color: #8E8E93;
+    background: #F2F2F7;
+    padding: 4px 8px;
+    border-radius: 8px;
+  }
+
+  &__status {
+    font-size: 12px;
+    padding: 4px 8px;
+    border-radius: 8px;
+    font-weight: 500;
+
+    &.active {
+      background: #E8F5E8;
+      color: #2E7D32;
+    }
+
+    &.inactive {
+      background: #FFEBEE;
+      color: #C62828;
+    }
+  }
+}
+
+.no-vacancies {
+  text-align: center;
+  padding: 40px 20px;
+  color: #8E8E93;
+
+  p {
+    margin: 0 0 20px 0;
+    font-size: 16px;
+  }
+}
+
+.search-error {
+  background: #FFEBEE;
+  border: 1px solid #FFCDD2;
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 20px;
+  color: #C62828;
+
+  p {
+    margin: 0;
+    font-size: 14px;
+  }
+}
+
+.vacancies-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  color: #8E8E93;
+
+  p {
+    margin: 16px 0 0 0;
+    font-size: 16px;
   }
 }
 

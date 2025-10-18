@@ -12,14 +12,17 @@ interface ProtectedRouteProps {
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
   const {token, status} = useSelector(selectAuthData);
   
-  if (status === LoadStatus.IN_PROGRESS) return <Loader />;
+  // Показываем лоадер пока идет проверка токена (начальная или загрузка)
+  if (status === LoadStatus.IN_PROGRESS || status === LoadStatus.NOT_LOADING) {
+    return <Loader />;
+  }
 
+  // После проверки (SUCCESS или ERROR) - если токена нет, редиректим на авторизацию
   if (!token) {
     return <Navigate to="/authorization" replace />;
   }
 
-  if (token) return <>{children}</>;
-
+  // Если токен есть - показываем защищенный контент
   return <>{children}</>;
 };
 

@@ -5,6 +5,8 @@ namespace App\Domain\Resume\Presentation\Controllers;
 use App\Domain\Resume\Application\Action\ResumeAction;
 use App\Domain\Resume\Application\Exception\ForbiddenResumeException;
 use App\Domain\Resume\Application\Exception\NotFoundResumeException;
+use App\Domain\Vacancy\Application\Exceptions\ForbiddenVacancyException;
+use App\Domain\Vacancy\Application\Exceptions\VacancyNotFoundException;
 use App\Domain\Resume\Presentation\Requests\ResumeRequest;
 use App\Domain\Resume\Presentation\Requests\ResumeUpdateRequest;
 use App\Domain\SharedKernel\Responses\Error;
@@ -22,6 +24,54 @@ class ResumeController extends Controller
 
     public function __construct() {
         $this->resumeAction = new ResumeAction();
+    }
+
+    public function index(Request $request): JsonResponse {
+        $user = $request->user();
+        try {
+            $resumes = $this->resumeAction->getResumesByUser($user);
+            return (new ParentResponse(
+                data: ['resumes' => $resumes],
+                httpStatus: 200,
+                status: StatusEnum::OK,
+            ))->toResponse();
+        } catch (ForbiddenResumeException $e) {
+            $debugInfo = [
+                'error' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ];
+            return (new ParentResponse(
+                error: new Error(code: $e->getCode(), message: 'Действие запрещено для этого пользователя'),
+                httpStatus: 403,
+                debugInfo: $debugInfo,
+                status: StatusEnum::FAIL,
+            ))->toResponse();
+        } catch (NotFoundResumeException $e) {
+            $debugInfo = [
+                'error' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ];
+            return (new ParentResponse(
+                error: new Error(code: $e->getCode(), message: 'Резюме не найдено'),
+                httpStatus: 404,
+                debugInfo: $debugInfo,
+                status: StatusEnum::FAIL,
+            ))->toResponse();
+        } catch (\Throwable $e) {
+            $debugInfo = [
+                'error' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ];
+            return (new ParentResponse(
+                error: new Error(code: $e->getCode(), message: 'Непредвиденная ошибка при получении резюме'),
+                httpStatus: 500,
+                debugInfo: $debugInfo,
+                status: StatusEnum::FAIL,
+            ))->toResponse();
+        }
     }
 
     /**
@@ -74,6 +124,53 @@ class ResumeController extends Controller
         }
     }
 
+    public function favorite(int $vacancyId, Request $request): JsonResponse {
+        try {
+            $user = $request->user();
+            $resumes = $this->resumeAction->getFavoriteResumeByVacancy($user, $vacancyId);
+            return (new ParentResponse(
+                data: ['resumes' => $resumes],
+                httpStatus: 200,
+                status: StatusEnum::OK,
+            ))->toResponse();
+        } catch (VacancyNotFoundException $e) {
+            $debugInfo = [
+                'error' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ];
+            return (new ParentResponse(
+                error: new Error(code: $e->getCode(), message: 'Вакансия не найдена'),
+                httpStatus: 404,
+                debugInfo: $debugInfo,
+                status: StatusEnum::FAIL,
+            ))->toResponse();
+        } catch (ForbiddenVacancyException $e) {
+            $debugInfo = [
+                'error' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ];
+            return (new ParentResponse(
+                error: new Error(code: $e->getCode(), message: 'Доступ к вакансии запрещен'),
+                httpStatus: 403,
+                debugInfo: $debugInfo,
+                status: StatusEnum::FAIL,
+            ))->toResponse();
+        } catch (\Throwable $e) {
+            $debugInfo = [
+                'error' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ];
+            return (new ParentResponse(
+                error: new Error(code: $e->getCode(), message: 'Непредвиденная ошибка при получении резюме'),
+                httpStatus: 500,
+                debugInfo: $debugInfo,
+                status: StatusEnum::FAIL,
+            ))->toResponse();
+        }
+    }
     /**
      * Получить конкретное резюме
      */

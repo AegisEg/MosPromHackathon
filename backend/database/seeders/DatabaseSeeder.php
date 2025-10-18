@@ -30,13 +30,19 @@ class DatabaseSeeder extends Seeder
             // Вакансии
             VacanciesSeeder::class,
 
+            // Избранное (связи вакансий с резюме)
+            FavoritesSeeder::class,
+
             // Стажировки
             InternshipsSeeder::class,
 
             // Отклики, чаты и сообщения
             RespondsSeeder::class,
+            // Чаты и сообщения
             ChatsSeeder::class,
+            // Сообщения чата
             ChatMessagesSeeder::class,
+            // Файлы сообщений чата
             ChatMessageFilesSeeder::class,
         ]);
     }
