@@ -1,10 +1,11 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Models;
 
 use App\Casts\DateTimeImmutableCast;
+use App\Domain\RespondAndInteraction\Enums\RespondStatus;
 use Illuminate\Database\Eloquent\Model;
-use App\Domain\Vacancies\Enum\RespondStatus;
 
 class Responds extends Model
 {
@@ -16,20 +17,18 @@ class Responds extends Model
         'status',
         'message',
     ];
-    
+
     protected $casts = [
-        'status' => RespondStatus::class,
+        'status'     => RespondStatus::class,
         'created_at' => DateTimeImmutableCast::class,
         'updated_at' => DateTimeImmutableCast::class,
     ];
 
-    public function vacancy()
-    {
+    public function vacancy() {
         return $this->belongsTo(Vacancies::class);
     }
-    
-    public function resume()
-    {
+
+    public function resume() {
         return $this->belongsTo(Resume::class);
     }
 }

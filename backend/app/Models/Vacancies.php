@@ -54,6 +54,13 @@ class Vacancies extends Model
     }
 
     /**
+     * Связь с резюме
+     */
+    public function responds() {
+        return $this->hasMany(Responds::class, 'vacancy_id', 'id');
+    }
+
+    /**
      * Связь с пользователем
      */
     public function user() {
