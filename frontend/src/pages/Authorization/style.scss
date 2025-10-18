@@ -37,4 +37,19 @@
             width: 100%;
         }
     }
+    .container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-shrink: 0;
+
+        .wrapper {
+            background: #FFFFFF4D;
+            backdrop-filter: blur(30px);
+            max-width: 610px;
+            max-height: 410px;
+            flex-shrink: 0;
+            width: 100%;
+        }
+    }
 }
