@@ -20,6 +20,6 @@ Route::group(['prefix' => 'companies'], function () {
             ->name('companies.destroy');
 
         Route::post('/upload-logo', [CompanyController::class, 'uploadLogo'])
-            ->name('companies.upload-logo');
+            ->name('companies.upload-logo')->middleware('company');
     });
 });
