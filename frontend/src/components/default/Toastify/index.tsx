@@ -6,7 +6,7 @@ import './style.scss';
 function NotFound() {
   return (
     <ToastContainer
-        position="bottom-right"
+        position="top-right"
         autoClose={5000}
         hideProgressBar={false}
         newestOnTop

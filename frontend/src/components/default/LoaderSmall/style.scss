@@ -10,7 +10,6 @@
   font-size: 14px;
   color: #D00E46;
   font-weight: 500;
-  animation: textFadeIn 0.3s ease-in-out 1.2s;
 }
 
 .loader-small__spinner {
@@ -151,14 +150,4 @@
   }
 }
 
-@keyframes textFadeIn {
-  0% {
-    opacity: 0;
-    transform: translateY(-5px);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
 

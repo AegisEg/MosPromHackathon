@@ -20,6 +20,7 @@ const VacanciesPage = React.lazy(() => import('../../../pages/Vacancies/'));
 const InternshipsPage = React.lazy(() => import('../../../pages/Internships/'));
 const PersonalCabinet = React.lazy(() => import('../../../pages/PersonalCabinet/'));
 const LogoutPage = React.lazy(() => import('../../../pages/Logout/'));
+const CalendarPage = React.lazy(() => import('../../../pages/Calendar/'));
 
 function renderFallback() {
   return <Loader />;
@@ -98,7 +99,7 @@ function AppRoutes() {
               </ProtectedRoute>
             </Suspense>
           } />
-          <Route path="/lk/resume/edit" element={
+          <Route path="/lk/resume/edit/:id" element={
             <Suspense fallback={renderFallback()}>
               <ProtectedRoute>
                 <ResumeEditPage />
@@ -162,6 +163,13 @@ function AppRoutes() {
             <Suspense fallback={renderFallback()}>
               <ProtectedRoute>
                 <LogoutPage />
+              </ProtectedRoute>
+            </Suspense>
+          } />
+          <Route path="/calendar" element={
+            <Suspense fallback={renderFallback()}>
+              <ProtectedRoute>
+                <CalendarPage />
               </ProtectedRoute>
             </Suspense>
           } />

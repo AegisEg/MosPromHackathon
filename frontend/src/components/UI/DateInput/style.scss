@@ -95,7 +95,7 @@
     min-width: 320px;
     backdrop-filter: blur(10px);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    z-index: 1000;
+    z-index: 9999;
   }
 
   &__table {
@@ -169,7 +169,7 @@
     cursor: pointer;
     transition: all 0.2s ease;
 
-    &:hover:not([data-disabled]):not([data-outside-range]) {
+    &:hover:not([data-disabled]) {
       background: rgba(72, 72, 74, 0.1);
       border-color: #48484A;
     }
@@ -195,8 +195,15 @@
     }
 
     &[data-outside-range] {
-      opacity: 0.4;
+      opacity: 0.6;
       color: #8E8E93;
+      cursor: pointer;
+      
+      &:hover {
+        opacity: 0.8;
+        background: rgba(72, 72, 74, 0.1);
+        border-color: #48484A;
+      }
     }
   }
 
@@ -268,7 +275,6 @@
     }
 
     .custom-date__field {
-      border-color: #48484A;
       color: #48484A;
     }
 
