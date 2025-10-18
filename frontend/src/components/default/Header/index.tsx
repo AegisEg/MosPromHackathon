@@ -22,22 +22,13 @@ function Header() {
                 <Link to="/vacancies" className={`link ${isActive('/vacancies')}`}>Вакансии</Link>
               </li>
               <li className={isAuthenticated ? 'visible' : 'hidden'}>
-                <Link to="/applications" className={isActive('/applications')}>Отклики</Link>
-              </li>
-              <li className={isAuthenticated ? 'visible' : 'hidden'}>
                 <Link to="/chat" className={isActive('/chat')}>Чат</Link>
-              </li>
-              <li className={isAuthenticated ? 'visible' : 'hidden'}>
-                <Link to="/favorites" className={isActive('/favorites')}>Избранное</Link>
               </li>
               <li className={isAuthenticated ? 'visible' : 'hidden'}>
                 <Link to="/notifications" className={isActive('/notifications')}>Уведомления</Link>
               </li>
               <li className={isAuthenticated ? 'visible' : 'hidden'}>
-                <Link to="/resume" className={isActive('/resume')}>Резюме</Link>
-              </li>
-              <li className={isAuthenticated ? 'visible' : 'hidden'}>
-                <Link to="/lk" className={isActive('/lk')}>Личный кабинет</Link>
+                <Link to="/lk" className={isActive('/auth-proccess')}>Личный кабинет</Link>
               </li>
               <li className={isAuthenticated ? 'visible' : 'hidden'}>
                 <Link to="/logout" className={isActive('/logout')}>Выйти</Link>
