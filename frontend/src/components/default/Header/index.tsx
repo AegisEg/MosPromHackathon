@@ -4,7 +4,6 @@ import Link from '../../UI/Link';
 import LanguageSwitcher from '../../UI/LanguageSwitcher';
 import { useSelector } from 'react-redux';
 import { selectIsAuthenticated } from '../../../redux/user/selectors';
-import SearchIcon from '@mui/icons-material/Search';
 import { useLocation } from 'react-router-dom';
 
 function Header() {
@@ -48,11 +47,6 @@ function Header() {
               </li>
               <li>
                 <LanguageSwitcher className="header__language-switcher" />
-              </li>
-              <li>
-                <Link to="/search" className={isActive('/search')}>
-                  <SearchIcon color="inherit" style={{ fontSize: '30px' }} />
-                </Link>
               </li>
             </ul>
         </div>  
