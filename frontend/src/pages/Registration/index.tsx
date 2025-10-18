@@ -98,7 +98,6 @@ const Registration: React.FC<RegistrationProps> = () => {
             // Сохраняем токен в Redux и localStorage
             if (result && result.token) {
                 dispatch(saveTokenToStorage(result.token));
-                showErrorToast('Регистрация прошла успешно!');
                 navigate('/auth-proccess');
             }
         } catch (error: any) {

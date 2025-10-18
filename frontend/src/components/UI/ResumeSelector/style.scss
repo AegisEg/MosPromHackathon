@@ -1,0 +1,339 @@
+.resume-selector-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 20px;
+    overflow: hidden; // Блокируем скролл
+}
+
+.resume-selector-modal {
+    background: #ffffff;
+    border-radius: 16px;
+    max-width: 600px;
+    width: 100%;
+    max-height: 90vh;
+    overflow: hidden;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+    display: flex;
+    flex-direction: column;
+}
+
+.resume-selector-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 24px 24px 16px 24px;
+    border-bottom: 1px solid #e9ecef;
+    flex-shrink: 0;
+
+    h2 {
+        margin: 0;
+        font-size: 24px;
+        font-weight: 600;
+        color: #393649;
+    }
+}
+
+.resume-selector-close {
+    background: none;
+    border: none;
+    font-size: 24px;
+    color: #6c757d;
+    cursor: pointer;
+    padding: 0;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: all 0.2s ease;
+
+    &:hover {
+        background: #f8f9fa;
+        color: #495057;
+    }
+}
+
+.resume-selector-content {
+    padding: 16px 24px;
+    flex: 1;
+    overflow-y: auto;
+    min-height: 0; // Важно для flex-контейнера
+}
+
+.resume-selector-loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 20px;
+    color: #8E8E93;
+
+    p {
+        margin: 16px 0 0 0;
+        font-size: 16px;
+    }
+}
+
+.resume-selector-empty {
+    text-align: center;
+    padding: 40px 20px;
+    color: #6c757d;
+
+    p {
+        margin: 0 0 8px 0;
+        font-size: 16px;
+
+        &:last-child {
+            margin-bottom: 0;
+            font-size: 14px;
+            color: #8E8E93;
+        }
+    }
+}
+
+.resume-selector-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.resume-selector-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px;
+    border: 2px solid #e9ecef;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    &:hover {
+        border-color: #BA0048;
+        background: #fef7f7;
+    }
+
+    &.selected {
+        border-color: #BA0048;
+        background: #fef7f7;
+    }
+}
+
+.resume-selector-item-content {
+    flex: 1;
+}
+
+.resume-selector-item-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #1C1C1E;
+    margin: 0 0 8px 0;
+}
+
+.resume-selector-item-details {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+
+    p {
+        margin: 0;
+        font-size: 14px;
+        color: #3A3A3C;
+
+        strong {
+            color: #1C1C1E;
+        }
+    }
+
+    .status {
+        padding: 2px 6px;
+        border-radius: 6px;
+        font-size: 12px;
+        font-weight: 500;
+        margin-left: 4px;
+
+        &.active {
+            background: #D4F4DD;
+            color: #1F7A1F;
+        }
+
+        &.inactive {
+            background: #FFE5E5;
+            color: #D70015;
+        }
+    }
+}
+
+.resume-selector-item-radio {
+    margin-left: 16px;
+
+    input[type="radio"] {
+        width: 20px;
+        height: 20px;
+        accent-color: #BA0048;
+    }
+}
+
+.resume-selector-message {
+    padding: 16px 24px;
+    border-top: 1px solid #e9ecef;
+    flex-shrink: 0;
+    background: #f8f9fa;
+}
+
+.resume-selector-message__label {
+    display: block;
+    font-size: 14px;
+    font-weight: 500;
+    color: #1C1C1E;
+    margin-bottom: 8px;
+}
+
+.resume-selector-message__textarea {
+    width: 100%;
+    min-height: 80px;
+    padding: 12px;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    font-size: 14px;
+    font-family: inherit;
+    resize: vertical;
+    background: #ffffff;
+    transition: border-color 0.2s ease;
+
+    &:focus {
+        outline: none;
+        border-color: #BA0048;
+        box-shadow: 0 0 0 2px rgba(186, 0, 72, 0.1);
+    }
+
+    &::placeholder {
+        color: #8E8E93;
+    }
+}
+
+.resume-selector-message__counter {
+    text-align: right;
+    font-size: 12px;
+    color: #8E8E93;
+    margin-top: 4px;
+}
+
+.resume-selector-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    padding: 16px 24px 24px 24px;
+    border-top: 1px solid #e9ecef;
+    flex-shrink: 0;
+    background: #ffffff;
+
+    .button {
+        min-width: 120px;
+    }
+}
+
+// Адаптивные стили
+@media (max-width: 768px) {
+    .resume-selector-overlay {
+        padding: 10px;
+    }
+
+    .resume-selector-modal {
+        max-height: 95vh;
+        border-radius: 12px;
+    }
+
+    .resume-selector-header {
+        padding: 16px 16px 12px 16px;
+
+        h2 {
+            font-size: 20px;
+        }
+    }
+
+    .resume-selector-content {
+        padding: 12px 16px;
+    }
+
+    .resume-selector-message {
+        padding: 12px 16px;
+    }
+
+    .resume-selector-message__textarea {
+        min-height: 70px;
+        font-size: 13px;
+    }
+
+    .resume-selector-footer {
+        padding: 12px 16px 16px 16px;
+        flex-direction: column-reverse;
+        gap: 8px;
+
+        .button {
+            min-width: auto;
+            width: 100%;
+        }
+    }
+
+    .resume-selector-item {
+        padding: 12px;
+    }
+
+    .resume-selector-item-title {
+        font-size: 16px;
+    }
+
+    .resume-selector-item-details {
+        p {
+            font-size: 13px;
+        }
+    }
+}
+
+@media (max-width: 480px) {
+    .resume-selector-overlay {
+        padding: 5px;
+    }
+
+    .resume-selector-modal {
+        border-radius: 8px;
+    }
+
+    .resume-selector-header {
+        padding: 12px 12px 8px 12px;
+
+        h2 {
+            font-size: 18px;
+        }
+    }
+
+    .resume-selector-content {
+        padding: 8px 12px;
+    }
+
+    .resume-selector-message {
+        padding: 8px 12px;
+    }
+
+    .resume-selector-message__textarea {
+        min-height: 60px;
+        font-size: 12px;
+    }
+
+    .resume-selector-footer {
+        padding: 8px 12px 12px 12px;
+    }
+
+    .resume-selector-item {
+        padding: 10px;
+    }
+}
