@@ -27,6 +27,19 @@ export const registerUser = (payload: RegistrationPayload) => {
         });
 }
 
+export const logoutUser = () => {
+    return api
+        .post('auth/logout', {})
+        .then((response) => {
+            return response.data;
+        })
+        .catch((error) => {
+            console.error('Logout error:', error);
+            throw error;
+        });
+}
+
+
 export const authorizeUser = (payload: AuthorizationPayload) => {
     return api
         .post('auth/login', payload)

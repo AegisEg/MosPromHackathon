@@ -1,58 +1,64 @@
 import './style.scss';
 import Logo from '../Logo';
 import Link from '../../UI/Link';
-import Button, { ButtonType } from '../../UI/Button';
 import LanguageSwitcher from '../../UI/LanguageSwitcher';
-import { useNavigate } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+import { selectIsAuthenticated, selectUserData } from '../../../redux/user/selectors';
+import { UserRole } from '../../../enums/UserRole';
 import SearchIcon from '@mui/icons-material/Search';
-import ChatBubbleOutlineOutlinedIcon from '@mui/icons-material/ChatBubbleOutlineOutlined';
-import StarBorderOutlinedIcon from '@mui/icons-material/StarBorderOutlined';
-import NotificationsOutlinedIcon from '@mui/icons-material/NotificationsOutlined';
+import { useCallback, useMemo } from 'react';
+import { useLocation } from 'react-router-dom';
 
 function Header() {
-  const navigate = useNavigate();
+  const isAuthenticated = useSelector(selectIsAuthenticated);
+  const { data: userData } = useSelector(selectUserData);
+  const location = useLocation();
+
+  const handleDashboardLink = useMemo(() => {
+    return userData?.role ? `/${userData.role.toLowerCase()}-dashboard` : '/';
+  }, [userData]);
+
+  const isActive = (path: string) => location.pathname === path ? 'active' : '';
 
   return (
     <div className="header">
       <div className="container">
-        <div className="header__left">
+        <div className="header__container">
           <Logo />
             <ul className="header_nav">
               <li>
-                <Link to="/vacancies">Вакансии</Link>
+                <Link to="/vacancies" className={`link ${isActive('/vacancies')}`}>Вакансии</Link>
               </li>
               <li>
-                <Link to="/applications">Отклики</Link>
+                <Link to="/applications" className={isActive('/applications')}>Отклики</Link>
               </li>
               <li>
-                <Link to="/specialists">Специалисты</Link>
+                <Link to="/specialists" className={isActive('/specialists')}>Специалисты</Link>
               </li>
+              <li>
+                <Link to="/chat" className={isActive('/chat')}>Чат</Link>
+              </li>
+              <li>
+                <Link to="/favorites" className={isActive('/favorites')}>Избранное</Link>
+              </li>
+              <li>
+                <Link to="/notifications" className={isActive('/notifications')}>Уведомления</Link>
+              </li>
+              {isAuthenticated ? (
+                <>
+                  <Link to="/resume" className={isActive('/resume')}>Резюме</Link>
+                  <Link to={handleDashboardLink} className={isActive(handleDashboardLink)}>Личный кабинет</Link>
+                  <Link to="/logout" className={isActive('/logout')}>Выйти</Link>
+                </>
+              ) : (
+                <Link to="/authorization" className={isActive('/authorization')}>Войти</Link>
+              )}
+              <LanguageSwitcher className="header__language-switcher" />
+              <Link to="/search" className={isActive('/search')}>
+                <SearchIcon color="inherit" />
+              </Link>
             </ul>
         </div>  
-        <div className="header__right">
-          <div className="header__right_buttons-search">
-            <Link to="/search">
-              <SearchIcon color="inherit" />
-              Поиск
-            </Link>
-            <LanguageSwitcher className="header__language-switcher" />
-          </div>
-          <div className="header__right_buttons-icons">
-            <Link to="/chat">
-              <ChatBubbleOutlineOutlinedIcon />
-            </Link>
-            <Link to="/favorites">
-              <StarBorderOutlinedIcon />
-            </Link>
-            <Link to="/notifications">
-              <NotificationsOutlinedIcon />
-            </Link>
-          </div>
-          <div className="header__right_buttons-auth">
-            <Button onClick={() => navigate('/resume')} variant={ButtonType.GRAY}>Резюме</Button>
-            <Button onClick={() => navigate('/authorization')}>Войти</Button>
-          </div>
-        </div>
       </div>
     </div>
   );

@@ -9,6 +9,7 @@ import { useTypedDispatch } from "../../../redux/store";
 import { useNavigate } from "react-router-dom";
 import { UserRole } from "../../../enums/UserRole";
 import { getRoleNumber } from "../../../utils/userDataMapper";
+import './style.scss';
 
 export const AuthorizationProxy = () => {
     const dispatch = useTypedDispatch();
