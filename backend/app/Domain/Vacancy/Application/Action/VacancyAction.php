@@ -3,7 +3,9 @@ declare(strict_types=1);
 
 namespace App\Domain\Vacancy\Application\Action;
 
+use App\Domain\RespondAndInteraction\Enums\RespondStatus;
 use App\Domain\Vacancy\Application\DTO\ShowVacancyDTO;
+use App\Domain\Vacancy\Application\Exceptions\AlreadyRespondedVacancyException;
 use App\Domain\Vacancy\Application\Exceptions\ForbiddenVacancyException;
 use App\Domain\Vacancy\Application\Exceptions\VacancyNotFoundException;
 use App\Models\User;
@@ -17,9 +19,11 @@ class VacancyAction
 
     public function getVacanciesByUser(User $user): array {
         $vacancies = Vacancies::where('user_id', $user->id)->get();
+
         if (!$vacancies) {
             throw new VacancyNotFoundException();
         }
+
         return $vacancies->toArray();
     }
 
@@ -114,6 +118,34 @@ class VacancyAction
             $vacancy->skills()->detach();
             $vacancy->delete();
             DB::commit();
+        } catch (Throwable $e) {
+            DB::rollBack();
+            throw $e;
+        }
+    }
+
+    public function respond(int $vacancyId, int $resumeId, string $message): int {
+        $vacancy = Vacancies::find($vacancyId);
+
+        if (!$vacancy) {
+            throw new VacancyNotFoundException();
+        }
+
+        if ($vacancy->responds()->where('resume_id', $resumeId)->exists()) {
+            throw new AlreadyRespondedVacancyException();
+        }
+
+        try {
+            DB::beginTransaction();
+            $respond = $vacancy->responds()->create([
+                'resume_id'  => $resumeId,
+                'vacancy_id' => $vacancy->id,
+                'status'     => RespondStatus::NEW,
+                'message'    => $message,
+            ]);
+            DB::commit();
+
+            return $respond->id;
         } catch (Throwable $e) {
             DB::rollBack();
             throw $e;

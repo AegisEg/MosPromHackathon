@@ -1,9 +1,10 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useSelector } from 'react-redux';
 import { selectUserData } from '../../redux/user/selectors';
 import { UserRoleLabels } from '../../enums/UserRole';
 import { LoadStatus } from '../../utils/types';
 import Loader from '../../components/default/Loader';
+import Button, { ButtonType } from '../../components/UI/Button';
 import './style.scss';
 
 const JobSeekerDashboard: React.FC = () => {
@@ -135,42 +136,15 @@ const JobSeekerDashboard: React.FC = () => {
                             </div>
                         </div>
 
-                        {/* Быстрые действия */}
                         <div className="dashboard-card dashboard-card--actions">
                             <h2 className="dashboard-card__title">Быстрые действия</h2>
-                            <div className="dashboard-card__content">
-                                <div className="quick-actions">
-                                    <button className="quick-action-btn">
-                                        <span className="quick-action-btn__icon">+</span>
-                                        <span className="quick-action-btn__text">Создать резюме</span>
-                                    </button>
-                                    <button className="quick-action-btn">
-                                        <span className="quick-action-btn__icon">🔍</span>
-                                        <span className="quick-action-btn__text">Найти вакансии</span>
-                                    </button>
-                                    <button className="quick-action-btn">
-                                        <span className="quick-action-btn__icon">📊</span>
-                                        <span className="quick-action-btn__text">Мои отклики</span>
-                                    </button>
-                                    <button className="quick-action-btn">
-                                        <span className="quick-action-btn__icon">⚙️</span>
-                                        <span className="quick-action-btn__text">Настройки</span>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Недавняя активность */}
-                        <div className="dashboard-card dashboard-card--activity">
-                            <h2 className="dashboard-card__title">Недавняя активность</h2>
-                            <div className="dashboard-card__content">
-                                <div className="activity-empty">
-                                    <div className="activity-empty__icon">📋</div>
-                                    <div className="activity-empty__text">Активности пока нет</div>
-                                    <div className="activity-empty__subtext">
-                                        Создайте резюме и начните откликаться на вакансии
-                                    </div>
-                                </div>
+                            <div className="quick-actions">
+                                <Button variant={ButtonType.RED} onClick={() => console.log('Создать резюме')}>
+                                    Создать резюме
+                                </Button>
+                                <Button variant={ButtonType.BLACK} onClick={() => console.log('Просмотр резюме')}>
+                                    Просмотр резюме
+                                </Button>
                             </div>
                         </div>
                     </div>

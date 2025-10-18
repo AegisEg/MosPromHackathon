@@ -7,11 +7,13 @@ use App\Domain\SharedKernel\Responses\Error;
 use App\Domain\SharedKernel\Responses\ParentResponse;
 use App\Domain\SharedKernel\Responses\StatusEnum;
 use App\Domain\Vacancy\Application\Action\VacancyAction;
+use App\Domain\Vacancy\Application\Exceptions\AlreadyRespondedVacancyException;
 use App\Domain\Vacancy\Application\Exceptions\ForbiddenVacancyException;
 use App\Domain\Vacancy\Application\Exceptions\VacancyNotFoundException;
 use App\Domain\Vacancy\Presentation\Events\CreateVacancyEvent;
 use App\Domain\Vacancy\Presentation\Events\UpdateVacancyEvent;
 use App\Domain\Vacancy\Presentation\Requests\CreateVacancyRequest;
+use App\Domain\Vacancy\Presentation\Requests\RespondRequest;
 use App\Domain\Vacancy\Presentation\Requests\UpdateVacancyRequest;
 use App\Http\Controllers\Controller;
 use Illuminate\Database\QueryException;
@@ -25,6 +27,7 @@ class VacancyController extends Controller
         $user = $request->user();
         try {
             $vacancies = (new VacancyAction())->getVacanciesByUser($user);
+
             return (new ParentResponse(
                 data: $vacancies,
                 httpStatus: 200,
@@ -33,9 +36,10 @@ class VacancyController extends Controller
         } catch (VacancyNotFoundException $e) {
             $debugInfo = [
                 'error' => $e->getMessage(),
-                'file' => $e->getFile(),
-                'line' => $e->getLine(),
+                'file'  => $e->getFile(),
+                'line'  => $e->getLine(),
             ];
+
             return (new ParentResponse(
                 error: new Error(code: $e->getCode(), message: 'Вакансии не найдены'),
                 httpStatus: 404,
@@ -45,9 +49,10 @@ class VacancyController extends Controller
         } catch (Throwable $e) {
             $debugInfo = [
                 'error' => $e->getMessage(),
-                'file' => $e->getFile(),
-                'line' => $e->getLine(),
+                'file'  => $e->getFile(),
+                'line'  => $e->getLine(),
             ];
+
             return (new ParentResponse(
                 error: new Error(code: $e->getCode(), message: 'Непредвиденная ошибка при получении вакансий'),
                 httpStatus: 500,
@@ -56,6 +61,7 @@ class VacancyController extends Controller
             ))->toResponse();
         }
     }
+
     public function show(int $idVacancy): JsonResponse {
         try {
             $vacancy = (new VacancyAction())->show($idVacancy);
@@ -156,6 +162,37 @@ class VacancyController extends Controller
             return (new ParentResponse(
                 error: new Error(code: $e->getCode(), message: $e->getMessage()),
                 httpStatus: 403,
+                status: StatusEnum::FAIL,
+            ))->toResponse();
+        } catch (VacancyNotFoundException $e) {
+            return (new ParentResponse(
+                error: new Error(code: $e->getCode(), message: $e->getMessage()),
+                httpStatus: 404,
+                status: StatusEnum::FAIL,
+            ))->toResponse();
+        } catch (Throwable $e) {
+            return (new ParentResponse(
+                error: new Error(code: $e->getCode(), message: $e->getMessage()),
+                httpStatus: 500,
+                status: StatusEnum::FAIL,
+            ))->toResponse();
+        }
+    }
+
+    public function respond(int $idVacancy, RespondRequest $request): JsonResponse {
+        $resumeId = $request->input('resume_id');
+        $message  = $request->input('message');
+        try {
+            (new VacancyAction())->respond(vacancyId: $idVacancy, resumeId: $resumeId, message: $message);
+
+            return (new ParentResponse(
+                status: StatusEnum::OK,
+                httpStatus: 204,
+            ))->toResponse();
+        } catch (AlreadyRespondedVacancyException $e) {
+            return (new ParentResponse(
+                error: new Error(code: $e->getCode(), message: $e->getMessage()),
+                httpStatus: 429, // Too Many Requests
                 status: StatusEnum::FAIL,
             ))->toResponse();
         } catch (VacancyNotFoundException $e) {

@@ -17,10 +17,7 @@ const RegistrationPage = React.lazy(() => import('../../../pages/Registration/')
 const ChatPage = React.lazy(() => import('../../../pages/Chat/'));
 const VacanciesPage = React.lazy(() => import('../../../pages/Vacancies/'));
 const InternshipsPage = React.lazy(() => import('../../../pages/Internships/'));
-const EmployerDashboard = React.lazy(() => import('../../../pages/EmployerDashboard/'));
-const JobSeekerDashboard = React.lazy(() => import('../../../pages/JobSeekerDashboard/'));
-const AdminDashboard = React.lazy(() => import('../../../pages/AdminDashboard/'));
-const InstituteDashboard = React.lazy(() => import('../../../pages/InstituteDashboard/'));
+const PersonalCabinet = React.lazy(() => import('../../../pages/PersonalCabinet/'));
 const LogoutPage = React.lazy(() => import('../../../pages/Logout/'));
 
 function renderFallback() {
@@ -146,31 +143,10 @@ function AppRoutes() {
                 </ProtectedRoute>
             </Suspense>
           } />
-          <Route path="/employer-dashboard" element={
+          <Route path="/lk" element={
             <Suspense fallback={renderFallback()}>
               <ProtectedRoute>
-                <EmployerDashboard />
-              </ProtectedRoute>
-            </Suspense>
-          } />
-          <Route path="/job-seeker-dashboard" element={
-            <Suspense fallback={renderFallback()}>
-              <ProtectedRoute>
-                <JobSeekerDashboard />
-              </ProtectedRoute>
-            </Suspense>
-          } />
-          <Route path="/admin-dashboard" element={
-            <Suspense fallback={renderFallback()}>
-              <ProtectedRoute>
-                <AdminDashboard />
-              </ProtectedRoute>
-            </Suspense>
-          } />
-          <Route path="/institute-dashboard" element={
-            <Suspense fallback={renderFallback()}>
-              <ProtectedRoute>
-                <InstituteDashboard />
+                <PersonalCabinet />
               </ProtectedRoute>
             </Suspense>
           } />

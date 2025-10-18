@@ -1,0 +1,212 @@
+.institute-dashboard-page {
+    flex: 1 1 auto;
+    display: flex;
+    margin: 50px 0;
+
+    &__title {
+        font-weight: 600;
+        font-size: 42px;
+        color: #393649;
+        margin-bottom: 40px;
+        text-align: left;
+    }
+
+    &__content {
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+    }
+}
+
+// Карточки
+.dashboard-card {
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 28px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+
+    &__title {
+        font-weight: 600;
+        font-size: 24px;
+        color: #393649;
+        margin-bottom: 24px;
+        padding-bottom: 16px;
+        border-bottom: 2px solid #e2e8f0;
+    }
+
+    &--stat {
+        padding: 20px;
+    }
+}
+
+// Информация о пользователе
+.user-info {
+    display: flex;
+    gap: 32px;
+    align-items: flex-start;
+
+    &__avatar {
+        flex-shrink: 0;
+    }
+
+    &__details {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    &__row {
+        display: flex;
+        gap: 12px;
+        align-items: baseline;
+    }
+
+    &__label {
+        font-weight: 600;
+        font-size: 15px;
+        color: #393649;
+        min-width: 180px;
+    }
+
+    &__value {
+        font-size: 15px;
+        color: #393649;
+        
+        &--status {
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 500;
+
+            &.active {
+                background: #d4edda;
+                color: #155724;
+            }
+
+            &.inactive {
+                background: #f8d7da;
+                color: #721c24;
+            }
+        }
+    }
+}
+
+.avatar-placeholder {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background: #BA0048;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 48px;
+    font-weight: 600;
+    color: #FFFFFF;
+    text-transform: uppercase;
+    box-shadow: 0 4px 12px rgba(186, 0, 72, 0.3);
+}
+
+// Статистика
+.dashboard-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+}
+
+.stat-card {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+
+    &__icon {
+        width: 56px;
+        height: 56px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        background: #BA0048;
+        color: #FFFFFF;
+    }
+
+    &__info {
+        flex: 1;
+    }
+
+    &__value {
+        font-size: 32px;
+        font-weight: 700;
+        color: #393649;
+        line-height: 1.2;
+    }
+
+    &__label {
+        font-size: 14px;
+        color: #393649;
+        margin-top: 4px;
+    }
+}
+
+// Быстрые действия
+.quick-actions {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+
+    .button {
+        flex: 1 1 auto;
+        min-width: 200px;
+    }
+}
+
+// Адаптивность
+@media (max-width: 768px) {
+    .institute-dashboard-page {
+        &__title {
+            font-size: 32px;
+            margin-bottom: 24px;
+        }
+    }
+
+    .user-info {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+
+        &__details {
+            align-items: center;
+        }
+
+        &__row {
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        &__label {
+            min-width: auto;
+        }
+    }
+
+    .dashboard-stats {
+        grid-template-columns: 1fr;
+    }
+
+    .quick-actions {
+        flex-direction: column;
+
+        .button {
+            min-width: 100%;
+        }
+    }
+
+    .dashboard-card {
+        padding: 20px;
+
+        &__title {
+            font-size: 20px;
+        }
+    }
+}
+
