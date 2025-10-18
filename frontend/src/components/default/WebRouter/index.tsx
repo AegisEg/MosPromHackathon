@@ -91,21 +91,21 @@ function AppRoutes() {
               <MainPage />
             </Suspense>
           } />
-          <Route path="/resume" element={
+          <Route path="/lk/resume" element={
             <Suspense fallback={renderFallback()}>
               <ProtectedRoute>
                 <ResumePage />
               </ProtectedRoute>
             </Suspense>
           } />
-          <Route path="/resume/edit" element={
+          <Route path="/lk/resume/edit" element={
             <Suspense fallback={renderFallback()}>
               <ProtectedRoute>
                 <ResumeEditPage />
               </ProtectedRoute>
             </Suspense>
           } />
-          <Route path="/resume/create" element={
+          <Route path="/lk/resume/create" element={
             <Suspense fallback={renderFallback()}>
               <ProtectedRoute>
                 <ResumeCreatePage />
@@ -158,7 +158,7 @@ function AppRoutes() {
               </ProtectedRoute>
             </Suspense>
           } />
-          <Route path="/logout" element={
+          <Route path="/lk/logout" element={
             <Suspense fallback={renderFallback()}>
               <ProtectedRoute>
                 <LogoutPage />

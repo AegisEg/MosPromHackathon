@@ -45,6 +45,50 @@
   }
 }
 
+// Стили для навыков
+.skills-section {
+  &__checkboxes {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 12px;
+    margin-top: 16px;
+  }
+}
+
+// Стили для формы
+.form-group {
+  margin-bottom: 24px;
+}
+
+.textarea-label {
+  display: block;
+  font-size: 14px;
+  font-weight: 500;
+  color: #48484A;
+  margin-bottom: 8px;
+}
+
+.textarea-input {
+  width: 100%;
+  min-height: 120px;
+  padding: 12px;
+  border: 1px solid #E5E5E7;
+  border-radius: 8px;
+  font-size: 14px;
+  font-family: inherit;
+  resize: vertical;
+  transition: border-color 0.2s ease;
+
+  &:focus {
+    outline: none;
+    border-color: #007AFF;
+  }
+
+  &::placeholder {
+    color: #8E8E93;
+  }
+}
+
 // Адаптивность
 @media (max-width: 768px) {
   .resume-edit {

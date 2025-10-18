@@ -149,16 +149,12 @@
     }
 }
 
-// Быстрые действия
-.quick-actions {
-    display: flex;
-    gap: 12px;
-    flex-wrap: wrap;
-
-    .button {
-        flex: 1 1 auto;
-        min-width: 200px;
-    }
+// Панель управления
+.panel-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    margin-top: 20px;
 }
 
 // Адаптивность
@@ -193,19 +189,23 @@
         grid-template-columns: 1fr;
     }
 
-    .quick-actions {
-        flex-direction: column;
-
-        .button {
-            min-width: 100%;
-        }
-    }
-
     .dashboard-card {
         padding: 20px;
 
         &__title {
             font-size: 20px;
         }
+    }
+
+    .panel-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 16px;
+    }
+}
+
+@media (max-width: 480px) {
+    .panel-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
     }
 }
