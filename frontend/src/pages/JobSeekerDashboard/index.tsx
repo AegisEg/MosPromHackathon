@@ -1,10 +1,18 @@
 import React from 'react';
+import './style.scss';
 
 const JobSeekerDashboard: React.FC = () => {
     return (
-        <div>
-            <h1>Личный кабинет соискателя</h1>
-            <p>Здесь будет интерфейс для соискателей</p>
+        <div className="job-seeker-dashboard-page">
+          <div className="container">
+            <div className="wrapper">
+              <div className="job-seeker-dashboard-page__content">
+                <h1 className="job-seeker-dashboard-page__title">
+                  Личный кабинет соискателя
+                </h1>
+              </div>
+            </div>
+          </div>
         </div>
     );
 };
