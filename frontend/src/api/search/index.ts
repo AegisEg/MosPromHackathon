@@ -1,47 +1,80 @@
 import api from "..";
-import { VacancyData, BackendVacancyData } from "../../redux/vacancy/types";
-import { mapBackendVacancyDataToRedux } from "../../utils/vacancyDataMapper";
+import { mapBackendInternshipsDataToRedux } from "../../utils/internshipDataMapper";
 
-export interface SearchVacanciesParams {
-  profession_id?: number;
-  salary_from?: number;
-  salary_to?: number;
-  employment_type?: number;
-  title?: string;
-  experience_wide?: number;
-  company_id?: number;
-  user_id?: number;
-}
-
-export interface SearchVacanciesResponse {
-  total: number;
-  vacancies: VacancyData[];
-}
-
-export const searchVacancies = (params: SearchVacanciesParams): Promise<SearchVacanciesResponse> => {
-  const queryParams = new URLSearchParams();
-  
-  // Добавляем только непустые параметры
-  Object.entries(params).forEach(([key, value]) => {
-    if (value !== undefined && value !== null && value !== '') {
-      queryParams.append(key, value.toString());
-    }
-  });
-
-  return api
-    .get(`search/vacancies/?${queryParams.toString()}`)
-    .then((response) => {
-      // Извлекаем данные из response.data.data и маппим их
-      const backendData = response.data.data;
-      return {
-        total: backendData.total,
-        vacancies: backendData.vacancies.map((vacancy: BackendVacancyData) => 
-          mapBackendVacancyDataToRedux(vacancy)
-        )
-      };
-    })
-    .catch((error) => {
-      console.error('Search vacancies error:', error);
-      throw error;
+// Вспомогательная функция для удаления пустых значений
+const removeEmptyParams = (params: any): any => {
+    const cleaned: any = {};
+    
+    Object.keys(params).forEach((key) => {
+        const value = params[key];
+        // Пропускаем null, undefined, пустые строки
+        if (value !== null && value !== undefined && value !== '') {
+            cleaned[key] = value;
+        }
     });
+    
+    return cleaned;
+};
+
+// Параметры поиска вакансий
+export interface SearchVacanciesParams {
+    title?: string;
+    company_id?: number;
+    profession_id?: number;
+    description?: string;
+    employment_type?: number;
+    experience_wide?: number;
+    salary_from?: number;
+    salary_to?: number;
+    user_id?: number;
+    skills?: string;
+}
+
+// Параметры поиска стажировок
+export interface SearchInternshipsParams {
+    speciality?: string;
+    count_students_from?: number;
+    count_students_to?: number;
+    start_date_from?: string;
+    start_date_to?: string;
+    end_date_from?: string;
+    end_date_to?: string;
+    user_id?: number;
+}
+
+// Поиск вакансий
+export const searchVacancies = (params: SearchVacanciesParams): Promise<any> => {
+    const cleanedParams = removeEmptyParams(params);
+    
+    return api
+        .get('search/vacancies', { params: cleanedParams })
+        .then((response) => {
+            console.log('Search vacancies API response:', response.data);
+            return response.data.data || {};
+        })
+        .catch((error) => {
+            console.error('Search vacancies error:', error);
+            throw error;
+        });
+};
+
+// Поиск стажировок
+export const searchInternships = (params: SearchInternshipsParams): Promise<any> => {
+    const cleanedParams = removeEmptyParams(params);
+    
+    return api
+        .get('search/internships', { params: cleanedParams })
+        .then((response) => {
+            console.log('Search internships API response:', response.data);
+            const data = response.data.data || {};
+            // Маппим данные из snake_case в camelCase
+            if (data.internships && Array.isArray(data.internships)) {
+                data.internships = mapBackendInternshipsDataToRedux(data.internships);
+            }
+            return data;
+        })
+        .catch((error) => {
+            console.error('Search internships error:', error);
+            throw error;
+        });
 };

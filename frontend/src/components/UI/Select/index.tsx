@@ -6,6 +6,7 @@ import makeAnimated from 'react-select/animated';
 
 interface SelectProps {
   label?: string;
+  labelColor?: 'black' | 'white';
   placeholder?: string;
   options: { value: string; label: string }[];
   defaultValue?: { value: string; label: string }[];
@@ -23,6 +24,7 @@ interface SelectProps {
 
 export default function Select({
   label,
+  labelColor = 'black',
   placeholder = 'Выберите значение',
   options,
   defaultValue,
@@ -222,7 +224,7 @@ export default function Select({
   return (
     <div className={selectClasses}>
       {label && (
-        <label className="custom-select__label">
+        <label className={`custom-select__label custom-select__label--${labelColor}`}>
           {label}
         </label>
       )}

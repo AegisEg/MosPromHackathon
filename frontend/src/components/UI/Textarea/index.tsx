@@ -4,6 +4,7 @@ import { useState } from 'react';
 
 interface TextareaProps {
   label?: string;
+  labelColor?: 'black' | 'white';
   placeholder?: string;
   value?: string;
   defaultValue?: string;
@@ -21,6 +22,7 @@ interface TextareaProps {
 
 export default function Textarea({
   label,
+  labelColor = 'black',
   placeholder,
   value: controlledValue,
   defaultValue = '',
@@ -71,7 +73,7 @@ export default function Textarea({
   return (
     <div className={textareaClasses}>
       {label && (
-        <label className="custom-textarea__label">
+        <label className={`custom-textarea__label custom-textarea__label--${labelColor}`}>
           {label}
         </label>
       )}

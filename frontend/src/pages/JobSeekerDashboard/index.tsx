@@ -1,20 +1,228 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
+import { useTypedDispatch } from '../../redux/store';
 import { selectUserData } from '../../redux/user/selectors';
+import {
+    selectResumesData,
+    selectResumesStatus,
+    selectCreateResumeStatus,
+    selectCreateResumeError,
+    selectUpdateResumeStatus,
+    selectUpdateResumeError,
+    selectDeleteResumeStatus,
+    selectDeleteResumeError
+} from '../../redux/resume/selectors';
+import {
+    getUserResumesAction,
+    createResumeAction,
+    updateResumeAction,
+    deleteResumeAction
+} from '../../redux/resume/actions';
 import { UserRoleLabels } from '../../enums/UserRole';
 import { LoadStatus } from '../../utils/types';
+import { ResumeData, CreateResumePayload, UpdateResumePayload } from '../../redux/resume/types';
 import Loader from '../../components/default/Loader';
 import Button, { ButtonType } from '../../components/UI/Button';
-import { useNavigate } from 'react-router-dom';
+import Input from '../../components/UI/Input';
+import Select from '../../components/UI/Select';
+import Checkbox from '../../components/UI/Checkbox';
+import { selectProfessionsData, selectCurrentProfessionSkillsData } from '../../redux/profession/selectors';
+import { getProfessionsAction, getProfessionSkillsAction } from '../../redux/profession/actions';
 import './style.scss';
 
 const JobSeekerDashboard: React.FC = () => {
+    const dispatch = useTypedDispatch();
     const { data: userData, status } = useSelector(selectUserData);
-    const navigate = useNavigate();
+
+    // Redux selectors
+    const resumes = useSelector(selectResumesData);
+    const resumesStatus = useSelector(selectResumesStatus);
+    const createResumeStatus = useSelector(selectCreateResumeStatus);
+    const createResumeError = useSelector(selectCreateResumeError);
+    const updateResumeStatus = useSelector(selectUpdateResumeStatus);
+    const updateResumeError = useSelector(selectUpdateResumeError);
+    const deleteResumeStatus = useSelector(selectDeleteResumeStatus);
+    const deleteResumeError = useSelector(selectDeleteResumeError);
+
+    const professions = useSelector(selectProfessionsData);
+    const currentProfessionSkills = useSelector(selectCurrentProfessionSkillsData);
+
+    // Состояния для модальных окон
+    const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+    const [editingResume, setEditingResume] = useState<ResumeData | null>(null);
+
+    // Состояния для формы резюме
+    const [formData, setFormData] = useState<CreateResumePayload>({
+        dateOfBirth: '',
+        city: '',
+        country: '',
+        education: '',
+        phone: '',
+        about: '',
+        professionId: 0,
+        salary: 0,
+        status: true,
+        skills: [],
+        educations: [],
+        experiences: [],
+    });
+
+    // Загружаем профессии и резюме при монтировании
+    useEffect(() => {
+        dispatch(getProfessionsAction());
+        dispatch(getUserResumesAction());
+    }, [dispatch]);
+
+    // Функции для работы с формой
+    const resetForm = () => {
+        setFormData({
+            dateOfBirth: '',
+            city: '',
+            country: '',
+            education: '',
+            phone: '',
+            about: '',
+            professionId: 0,
+            salary: 0,
+            status: true,
+            skills: [],
+            educations: [],
+            experiences: [],
+        });
+    };
+
+    const handleInputChange = (field: keyof CreateResumePayload, value: any) => {
+        setFormData(prev => ({
+            ...prev,
+            [field]: value
+        }));
+    };
+
+    const handleProfessionChange = (option: any) => {
+        if (option && option.value) {
+            const professionId = parseInt(option.value);
+            handleInputChange('professionId', professionId);
+            dispatch(getProfessionSkillsAction(professionId));
+        } else {
+            handleInputChange('professionId', 0);
+        }
+    };
+
+    const handleSkillToggle = (skillId: number) => {
+        setFormData(prev => ({
+            ...prev,
+            skills: prev.skills?.includes(skillId)
+                ? prev.skills.filter(id => id !== skillId)
+                : [...(prev.skills || []), skillId]
+        }));
+    };
+
+    // Функции для CRUD операций
+    const handleCreateResume = async () => {
+        if (!formData.dateOfBirth.trim()) {
+            alert('Дата рождения обязательна');
+            return;
+        }
+        if (!formData.city.trim()) {
+            alert('Город обязателен');
+            return;
+        }
+        if (!formData.country.trim()) {
+            alert('Страна обязательна');
+            return;
+        }
+        if (!formData.phone.trim()) {
+            alert('Телефон обязателен');
+            return;
+        }
+        if (!formData.about.trim()) {
+            alert('Информация о себе обязательна');
+            return;
+        }
+        if (formData.professionId === 0) {
+            alert('Выберите профессию');
+            return;
+        }
+
+        try {
+            await dispatch(createResumeAction(formData)).unwrap();
+            alert('Резюме успешно создано');
+            setIsCreateModalOpen(false);
+            resetForm();
+            // Обновляем только список резюме
+            dispatch(getUserResumesAction());
+        } catch (error) {
+            alert(createResumeError || 'Ошибка при создании резюме');
+        }
+    };
+
+    const handleUpdateResume = async () => {
+        if (!editingResume?.id) {
+            alert('Резюме не выбрано');
+            return;
+        }
+
+        try {
+            const updatePayload: UpdateResumePayload = {
+                id: editingResume.id,
+                ...formData,
+            };
+            await dispatch(updateResumeAction(updatePayload)).unwrap();
+            alert('Резюме успешно обновлено');
+            setIsEditModalOpen(false);
+            setEditingResume(null);
+            resetForm();
+            // Обновляем только список резюме
+            dispatch(getUserResumesAction());
+        } catch (error) {
+            alert(updateResumeError || 'Ошибка при обновлении резюме');
+        }
+    };
+
+    const handleDeleteResume = async (id: number) => {
+        if (window.confirm('Вы уверены, что хотите удалить это резюме?')) {
+            try {
+                await dispatch(deleteResumeAction(id)).unwrap();
+                alert('Резюме успешно удалено');
+                // Обновляем только список резюме
+                dispatch(getUserResumesAction());
+            } catch (error) {
+                alert(deleteResumeError || 'Ошибка при удалении резюме');
+            }
+        }
+    };
+
+    const handleEditResume = (resume: ResumeData) => {
+        setEditingResume(resume);
+        setFormData({
+            dateOfBirth: resume.dateOfBirth || '',
+            city: resume.city || '',
+            country: resume.country || '',
+            education: resume.education || '',
+            phone: resume.phone || '',
+            about: resume.about || '',
+            professionId: resume.professionId || 0,
+            salary: resume.salary || 0,
+            status: resume.status ?? true,
+            skills: resume.skills || [],
+            educations: resume.educations || [],
+            experiences: resume.experiences || [],
+        });
+        
+        // Загружаем навыки для выбранной профессии
+        if (resume.professionId) {
+            dispatch(getProfessionSkillsAction(resume.professionId));
+        }
+        
+        setIsEditModalOpen(true);
+    };
 
     if (status === LoadStatus.IN_PROGRESS) {
         return <Loader />;
     }
+
+    console.log('resumes', resumes);
 
     return (
         <div className="job-seeker-dashboard-page">
@@ -72,86 +280,324 @@ const JobSeekerDashboard: React.FC = () => {
                             </div>
                         </div>
 
-                        {/* Статистика */}
-                        <div className="dashboard-stats">
-                            <div className="dashboard-card dashboard-card--stat">
-                                <div className="stat-card">
-                                    <div className="stat-card__icon stat-card__icon--blue">
-                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                            <path d="M14 2H6C5.46957 2 4.96086 2.21071 4.58579 2.58579C4.21071 2.96086 4 3.46957 4 4V20C4 20.5304 4.21071 21.0391 4.58579 21.4142C4.96086 21.7893 5.46957 22 6 22H18C18.5304 22 19.0391 21.7893 19.4142 21.4142C19.7893 21.0391 20 20.5304 20 20V8L14 2Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                                            <path d="M14 2V8H20" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                                        </svg>
-                                    </div>
-                                    <div className="stat-card__info">
-                                        <div className="stat-card__value">0</div>
-                                        <div className="stat-card__label">Резюме</div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div className="dashboard-card dashboard-card--stat">
-                                <div className="stat-card">
-                                    <div className="stat-card__icon stat-card__icon--green">
-                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                            <path d="M21 15V19C21 19.5304 20.7893 20.0391 20.4142 20.4142C20.0391 20.7893 19.5304 21 19 21H5C4.46957 21 3.96086 20.7893 3.58579 20.4142C3.21071 20.0391 3 19.5304 3 19V15" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                                            <path d="M7 10L12 15L17 10" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                                            <path d="M12 15V3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                                        </svg>
-                                    </div>
-                                    <div className="stat-card__info">
-                                        <div className="stat-card__value">0</div>
-                                        <div className="stat-card__label">Откликов</div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div className="dashboard-card dashboard-card--stat">
-                                <div className="stat-card">
-                                    <div className="stat-card__icon stat-card__icon--purple">
-                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                            <path d="M20 21V19C20 17.9391 19.5786 16.9217 18.8284 16.1716C18.0783 15.4214 17.0609 15 16 15H8C6.93913 15 5.92172 15.4214 5.17157 16.1716C4.42143 16.9217 4 17.9391 4 19V21" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                                            <path d="M12 11C14.2091 11 16 9.20914 16 7C16 4.79086 14.2091 3 12 3C9.79086 3 8 4.79086 8 7C8 9.20914 9.79086 11 12 11Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                                        </svg>
-                                    </div>
-                                    <div className="stat-card__info">
-                                        <div className="stat-card__value">0</div>
-                                        <div className="stat-card__label">Приглашений</div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div className="dashboard-card dashboard-card--stat">
-                                <div className="stat-card">
-                                    <div className="stat-card__icon stat-card__icon--orange">
-                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                            <path d="M17 21V19C17 17.9391 16.5786 16.9217 15.8284 16.1716C15.0783 15.4214 14.0609 15 13 15H5C3.93913 15 2.92172 15.4214 2.17157 16.1716C1.42143 16.9217 1 17.9391 1 19V21" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                                            <path d="M9 11C11.2091 11 13 9.20914 13 7C13 4.79086 11.2091 3 9 3C6.79086 3 5 4.79086 5 7C5 9.20914 6.79086 11 9 11Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                                            <path d="M23 21V19C22.9993 18.1137 22.7044 17.2528 22.1614 16.5523C21.6184 15.8519 20.8581 15.3516 20 15.13" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                                            <path d="M16 3.13C16.8604 3.35031 17.623 3.85071 18.1676 4.55232C18.7122 5.25392 19.0078 6.11683 19.0078 7.005C19.0078 7.89317 18.7122 8.75608 18.1676 9.45768C17.623 10.1593 16.8604 10.6597 16 10.88" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                                        </svg>
-                                    </div>
-                                    <div className="stat-card__info">
-                                        <div className="stat-card__value">0</div>
-                                        <div className="stat-card__label">Просмотров</div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="dashboard-card dashboard-card--actions">
-                            <h2 className="dashboard-card__title">Быстрые действия</h2>
-                            <div className="quick-actions">
-                                <Button variant={ButtonType.RED} onClick={() => navigate('/resume/create')}>
+                        {/* Секция резюме */}
+                        <div className="dashboard-card dashboard-card--resume">
+                            <div className="resume-header">
+                                <h2 className="dashboard-card__title">Мои резюме</h2>
+                                <Button
+                                    variant={ButtonType.RED}
+                                    onClick={() => setIsCreateModalOpen(true)}
+                                >
                                     Создать резюме
                                 </Button>
-                                <Button variant={ButtonType.BLACK} onClick={() => navigate('/resume')}>
-                                    Просмотр резюме
-                                </Button>
                             </div>
+
+                            {resumesStatus === LoadStatus.IN_PROGRESS ? (
+                                <div className="resumes-loading">
+                                    <p>Загрузка резюме...</p>
+                                </div>
+                            ) : resumes.length > 0 ? (
+                                <div className="resumes-list">
+                                    {resumes.map((resume) => (
+                                        <div key={resume.id} className="resume-card">
+                                            <div className="resume-card__content">
+                                                   <h3 className="resume-card__title">
+                                                       {resume.profession || 'Резюме'}
+                                                   </h3>
+                                                <div className="resume-card__details">
+                                                    <p><strong>Город:</strong> {resume.city}</p>
+                                                    <p><strong>Страна:</strong> {resume.country}</p>
+                                                    <p><strong>Телефон:</strong> {resume.phone}</p>
+                                                    {resume.salary && (
+                                                        <p><strong>Желаемая зарплата:</strong> {resume.salary.toLocaleString()} ₽</p>
+                                                    )}
+                                                    <p><strong>Статус:</strong>
+                                                        <span className={`status ${resume.status ? 'active' : 'inactive'}`}>
+                                                            {resume.status ? 'Активно' : 'Неактивно'}
+                                                        </span>
+                                                    </p>
+                                                </div>
+                                                <div className="resume-card__actions">
+                                                    <Button
+                                                        variant={ButtonType.BLACK}
+                                                        onClick={() => handleEditResume(resume)}
+                                                    >
+                                                        Редактировать
+                                                    </Button>
+                                                    <Button
+                                                        variant={ButtonType.GRAY}
+                                                        onClick={() => handleDeleteResume(resume.id!)}
+                                                    >
+                                                        Удалить
+                                                    </Button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            ) : (
+                                <div className="no-resume">
+                                    <p>У вас пока нет резюме</p>
+                                </div>
+                            )}
                         </div>
                     </div>
                 </div>
             </div>
+
+            {/* Модальное окно создания резюме */}
+            {isCreateModalOpen && (
+                <div className="modal-overlay" onClick={() => setIsCreateModalOpen(false)}>
+                    <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+                        <div className="modal-header">
+                            <h2>Создать резюме</h2>
+                            <button
+                                className="modal-close"
+                                onClick={() => setIsCreateModalOpen(false)}
+                            >
+                                ×
+                            </button>
+                        </div>
+
+                        <div className="modal-body">
+                            <div className="form-group">
+                                <Input
+                                    label="Дата рождения"
+                                    type="date"
+                                    value={formData.dateOfBirth}
+                                    onChange={(value) => handleInputChange('dateOfBirth', value)}
+                                />
+                            </div>
+
+                            <div className="form-group">
+                                <Input
+                                    label="Город"
+                                    value={formData.city}
+                                    onChange={(value) => handleInputChange('city', value)}
+                                />
+                            </div>
+
+                            <div className="form-group">
+                                <Input
+                                    label="Страна"
+                                    value={formData.country}
+                                    onChange={(value) => handleInputChange('country', value)}
+                                />
+                            </div>
+
+                            <div className="form-group">
+                                <Input
+                                    label="Телефон"
+                                    value={formData.phone}
+                                    onChange={(value) => handleInputChange('phone', value)}
+                                />
+                            </div>
+
+                            <div className="form-group">
+                                <Input
+                                    label="Образование"
+                                    value={formData.education}
+                                    onChange={(value) => handleInputChange('education', value)}
+                                />
+                            </div>
+
+                            <div className="form-group">
+                                <Select
+                                    label="Профессия"
+                                    options={professions.map(prof => ({
+                                        value: prof.id.toString(),
+                                        label: prof.name
+                                    }))}
+                                    value={formData.professionId ? {
+                                        value: formData.professionId.toString(),
+                                        label: professions.find(p => p.id === formData.professionId)?.name || ''
+                                    } : undefined}
+                                    onChange={handleProfessionChange}
+                                    placeholder="Выберите профессию"
+                                />
+                            </div>
+
+                            {formData.professionId > 0 && currentProfessionSkills.length > 0 && (
+                                <div className="skills-section">
+                                    <label className="skills-section__label">Навыки</label>
+                                    <div className="skills-section__checkboxes">
+                                        {currentProfessionSkills.map(skill => (
+                                            <Checkbox
+                                                key={skill.id}
+                                                label={skill.name}
+                                                checked={formData.skills?.includes(skill.id) || false}
+                                                onChange={() => handleSkillToggle(skill.id)}
+                                            />
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
+                            <div className="form-group">
+                                <Input
+                                    label="Желаемая зарплата"
+                                    type="number"
+                                    value={formData.salary?.toString() || ''}
+                                    onChange={(value) => handleInputChange('salary', parseInt(value) || 0)}
+                                />
+                            </div>
+
+                            <div className="form-group">
+                                <label className="textarea-label">О себе</label>
+                                <textarea
+                                    className="textarea-input"
+                                    value={formData.about}
+                                    onChange={(e) => handleInputChange('about', e.target.value)}
+                                    rows={4}
+                                    placeholder="Расскажите о себе, своих навыках и опыте..."
+                                />
+                            </div>
+                        </div>
+
+                        <div className="modal-footer">
+                            <Button
+                                variant={ButtonType.GRAY}
+                                onClick={() => setIsCreateModalOpen(false)}
+                            >
+                                Отмена
+                            </Button>
+                            <Button
+                                onClick={handleCreateResume}
+                                disabled={createResumeStatus === LoadStatus.IN_PROGRESS}
+                            >
+                                {createResumeStatus === LoadStatus.IN_PROGRESS ? 'Создание...' : 'Создать'}
+                            </Button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Модальное окно редактирования резюме */}
+            {isEditModalOpen && editingResume && (
+                <div className="modal-overlay" onClick={() => setIsEditModalOpen(false)}>
+                    <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+                        <div className="modal-header">
+                            <h2>Редактировать резюме</h2>
+                            <button
+                                className="modal-close"
+                                onClick={() => setIsEditModalOpen(false)}
+                            >
+                                ×
+                            </button>
+                        </div>
+
+                        <div className="modal-body">
+                            <div className="form-group">
+                                <Input
+                                    label="Дата рождения"
+                                    type="date"
+                                    value={formData.dateOfBirth}
+                                    onChange={(value) => handleInputChange('dateOfBirth', value)}
+                                />
+                            </div>
+
+                            <div className="form-group">
+                                <Input
+                                    label="Город"
+                                    value={formData.city}
+                                    onChange={(value) => handleInputChange('city', value)}
+                                />
+                            </div>
+
+                            <div className="form-group">
+                                <Input
+                                    label="Страна"
+                                    value={formData.country}
+                                    onChange={(value) => handleInputChange('country', value)}
+                                />
+                            </div>
+
+                            <div className="form-group">
+                                <Input
+                                    label="Телефон"
+                                    value={formData.phone}
+                                    onChange={(value) => handleInputChange('phone', value)}
+                                />
+                            </div>
+
+                            <div className="form-group">
+                                <Input
+                                    label="Образование"
+                                    value={formData.education}
+                                    onChange={(value) => handleInputChange('education', value)}
+                                />
+                            </div>
+
+                            <div className="form-group">
+                                <Select
+                                    label="Профессия"
+                                    options={professions.map(prof => ({
+                                        value: prof.id.toString(),
+                                        label: prof.name
+                                    }))}
+                                    value={formData.professionId ? {
+                                        value: formData.professionId.toString(),
+                                        label: professions.find(p => p.id === formData.professionId)?.name || ''
+                                    } : undefined}
+                                    onChange={handleProfessionChange}
+                                    placeholder="Выберите профессию"
+                                />
+                            </div>
+
+                            {formData.professionId > 0 && currentProfessionSkills.length > 0 && (
+                                <div className="skills-section">
+                                    <label className="skills-section__label">Навыки</label>
+                                    <div className="skills-section__checkboxes">
+                                        {currentProfessionSkills.map(skill => (
+                                            <Checkbox
+                                                key={skill.id}
+                                                label={skill.name}
+                                                checked={formData.skills?.includes(skill.id) || false}
+                                                onChange={() => handleSkillToggle(skill.id)}
+                                            />
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
+                            <div className="form-group">
+                                <Input
+                                    label="Желаемая зарплата"
+                                    type="number"
+                                    value={formData.salary?.toString() || ''}
+                                    onChange={(value) => handleInputChange('salary', parseInt(value) || 0)}
+                                />
+                            </div>
+
+                            <div className="form-group">
+                                <label className="textarea-label">О себе</label>
+                                <textarea
+                                    className="textarea-input"
+                                    value={formData.about}
+                                    onChange={(e) => handleInputChange('about', e.target.value)}
+                                    rows={4}
+                                    placeholder="Расскажите о себе, своих навыках и опыте..."
+                                />
+                            </div>
+                        </div>
+
+                        <div className="modal-footer">
+                            <Button
+                                variant={ButtonType.GRAY}
+                                onClick={() => setIsEditModalOpen(false)}
+                            >
+                                Отмена
+                            </Button>
+                            <Button
+                                onClick={handleUpdateResume}
+                                disabled={updateResumeStatus === LoadStatus.IN_PROGRESS}
+                            >
+                                {updateResumeStatus === LoadStatus.IN_PROGRESS ? 'Сохранение...' : 'Сохранить'}
+                            </Button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

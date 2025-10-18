@@ -13,3 +13,4 @@ require app_path('Domain/Internship/Presentation/routes.php');
 require app_path('Domain/Analitics/Presentation/routes.php');
 require app_path('Domain/SearchEngine/Presentation/routes.php');
 require app_path('Domain/RespondAndInteraction/Presentation/route.php');
+require app_path('Domain/Connection/Presentation/routes.php');

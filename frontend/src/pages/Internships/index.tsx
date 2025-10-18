@@ -1,191 +1,229 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import { useSelector } from 'react-redux';
+import { useTypedDispatch } from '../../redux/store';
+import { 
+    selectSearchInternshipsData, 
+    selectSearchInternshipsStatus,
+    selectSearchInternshipsError
+} from '../../redux/search/selectors';
+import { searchInternshipsAction } from '../../redux/search/actions';
+import { InternshipData } from '../../redux/internship/types';
+import { LoadStatus } from '../../utils/types';
 import './style.scss';
 import Input from '../../components/UI/Input';
-import Select from '../../components/UI/Select';
-import Button from '../../components/UI/Button';
+import Button, { ButtonType } from '../../components/UI/Button';
+import DateInput from '../../components/UI/DateInput';
+import Slider from '../../components/UI/Slider';
 import { DefaultValue } from '../../types/default.types';
-import HR from '../../components/default/HR';
+import Loader from '../../components/default/Loader';
 
 function Internships() {
+  const dispatch = useTypedDispatch();
+  
+  // Redux selectors
+  const searchResults = useSelector(selectSearchInternshipsData);
+  const searchStatus = useSelector(selectSearchInternshipsStatus);
+  const searchError = useSelector(selectSearchInternshipsError);
+
   // Состояния фильтров
   const [searchQuery, setSearchQuery] = useState<DefaultValue<string>>({ 
     value: '', success: false, error: '', isDisabled: false 
   });
-  const [city, setCity] = useState<any>(null);
-  const [duration, setDuration] = useState<any>(null);
-  const [format, setFormat] = useState<any>(null);
-  const [salary, setSalary] = useState<DefaultValue<string>>({ 
-    value: '', success: false, error: '', isDisabled: false 
-  });
+  const [countStudentsRange, setCountStudentsRange] = useState<number[]>([1, 50]);
+  const [startDate, setStartDate] = useState<string>('');
+  const [endDate, setEndDate] = useState<string>('');
 
-  // Опции для фильтров
-  const cityOptions = [
-    { value: 'moscow', label: 'Москва' },
-    { value: 'spb', label: 'Санкт-Петербург' },
-    { value: 'novosibirsk', label: 'Новосибирск' },
-    { value: 'ekaterinburg', label: 'Екатеринбург' },
-  ];
+  // Функция для выполнения поиска
+  const performSearch = useCallback(() => {
+    const searchParams: any = {};
+    
+    if (searchQuery.value.trim()) {
+      searchParams.speciality = searchQuery.value.trim();
+    }
+    
+    // Отправляем диапазон только если он изменён от начального
+    if (countStudentsRange[0] !== 1 || countStudentsRange[1] !== 50) {
+      searchParams.count_students_from = countStudentsRange[0];
+      searchParams.count_students_to = countStudentsRange[1];
+    }
+    
+    if (startDate) {
+      searchParams.start_date_from = convertDateToISO(startDate);
+    }
+    
+    if (endDate) {
+      searchParams.end_date_to = convertDateToISO(endDate);
+    }
 
-  const durationOptions = [
-    { value: '1-3', label: '1-3 месяца' },
-    { value: '3-6', label: '3-6 месяцев' },
-    { value: '6+', label: 'Более 6 месяцев' },
-  ];
+    dispatch(searchInternshipsAction(searchParams));
+  }, [dispatch, searchQuery.value, countStudentsRange, startDate, endDate]);
 
-  const formatOptions = [
-    { value: 'office', label: 'В офисе' },
-    { value: 'remote', label: 'Удаленно' },
-    { value: 'hybrid', label: 'Гибрид' },
-  ];
+  // Выполняем начальный поиск при загрузке страницы
+  useEffect(() => {
+    performSearch();
+  }, []);
 
-  // Моковые данные стажировок
-  const internships = [
-    {
-      id: 1,
-      company: 'Tech Innovations',
-      location: 'Москва, Российская федерация',
-      title: 'Стажер Frontend разработчик',
-      description: 'Ищем начинающего разработчика для работы над веб-приложениями. Обучение и менторство включены.',
-      publishedTime: '2 часа назад',
-    },
-    {
-      id: 2,
-      company: 'Digital Solutions',
-      location: 'Санкт-Петербург, Россия',
-      title: 'Стажер UX/UI дизайнер',
-      description: 'Присоединяйтесь к команде дизайнеров для создания современных интерфейсов мобильных приложений.',
-      publishedTime: '5 часов назад',
-    },
-    {
-      id: 3,
-      company: 'StartUp Lab',
-      location: 'Москва, Российская федерация',
-      title: 'Стажер Data Analyst',
-      description: 'Работа с большими данными, создание отчетов и визуализаций. Python и SQL приветствуются.',
-      publishedTime: '1 день назад',
-    },
-    {
-      id: 4,
-      company: 'Creative Agency',
-      location: 'Новосибирск, Россия',
-      title: 'Стажер Project Manager',
-      description: 'Помощь в управлении проектами, координация команды, работа с документацией.',
-      publishedTime: '2 дня назад',
-    },
-  ];
+  // Функция для конвертации даты из DD.MM.YYYY в YYYY-MM-DD
+  const convertDateToISO = (dateStr: string): string => {
+    if (!dateStr) return '';
+    const parts = dateStr.split('.');
+    if (parts.length === 3) {
+      return `${parts[2]}-${parts[1]}-${parts[0]}`;
+    }
+    return dateStr;
+  };
+
+  // Функция для форматирования даты из YYYY-MM-DD в DD.MM.YYYY
+  const formatDate = (dateStr: string): string => {
+    if (!dateStr) return '';
+    const date = new Date(dateStr);
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear();
+    return `${day}.${month}.${year}`;
+  };
 
   const handleResetFilters = () => {
     setSearchQuery({ value: '', success: false, error: '', isDisabled: false });
-    setCity(null);
-    setDuration(null);
-    setFormat(null);
-    setSalary({ value: '', success: false, error: '', isDisabled: false });
+    setCountStudentsRange([1, 50]);
+    setStartDate('');
+    setEndDate('');
   };
+
+  const handleSearch = () => {
+    performSearch();
+  };
+
+  // Получаем стажировки из результатов поиска
+  const internships = useMemo(() => {
+    return searchResults?.internships || [];
+  }, [searchResults]);
+
+  const totalInternships = useMemo(() => {
+    return searchResults?.total || 0;
+  }, [searchResults]);
 
   return (
     <div className="internships-page">
       <div className="container">
         <div className="internships-page__content">
           <div className="internships-page__wrapper">
-            {/* Sidebar с фильтрами */}
-            <aside className="internships-page__filters">
-              <div className="internships-page__filters-sticky">
+            {/* Фильтры */}
+            <div className="internships-page__filters">
               <h2 className="internships-page__filters-title">Фильтры</h2>
               
-              <div className="internships-page__filters-group">
-                <Input
-                  label="Поиск по названию"
-                  placeholder="Введите название стажировки"
-                  value={searchQuery.value}
-                  onChange={(value) => setSearchQuery({ ...searchQuery, value })}
-                  error={searchQuery.error}
-                  disabled={searchQuery.isDisabled}
-                />
-              </div>
+              <div className="internships-page__filters-content">
+                <div className="internships-page__filters-group">
+                  <Input
+                    label="Поиск по специальности"
+                    placeholder="Введите специальность"
+                    value={searchQuery.value}
+                    onChange={(value) => setSearchQuery({ ...searchQuery, value })}
+                    error={searchQuery.error}
+                    disabled={searchQuery.isDisabled}
+                  />
+                </div>
 
-              <div className="internships-page__filters-group">
-                <Select
-                  label="Город"
-                  options={cityOptions}
-                  value={city}
-                  onChange={(option) => setCity(option)}
-                  placeholder="Выберите город"
-                  isClearable
-                />
-              </div>
+                <div className="internships-page__filters-group">
+                  <Slider
+                    label="Количество студентов"
+                    min={1}
+                    max={50}
+                    value={countStudentsRange}
+                    onChange={(_, value) => setCountStudentsRange(value as number[])}
+                    valueLabelDisplay="auto"
+                  />
+                </div>
 
-              <div className="internships-page__filters-group">
-                <Select
-                  label="Длительность"
-                  options={durationOptions}
-                  value={duration}
-                  onChange={(option) => setDuration(option)}
-                  placeholder="Выберите длительность"
-                  isClearable
-                />
-              </div>
+                <div className="internships-page__filters-group">
+                  <DateInput
+                    label="Начало стажировки (от)"
+                    placeholder="ДД.ММ.ГГГГ"
+                    value={startDate}
+                    onChange={(value) => setStartDate(value)}
+                    dateFormat="DD.MM.YYYY"
+                  />
+                </div>
 
-              <div className="internships-page__filters-group">
-                <Select
-                  label="Формат работы"
-                  options={formatOptions}
-                  value={format}
-                  onChange={(option) => setFormat(option)}
-                  placeholder="Выберите формат"
-                  isClearable
-                />
-              </div>
-
-              <div className="internships-page__filters-group">
-                <Input
-                  label="Стипендия от"
-                  placeholder="Например: 30000"
-                  type="number"
-                  value={salary.value}
-                  onChange={(value) => setSalary({ ...salary, value })}
-                  error={salary.error}
-                  disabled={salary.isDisabled}
-                />
+                <div className="internships-page__filters-group">
+                  <DateInput
+                    label="Конец стажировки (до)"
+                    placeholder="ДД.ММ.ГГГГ"
+                    value={endDate}
+                    onChange={(value) => setEndDate(value)}
+                    dateFormat="DD.MM.YYYY"
+                  />
+                </div>
               </div>
 
               <div className="internships-page__filters-actions">
-                <Button onClick={handleResetFilters}>
+                <Button 
+                  onClick={handleSearch}
+                  disabled={(searchStatus as any) === LoadStatus.IN_PROGRESS}
+                >
+                  {(searchStatus as any) === LoadStatus.IN_PROGRESS ? 'Поиск...' : 'Поиск'}
+                </Button>
+                <Button 
+                  onClick={handleResetFilters}
+                  variant={ButtonType.GRAY}
+                >
                   Сбросить фильтры
                 </Button>
               </div>
-              </div>
-            </aside>
+            </div>
 
             {/* Список стажировок */}
             <div className="inner-wrapper">
-              <div className="inner-wrapper_title">Популярные стажировки</div>
-              <div className="internships-page__list">
-                {internships.map((internship) => (
-                  <div key={internship.id} className="internship-card">
-                    <p className="internship-card__company">{internship.company}</p>
-                    <p className="internship-card__location">{internship.location}</p>
-                    <h3 className="internship-card__title">{internship.title}</h3>
-                    <p className="internship-card__description">{internship.description}</p>
-                    <p className="internship-card__published">
-                      Стажировка опубликована: {internship.publishedTime}
-                    </p>
-                  </div>
-                ))}
+              <div className="inner-wrapper_title">
+                Найдено стажировок: {totalInternships}
               </div>
-              <HR margin={36} />
-              <div className="inner-wrapper_title">Другие стажировки</div>
+              {searchError && (
+                <div className="search-error">
+                  <p>Ошибка поиска: {searchError}</p>
+                </div>
+              )}
               <div className="internships-page__list">
-                {internships.map((internship) => (
-                  <div key={internship.id} className="internship-card">
-                    <p className="internship-card__company">{internship.company}</p>
-                    <p className="internship-card__location">{internship.location}</p>
-                    <h3 className="internship-card__title">{internship.title}</h3>
-                    <p className="internship-card__description">{internship.description}</p>
-                    <p className="internship-card__published">
-                      Стажировка опубликована: {internship.publishedTime}
-                    </p>
+                {(searchStatus as any) === LoadStatus.IN_PROGRESS ? (
+                  <div className="internships-loading">
+                    <Loader />
+                    <p>Поиск стажировок...</p>
                   </div>
-                ))}
+                ) : internships.length === 0 ? (
+                  <div className="no-internships">
+                    <p>По вашим критериям стажировки не найдены</p>
+                    <Button onClick={handleResetFilters}>
+                      Сбросить фильтры
+                    </Button>
+                  </div>
+                ) : (
+                  internships.map((internship: InternshipData) => (
+                    <div key={internship.id} className="internship-card">
+                      <div className="internship-card__header">
+                        <h3 className="internship-card__title">{internship.speciality}</h3>
+                      </div>
+                      
+                      <div className="internship-card__info">
+                        <div className="internship-card__info-item">
+                          <span className="internship-card__info-label">Количество студентов:</span>
+                          <span className="internship-card__info-value">{internship.countStudents}</span>
+                        </div>
+                        
+                        <div className="internship-card__info-item">
+                          <span className="internship-card__info-label">Период:</span>
+                          <span className="internship-card__info-value">
+                            {formatDate(internship.startDatePeriod || '')} - {formatDate(internship.endDatePeriod || '')}
+                          </span>
+                        </div>
+                      </div>
+                      
+                      {internship.createdAt && (
+                        <p className="internship-card__published">
+                          Опубликовано: {formatDate(internship.createdAt.split('T')[0])}
+                        </p>
+                      )}
+                    </div>
+                  ))
+                )}
               </div>
             </div>
           </div>

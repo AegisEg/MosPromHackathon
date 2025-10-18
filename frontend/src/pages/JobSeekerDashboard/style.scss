@@ -161,6 +161,242 @@
     }
 }
 
+// Секция резюме
+.resume-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
+.resume-card {
+    background: #f8f9fa;
+    border-radius: 12px;
+    padding: 24px;
+    border: 1px solid #e9ecef;
+
+    &__content {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    &__title {
+        font-size: 20px;
+        font-weight: 600;
+        color: #393649;
+        margin: 0;
+    }
+
+    &__details {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+
+        p {
+            margin: 0;
+            font-size: 14px;
+            color: #393649;
+
+            strong {
+                font-weight: 600;
+            }
+        }
+
+        .status {
+            padding: 4px 8px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 500;
+            margin-left: 8px;
+
+            &.active {
+                background: #d4edda;
+                color: #155724;
+            }
+
+            &.inactive {
+                background: #f8d7da;
+                color: #721c24;
+            }
+        }
+    }
+
+    &__actions {
+        display: flex;
+        gap: 12px;
+        margin-top: 16px;
+
+        .button {
+            flex: 1;
+        }
+    }
+}
+
+.resumes-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.resumes-loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 20px;
+    color: #8E8E93;
+
+    p {
+        margin: 16px 0 0 0;
+        font-size: 16px;
+    }
+}
+
+.no-resume {
+    text-align: center;
+    padding: 40px 20px;
+    color: #6c757d;
+
+    p {
+        margin: 0 0 16px 0;
+        font-size: 16px;
+    }
+}
+
+// Модальные окна
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 20px;
+}
+
+.modal-content {
+    background: #ffffff;
+    border-radius: 16px;
+    max-width: 600px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 24px 24px 0 24px;
+    border-bottom: 1px solid #e9ecef;
+    margin-bottom: 24px;
+
+    h2 {
+        margin: 0;
+        font-size: 24px;
+        font-weight: 600;
+        color: #393649;
+    }
+}
+
+.modal-close {
+    background: none;
+    border: none;
+    font-size: 24px;
+    color: #6c757d;
+    cursor: pointer;
+    padding: 0;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: all 0.2s ease;
+
+    &:hover {
+        background: #f8f9fa;
+        color: #393649;
+    }
+}
+
+.modal-body {
+    padding: 0 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.modal-footer {
+    display: flex;
+    gap: 12px;
+    padding: 24px;
+    border-top: 1px solid #e9ecef;
+    margin-top: 24px;
+
+    .button {
+        flex: 1;
+    }
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.textarea-label {
+    font-size: 14px;
+    font-weight: 500;
+    color: #000;
+    margin-bottom: 8px;
+}
+
+.textarea-input {
+    width: 100%;
+    padding: 12px 16px;
+    border: 2px solid #C7C7CC;
+    border-radius: 8px;
+    font-size: 14px;
+    font-family: inherit;
+    resize: vertical;
+    transition: border-color 0.2s ease;
+
+    &:focus {
+        outline: none;
+        border-color: #BA0048;
+    }
+
+    &::placeholder {
+        color: #8E8E93;
+    }
+}
+
+// Стили для секции навыков
+.skills-section {
+    margin-bottom: 20px;
+
+    &__label {
+        display: block;
+        font-size: 14px;
+        font-weight: 500;
+        color: #000;
+        margin-bottom: 12px;
+    }
+
+    &__checkboxes {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 12px;
+    }
+}
+
 // Адаптивность
 @media (max-width: 768px) {
     .job-seeker-dashboard-page {
@@ -206,6 +442,56 @@
 
         &__title {
             font-size: 20px;
+        }
+    }
+
+    .resume-header {
+        flex-direction: column;
+        gap: 16px;
+        align-items: stretch;
+    }
+
+    .resume-card {
+        padding: 16px;
+
+        &__actions {
+            flex-direction: column;
+        }
+    }
+
+    .modal-overlay {
+        padding: 10px;
+    }
+
+    .modal-content {
+        max-height: 95vh;
+    }
+
+    .modal-header {
+        padding: 16px 16px 0 16px;
+
+        h2 {
+            font-size: 20px;
+        }
+    }
+
+    .modal-body {
+        padding: 0 16px;
+        gap: 16px;
+    }
+
+    .modal-footer {
+        padding: 16px;
+        flex-direction: column;
+
+        .button {
+            flex: none;
+        }
+    }
+
+    .skills-section {
+        &__checkboxes {
+            grid-template-columns: 1fr;
         }
     }
 }

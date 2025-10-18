@@ -3,6 +3,7 @@ import './style.scss';
 
 interface CheckboxProps {
   label?: string;
+  labelColor?: 'black' | 'white';
   checked: boolean;
   onChange: (checked: boolean) => void;
   disabled?: boolean;
@@ -12,6 +13,7 @@ interface CheckboxProps {
 
 const Checkbox: React.FC<CheckboxProps> = ({
   label,
+  labelColor = 'black',
   checked,
   onChange,
   disabled = false,
@@ -29,7 +31,7 @@ const Checkbox: React.FC<CheckboxProps> = ({
           className="custom-checkbox__input"
         />
         <span className="custom-checkbox__checkmark"></span>
-        {label && <span className="custom-checkbox__text">{label}</span>}
+        {label && <span className={`custom-checkbox__text custom-checkbox__text--${labelColor}`}>{label}</span>}
       </label>
       {error && <span className="custom-checkbox__error">{error}</span>}
     </div>

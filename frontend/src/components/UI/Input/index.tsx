@@ -5,6 +5,7 @@ import { IMaskInput } from 'react-imask';
 
 interface InputProps {
   label?: string;
+  labelColor?: 'black' | 'white';
   placeholder?: string;
   type?: string;
   value?: string;
@@ -23,6 +24,7 @@ interface InputProps {
 
 export default function Input({
   label,
+  labelColor = 'black',
   placeholder,
   type = 'text',
   value: controlledValue,
@@ -74,7 +76,7 @@ export default function Input({
   return (
     <div className={inputClasses}>
       {label && (
-        <label className="custom-input__label">
+        <label className={`custom-input__label custom-input__label--${labelColor}`}>
           {label}
         </label>
       )}
