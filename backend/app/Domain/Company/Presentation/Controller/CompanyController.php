@@ -15,6 +15,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class CompanyController extends Controller
 {
@@ -114,12 +115,14 @@ class CompanyController extends Controller
         $request->validate([
             'logo_file' => 'required|file|image|max:2048',
         ]);
-        $logoFile = $request->file('logo_file');
-        $logoUrl  = $logoFile->store('companies', 'public');
+        $logoFile        = $request->file('logo_file');
+        $logoUrlRelative = $logoFile->store('companies', 'public');
 
-        if ($logoUrl) {
+        if ($logoUrlRelative) {
+            $logoFileUrl = asset(Storage::url($logoUrlRelative));
+
             return (new ParentResponse(
-                data: ['logo_url' => $logoUrl],
+                data: ['logo_url' => $logoFileUrl],
                 httpStatus: 200,
                 status: StatusEnum::OK,
             ))->toResponse();
