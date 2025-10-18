@@ -98,6 +98,7 @@ function Authorization() {
                         </h1>
                         <Input
                             label="Электронная почта"
+                            labelColor="white"
                             placeholder="example@mail.com"
                             value={email.value}
                             onChange={(value) => setEmail({ ...email, value, success: true, error: '' })}
@@ -117,6 +118,7 @@ function Authorization() {
                         />
                         <Password 
                             label="Пароль"
+                            labelColor="white"
                             placeholder="********"
                             value={password.value}
                             onChange={(value) => setPassword({ ...password, value, success: true, error: '' })}

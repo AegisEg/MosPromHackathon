@@ -4,6 +4,7 @@ import { useState } from 'react';
 
 interface ToggleProps {
   label?: string;
+  labelColor?: 'black' | 'white';
   checked?: boolean;
   defaultChecked?: boolean;
   onChange?: (checked: boolean) => void;
@@ -16,6 +17,7 @@ interface ToggleProps {
 
 export default function Toggle({
   label,
+  labelColor = 'black',
   checked: controlledChecked,
   defaultChecked = false,
   onChange,
@@ -62,7 +64,7 @@ export default function Toggle({
         <span className="custom-toggle__switch">
           <span className="custom-toggle__slider" />
         </span>
-        {label && <span className="custom-toggle__label">{label}</span>}
+        {label && <span className={`custom-toggle__label custom-toggle__label--${labelColor}`}>{label}</span>}
       </label>
       
       {error && (

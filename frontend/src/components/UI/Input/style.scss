@@ -9,9 +9,16 @@
     font-weight: 500;
     font-size: 14px;
     line-height: 20px;
-    color: #FFFFFF;
     transition: color 0.3s ease;
     cursor: default;
+
+    &--black {
+      color: #393649;
+    }
+
+    &--white {
+      color: #FFFFFF;
+    }
   }
 
 
@@ -70,10 +77,6 @@
 
   // Hover на весь контейнер
   &:hover:not(&--disabled):not(&--error) {
-    .custom-input__label {
-      color: #FFFFFF;
-    }
-
     .custom-input__field:not(:disabled) {
       color: #393649;
 
@@ -85,10 +88,6 @@
 
   // Состояние фокуса
   &--focused:not(&--error) {
-    .custom-input__label {
-      color: #FFFFFF;
-    }
-
     .custom-input__field {
       color: #393649;
     }
@@ -96,10 +95,6 @@
 
   // Состояние с заполненным значением
   &--has-value:not(&--error):not(&--focused) {
-    .custom-input__label {
-      color: #FFFFFF;
-    }
-
     .custom-input__field {
       color: #393649;
     }

@@ -47,8 +47,15 @@
   &__label {
     font-size: 16px;
     line-height: 24px;
-    color: #C7C7CC;
     transition: color 0.3s ease;
+
+    &--black {
+      color: #393649;
+    }
+
+    &--white {
+      color: #FFFFFF;
+    }
   }
 
 

@@ -13,3 +13,8 @@ Route::group(['prefix' => 'search/vacancies'], function () {
             ->name('search.vacancies.search.favorites');
     });
 });
+
+Route::group(['prefix' => 'search/internships'], function () {
+    Route::get('/', [SearchEngineController::class, 'searchInternships'])
+        ->name('search.internships.search');
+});

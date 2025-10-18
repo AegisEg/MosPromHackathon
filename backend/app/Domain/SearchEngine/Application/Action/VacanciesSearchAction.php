@@ -6,6 +6,9 @@ namespace App\Domain\SearchEngine\Application\Action;
 use App\Models\Vacancies;
 use App\Domain\AssistantAI\Services\SemanticSearchService;
 
+/**
+ * Класс для поиска вакансий
+ */
 class VacanciesSearchAction {
 
     public function searchVacancies(array $queryArray): array {

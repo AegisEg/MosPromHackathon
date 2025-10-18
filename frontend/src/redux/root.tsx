@@ -7,6 +7,7 @@ import vacancyReducer from './vacancy/reducer';
 import professionReducer from './profession/reducer';
 import searchReducer from './search/reducer';
 import resumeReducer from './resume/reducer';
+import internshipReducer from './internship/reducer';
 
 export const rootReducer = combineReducers({
   settings: SettingReduces,
@@ -16,4 +17,5 @@ export const rootReducer = combineReducers({
   profession: professionReducer,
   search: searchReducer,
   resume: resumeReducer,
+  internship: internshipReducer,
 });

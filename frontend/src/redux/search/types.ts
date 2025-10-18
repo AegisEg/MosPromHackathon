@@ -1,4 +1,5 @@
 import { VacancyData } from '../vacancy/types';
+import { InternshipData } from '../internship/types';
 import { LoadStatus } from '../../utils/types';
 
 export interface SearchState {
@@ -7,6 +8,14 @@ export interface SearchState {
     data: {
       total: number;
       vacancies: VacancyData[];
+    } | null;
+    error: string | null;
+  };
+  searchInternshipsResults: {
+    status: LoadStatus;
+    data: {
+      total: number;
+      internships: InternshipData[];
     } | null;
     error: string | null;
   };

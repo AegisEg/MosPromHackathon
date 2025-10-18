@@ -23,6 +23,36 @@ use Throwable;
 
 class InternshipController extends Controller
 {
+    public function index(Request $request): JsonResponse {
+        try {
+            $internshipsDTOs = (new InternshipAction())->internshipList();
+            $internships    = [];
+    
+            foreach ($internshipsDTOs as $internshipDTO) {
+                $internships[] = $internshipDTO->toArray();
+            }
+
+            return (new ParentResponse(
+                data: $internships,
+                httpStatus: 200,
+                status: StatusEnum::OK,
+            ))->toResponse();
+        } catch (Throwable $e) {
+            $debugInfo = [
+                'error' => $e->getMessage(),
+                'file'  => $e->getFile(),
+                'line'  => $e->getLine(),
+            ];
+
+            return (new ParentResponse(
+                error: new Error(code: $e->getCode(), message: 'Непредвиденная ошибка при получении стажировок'),
+                httpStatus: 500,
+                debugInfo: $debugInfo,
+                status: StatusEnum::FAIL,
+            ))->toResponse();
+        }
+    }
+
     public function show(int $idInternship): JsonResponse {
         try {
             $internship = (new InternshipAction())->show($idInternship);

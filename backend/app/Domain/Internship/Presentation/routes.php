@@ -8,6 +8,8 @@ Route::group(['prefix' => 'internships'], function () {
     Route::get('/{idInternship}', [InternshipController::class, 'show'])
         ->name('internships.show');
     Route::group(['middleware' => ['auth:sanctum']], function () {
+        Route::get('/', [InternshipController::class, 'index'])
+            ->name('index');
         Route::post('/', [InternshipController::class, 'create'])
             ->name('internships.create')->middleware('institute');
         Route::put('/{idInternship}', [InternshipController::class, 'update'])

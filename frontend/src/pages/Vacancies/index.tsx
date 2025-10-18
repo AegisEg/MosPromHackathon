@@ -96,7 +96,6 @@ function Vacancies() {
     { value: EmploymentType.FULL_TIME.toString(), label: 'Полная занятость' },
     { value: EmploymentType.PART_TIME.toString(), label: 'Частичная занятость' },
     { value: EmploymentType.CONTRACT.toString(), label: 'Договор' },
-    { value: EmploymentType.INTERNSHIP.toString(), label: 'Стажировка' },
     { value: EmploymentType.FREELANCE.toString(), label: 'Фриланс' },
   ];
 
