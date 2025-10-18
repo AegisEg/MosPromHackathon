@@ -5,12 +5,11 @@ use App\Domain\Company\Presentation\Controller\CompanyController;
 use Illuminate\Support\Facades\Route;
 
 Route::group(['prefix' => 'companies'], function () {
-
     Route::get('/{id}', [CompanyController::class, 'show'])
         ->name('companies.show');
     Route::group(['middleware' => ['auth:sanctum']], function () {
         Route::get('/', [CompanyController::class, 'index'])
-        ->name('companies.index');
+            ->name('companies.index');
         Route::post('/store', [CompanyController::class, 'store'])
             ->name('companies.store')->middleware('company');
 
@@ -19,5 +18,8 @@ Route::group(['prefix' => 'companies'], function () {
 
         Route::delete('/delete/{id}', [CompanyController::class, 'destroy'])
             ->name('companies.destroy');
+
+        Route::post('/upload-logo', [CompanyController::class, 'uploadLogo'])
+            ->name('companies.upload-logo');
     });
 });

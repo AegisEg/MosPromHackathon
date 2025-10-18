@@ -28,6 +28,7 @@ class CompanyController extends Controller
         $user = $request->user();
         try {
             $companies = $this->companyAction->getCompaniesByUser($user);
+
             return (new ParentResponse(
                 data: $companies,
                 httpStatus: 200,
@@ -36,9 +37,10 @@ class CompanyController extends Controller
         } catch (NotFoundCompanyException $e) {
             $debugInfo = [
                 'error' => $e->getMessage(),
-                'file' => $e->getFile(),
-                'line' => $e->getLine(),
+                'file'  => $e->getFile(),
+                'line'  => $e->getLine(),
             ];
+
             return (new ParentResponse(
                 error: new Error(code: $e->getCode(), message: 'Компании не найдены'),
                 httpStatus: 404,
@@ -48,9 +50,10 @@ class CompanyController extends Controller
         } catch (\Throwable $e) {
             $debugInfo = [
                 'error' => $e->getMessage(),
-                'file' => $e->getFile(),
-                'line' => $e->getLine(),
+                'file'  => $e->getFile(),
+                'line'  => $e->getLine(),
             ];
+
             return (new ParentResponse(
                 error: new Error(code: $e->getCode(), message: 'Непредвиденная ошибка при получении компаний'),
                 httpStatus: 500,
@@ -62,11 +65,11 @@ class CompanyController extends Controller
 
     public function store(CompanyStoreRequest $request): JsonResponse {
         $user = $request->user();
-        
+
         if (!$user) {
             return response()->json([
                 'success' => false,
-                'message' => 'Пользователь не авторизован'
+                'message' => 'Пользователь не авторизован',
             ], 401);
         }
 
@@ -81,11 +84,12 @@ class CompanyController extends Controller
         } catch (QueryException $e) {
             $debugInfo = [
                 'error' => $e->getMessage(),
-                'file' => $e->getFile(),
-                'line' => $e->getLine(),
+                'file'  => $e->getFile(),
+                'line'  => $e->getLine(),
             ];
+
             return (new ParentResponse(
-                error: new Error(code: $e->getCode(), message: "Ошибка при создании компании"),
+                error: new Error(code: $e->getCode(), message: 'Ошибка при создании компании'),
                 httpStatus: 400,
                 debugInfo: $debugInfo,
                 status: StatusEnum::FAIL,
@@ -93,9 +97,10 @@ class CompanyController extends Controller
         } catch (\Throwable $e) {
             $debugInfo = [
                 'error' => $e->getMessage(),
-                'file' => $e->getFile(),
-                'line' => $e->getLine(),
+                'file'  => $e->getFile(),
+                'line'  => $e->getLine(),
             ];
+
             return (new ParentResponse(
                 error: new Error(code: $e->getCode(), message: 'Непредвиденная ошибка при создании резюме'),
                 httpStatus: 500,
@@ -105,21 +110,44 @@ class CompanyController extends Controller
         }
     }
 
-    public function show(int $id): JsonResponse
-    {
+    public function uploadLogo(Request $request): JsonResponse {
+        $request->validate([
+            'logo_file' => 'required|file|image|max:2048',
+        ]);
+        $logoFile = $request->file('logo_file');
+        $logoUrl  = $logoFile->store('companies', 'public');
+
+        if ($logoUrl) {
+            return (new ParentResponse(
+                data: ['logo_url' => $logoUrl],
+                httpStatus: 200,
+                status: StatusEnum::OK,
+            ))->toResponse();
+        }
+
+        return (new ParentResponse(
+            error: new Error(code: 500, message: 'Ошибка при загрузке логотипа'),
+            httpStatus: 500,
+            status: StatusEnum::FAIL,
+        ))->toResponse();
+    }
+
+    public function show(int $id): JsonResponse {
         try {
             $company = $this->companyAction->getCompany($id);
-        return (new ParentResponse(
-            data: $company,
+
+            return (new ParentResponse(
+                data: $company,
                 httpStatus: 200,
                 status: StatusEnum::OK,
             ))->toResponse();
         } catch (NotFoundCompanyException $e) {
             $debugInfo = [
                 'error' => $e->getMessage(),
-                'file' => $e->getFile(),
-                'line' => $e->getLine(),
+                'file'  => $e->getFile(),
+                'line'  => $e->getLine(),
             ];
+
             return (new ParentResponse(
                 error: new Error(code: $e->getCode(), message: 'Компания не найдена'),
                 httpStatus: 404,
@@ -129,9 +157,10 @@ class CompanyController extends Controller
         } catch (\Throwable $e) {
             $debugInfo = [
                 'error' => $e->getMessage(),
-                'file' => $e->getFile(),
-                'line' => $e->getLine(),
+                'file'  => $e->getFile(),
+                'line'  => $e->getLine(),
             ];
+
             return (new ParentResponse(
                 error: new Error(code: $e->getCode(), message: 'Непредвиденная ошибка при получении компании'),
                 httpStatus: 500,
@@ -143,12 +172,13 @@ class CompanyController extends Controller
 
     public function update(int $id, CompanyUpdateRequest $request): JsonResponse {
         try {
-            $user = $request->user();
+            $user      = $request->user();
             $companyId = $this->companyAction->updateCompany(
                 user: $user,
                 id: $id,
-                companyArray: $request->validated()
+                companyArray: $request->validated(),
             );
+
             return (new ParentResponse(
                 data: ['company_id' => $companyId],
                 httpStatus: 200,
@@ -157,9 +187,10 @@ class CompanyController extends Controller
         } catch (NotFoundCompanyException $e) {
             $debugInfo = [
                 'error' => $e->getMessage(),
-                'file' => $e->getFile(),
-                'line' => $e->getLine(),
+                'file'  => $e->getFile(),
+                'line'  => $e->getLine(),
             ];
+
             return (new ParentResponse(
                 error: new Error(code: $e->getCode(), message: 'Компания не найдена'),
                 httpStatus: 404,
@@ -169,9 +200,10 @@ class CompanyController extends Controller
         } catch (ForbiddenCompanyException $e) {
             $debugInfo = [
                 'error' => $e->getMessage(),
-                'file' => $e->getFile(),
-                'line' => $e->getLine(),
+                'file'  => $e->getFile(),
+                'line'  => $e->getLine(),
             ];
+
             return (new ParentResponse(
                 error: new Error(code: $e->getCode(), message: 'Действие запрещено для этого пользователя'),
                 httpStatus: 403,
@@ -181,9 +213,10 @@ class CompanyController extends Controller
         } catch (\Throwable $e) {
             $debugInfo = [
                 'error' => $e->getMessage(),
-                'file' => $e->getFile(),
-                'line' => $e->getLine(),
+                'file'  => $e->getFile(),
+                'line'  => $e->getLine(),
             ];
+
             return (new ParentResponse(
                 error: new Error(code: $e->getCode(), message: 'Непредвиденная ошибка при обновлении компании'),
                 httpStatus: 500,
@@ -198,8 +231,9 @@ class CompanyController extends Controller
             $user = $request->user();
             $this->companyAction->deleteCompany(
                 user: $user,
-                id: $id
+                id: $id,
             );
+
             return (new ParentResponse(
                 httpStatus: 204,
                 status: StatusEnum::OK,
@@ -207,9 +241,10 @@ class CompanyController extends Controller
         } catch (NotFoundCompanyException $e) {
             $debugInfo = [
                 'error' => $e->getMessage(),
-                'file' => $e->getFile(),
-                'line' => $e->getLine(),
+                'file'  => $e->getFile(),
+                'line'  => $e->getLine(),
             ];
+
             return (new ParentResponse(
                 error: new Error(code: $e->getCode(), message: 'Компания не найдена'),
                 httpStatus: 404,
@@ -219,9 +254,10 @@ class CompanyController extends Controller
         } catch (ForbiddenCompanyException $e) {
             $debugInfo = [
                 'error' => $e->getMessage(),
-                'file' => $e->getFile(),
-                'line' => $e->getLine(),
+                'file'  => $e->getFile(),
+                'line'  => $e->getLine(),
             ];
+
             return (new ParentResponse(
                 error: new Error(code: $e->getCode(), message: 'Действие запрещено для этого пользователя'),
                 httpStatus: 403,
@@ -231,9 +267,10 @@ class CompanyController extends Controller
         } catch (\Throwable $e) {
             $debugInfo = [
                 'error' => $e->getMessage(),
-                'file' => $e->getFile(),
-                'line' => $e->getLine(),
+                'file'  => $e->getFile(),
+                'line'  => $e->getLine(),
             ];
+
             return (new ParentResponse(
                 error: new Error(code: $e->getCode(), message: 'Непредвиденная ошибка при удалении компании'),
                 httpStatus: 500,
