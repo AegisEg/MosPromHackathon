@@ -8,7 +8,6 @@ use App\Domain\Resume\Application\Service\ResumeService;
 use App\Domain\SharedKernel\Services\DateHelper;
 use App\Domain\Vacancy\Application\Exceptions\ForbiddenVacancyException;
 use App\Domain\Vacancy\Application\Exceptions\VacancyNotFoundException;
-use App\Models\Favorite;
 use App\Models\Resume;
 use App\Models\User;
 use App\Models\Vacancies;
@@ -195,7 +194,10 @@ class ResumeAction {
             ];
         });
 
-        return $resumes->toArray();
+        return [
+            'total' => $favoriteResumes->count(),
+            'resumes' => $resumes->toArray(),
+        ];
     }
 
     public function createResume(User $user, array $resumeArray): int {

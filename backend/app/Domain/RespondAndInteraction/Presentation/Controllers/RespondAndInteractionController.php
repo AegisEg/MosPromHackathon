@@ -1,0 +1,78 @@
+<?php
+declare(strict_types=1);
+
+namespace App\Domain\RespondAndInteraction\Presentation\Controllers;
+
+use App\Domain\RespondAndInteraction\Application\Action\RespondAndInteractionAction;
+use App\Domain\RespondAndInteraction\Application\Exceptions\ForbiddenRespondException;
+use App\Domain\RespondAndInteraction\Application\Exceptions\RespondNotFoundException;
+use App\Domain\Resume\Application\Action\ResumeAction;
+use App\Domain\Resume\Application\Exception\ForbiddenResumeException;
+use App\Domain\Resume\Application\Exception\NotFoundResumeException;
+use App\Domain\Vacancy\Application\Exceptions\ForbiddenVacancyException;
+use App\Domain\Vacancy\Application\Exceptions\VacancyNotFoundException;
+use App\Domain\Resume\Presentation\Requests\ResumeRequest;
+use App\Domain\Resume\Presentation\Requests\ResumeUpdateRequest;
+use App\Domain\SharedKernel\Responses\Error;
+use App\Domain\SharedKernel\Responses\ParentResponse;
+use App\Domain\SharedKernel\Responses\StatusEnum;
+use App\Http\Controllers\Controller;
+use App\Models\Resume;
+use Illuminate\Database\QueryException;
+use Illuminate\Http\Request;
+use Illuminate\Http\JsonResponse;
+use Throwable;
+
+class RespondAndInteractionController extends Controller
+{
+    private RespondAndInteractionAction $respondAndInteractionAction;
+    public function __construct() {
+        $this->respondAndInteractionAction = new RespondAndInteractionAction();
+    }
+
+    public function show(int $vacancyId, Request $request): JsonResponse {
+        $user = $request->user();
+        try {
+            $responds = $this->respondAndInteractionAction->getRespondsByVacancy($user, $vacancyId);
+            return (new ParentResponse(
+                data: ['responds' => $responds],
+                httpStatus: 200,
+                status: StatusEnum::OK,
+            ))->toResponse();
+        } catch (ForbiddenRespondException $e) {
+            $debugInfo = [
+                'error' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ];
+            return (new ParentResponse(
+                error: new Error(code: $e->getCode(), message: $e->getMessage()),
+                httpStatus: 403,
+                status: StatusEnum::FAIL,
+                debugInfo: $debugInfo,
+            ))->toResponse();
+        } catch (RespondNotFoundException $e) {
+            $debugInfo = [
+                'error' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ];
+            return (new ParentResponse(
+                error: new Error(code: $e->getCode(), message: $e->getMessage()),
+                httpStatus: 404,
+                status: StatusEnum::FAIL,
+            ))->toResponse();
+        } catch (Throwable $e) {
+            $debugInfo = [
+                'error' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ];
+            return (new ParentResponse(
+                error: new Error(code: $e->getCode(), message: $e->getMessage()),
+                httpStatus: 500,
+                status: StatusEnum::FAIL,
+            ))->toResponse();
+        }
+    }
+}

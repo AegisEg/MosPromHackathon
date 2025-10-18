@@ -19,32 +19,18 @@ class FavoritesSeeder extends Seeder
         $vacancies = Vacancies::all();
         $resumes = Resume::all();
 
-        if ($vacancies->count() < 5 || $resumes->count() < 3) {
+        if ($vacancies->count() < 10 || $resumes->count() < 10) {
             $this->command->warn('Недостаточно вакансий или резюме. Сначала запустите VacanciesSeeder и ResumesSeeder.');
             return;
         }
 
         $favorites = [];
+        $targetCount = 50; // Целевое количество записей избранного
+        $attempts = 0;
+        $maxAttempts = 200; // Максимальное количество попыток
 
         // Создаем избранные связи между вакансиями и резюме
-        // Каждая вакансия может выбрать несколько резюме
-        foreach ($vacancies->take(20) as $vacancy) {
-            // Случайное количество резюме для каждой вакансии (от 1 до 3)
-            $resumeCount = rand(1, min(3, $resumes->count()));
-            $selectedResumes = $resumes->random($resumeCount);
-
-            foreach ($selectedResumes as $resume) {
-                $favorites[] = [
-                    'vacancy_id' => $vacancy->id,
-                    'resume_id' => $resume->id,
-                    'created_at' => now(),
-                    'updated_at' => now(),
-                ];
-            }
-        }
-
-        // Добавляем дополнительные случайные связи
-        for ($i = 0; $i < 15; $i++) {
+        while (count($favorites) < $targetCount && $attempts < $maxAttempts) {
             $vacancy = $vacancies->random();
             $resume = $resumes->random();
 
@@ -57,10 +43,12 @@ class FavoritesSeeder extends Seeder
                 $favorites[] = [
                     'vacancy_id' => $vacancy->id,
                     'resume_id' => $resume->id,
-                    'created_at' => now(),
-                    'updated_at' => now(),
+                    'created_at' => now()->subDays(rand(0, 30)), // Случайная дата в последние 30 дней
+                    'updated_at' => now()->subDays(rand(0, 30)),
                 ];
             }
+            
+            $attempts++;
         }
 
         // Вставляем все записи одним запросом
