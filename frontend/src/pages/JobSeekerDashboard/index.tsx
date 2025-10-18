@@ -301,12 +301,9 @@ const JobSeekerDashboard: React.FC = () => {
                                     {resumes.map((resume) => (
                                         <div key={resume.id} className="resume-card">
                                             <div className="resume-card__content">
-                                                <h3 className="resume-card__title">
-                                                    {resume.professionId ?
-                                                        professions.find(p => p.id === resume.professionId)?.name || 'Неизвестная профессия'
-                                                        : 'Резюме'
-                                                    }
-                                                </h3>
+                                                   <h3 className="resume-card__title">
+                                                       {resume.profession || 'Резюме'}
+                                                   </h3>
                                                 <div className="resume-card__details">
                                                     <p><strong>Город:</strong> {resume.city}</p>
                                                     <p><strong>Страна:</strong> {resume.country}</p>
@@ -341,12 +338,6 @@ const JobSeekerDashboard: React.FC = () => {
                             ) : (
                                 <div className="no-resume">
                                     <p>У вас пока нет резюме</p>
-                                    <Button
-                                        variant={ButtonType.RED}
-                                        onClick={() => setIsCreateModalOpen(true)}
-                                    >
-                                        Создать первое резюме
-                                    </Button>
                                 </div>
                             )}
                         </div>

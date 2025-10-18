@@ -280,11 +280,25 @@
     margin-bottom: 12px;
   }
 
-  &__salary {
-    font-size: 16px;
+  &__title {
+    font-size: 20px;
     font-weight: 600;
-    color: #8E8E93;
-    margin-top: 12px;
+    color: #1C1C1E;
+    margin: 0;
+    flex: 1;
+  }
+
+  &__header-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-left: 16px;
+  }
+
+  &__salary {
+    font-size: 18px;
+    font-weight: 600;
+    color: #BA0048;
     white-space: nowrap;
   }
 

@@ -11,6 +11,7 @@ export interface BackendResumeData {
     phone?: string;
     about?: string;
     profession_id?: number;
+    profession?: string; // Название профессии
     salary?: number;
     status?: boolean;
     created_at?: string;
@@ -55,6 +56,7 @@ export interface ResumeData {
     phone?: string;
     about?: string;
     professionId?: number;
+    profession?: string; // Название профессии
     salary?: number;
     status?: boolean;
     createdAt?: string;
