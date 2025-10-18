@@ -1,4 +1,4 @@
-import React, { Suspense } from 'react';
+import React, { Suspense, useState, useEffect, useRef } from 'react';
 import './style.scss';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import Loader from '../Loader/';
@@ -25,6 +25,66 @@ function renderFallback() {
 function AppRoutes() {
   const location = useLocation();
   const showHeaderAndFooter = !['/authorization', '/registration'].includes(location.pathname);
+  const footerRef = useRef<HTMLElement>(null);
+
+  // Состояние для кнопки "Вверх"
+  const [showScrollTop, setShowScrollTop] = useState(false);
+
+  // Здесь мне нужно получить сколько пикселей футера в высоту видно на экране
+  const [heightVisibleFooter, setHeightVisibleFooter] = useState(0);
+
+  useEffect(() => {
+    function updateFooterVisibility() {
+      if (!footerRef.current) {
+        setHeightVisibleFooter(0);
+        return;
+      }
+      const rect = footerRef.current.getBoundingClientRect();
+      const windowHeight = window.innerHeight;
+      const buttonHeight = 56;
+      const buttonDefaultBottom = 40;
+      const minGap = 20; // Минимальный отступ от footer
+      
+      // Если footer виден на экране
+      if (rect.top < windowHeight) {
+        // Вычисляем, сколько нужно поднять кнопку
+        const overlap = windowHeight - rect.top - buttonDefaultBottom - buttonHeight - minGap;
+        
+        if (overlap > 0) {
+          setHeightVisibleFooter(overlap);
+        } else {
+          setHeightVisibleFooter(0);
+        }
+      } else {
+        setHeightVisibleFooter(0);
+      }
+    }
+
+    updateFooterVisibility();
+    window.addEventListener('scroll', updateFooterVisibility, { passive: true });
+    window.addEventListener('resize', updateFooterVisibility, { passive: true });
+    return () => {
+      window.removeEventListener('scroll', updateFooterVisibility);
+      window.removeEventListener('resize', updateFooterVisibility);
+    };
+  }, []);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      // Показываем кнопку, если прокрутили больше 150px
+      setShowScrollTop(window.scrollY > 150);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const scrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    });
+  };
 
   return (
     <>
@@ -86,7 +146,34 @@ function AppRoutes() {
         } />
         </Routes>
       </div>
-      {showHeaderAndFooter && <Footer />}
+      
+      {showHeaderAndFooter && <Footer ref={footerRef} />}
+      
+      {/* Кнопка "Вверх" */}
+      {showScrollTop && (
+        <button 
+          className="scroll-to-top"
+          onClick={scrollToTop}
+          aria-label="Вернуться наверх"
+          style={{ bottom: `${heightVisibleFooter + 40}px` }}
+        >
+          <svg 
+            width="24" 
+            height="24" 
+            viewBox="0 0 24 24" 
+            fill="none" 
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path 
+              d="M12 19V5M12 5L5 12M12 5L19 12" 
+              stroke="white" 
+              strokeWidth="2" 
+              strokeLinecap="round" 
+              strokeLinejoin="round"
+            />
+          </svg>
+        </button>
+      )}
     </>
   );
 }

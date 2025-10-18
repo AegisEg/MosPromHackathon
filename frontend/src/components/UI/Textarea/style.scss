@@ -8,14 +8,9 @@
     font-weight: 500;
     font-size: 14px;
     line-height: 20px;
-    color: #C7C7CC;
+    color: #FFFFFF;
     transition: color 0.3s ease;
     cursor: default;
-  }
-
-  &__required {
-    color: #FF3B30;
-    margin-left: 4px;
   }
 
   &__wrapper {
@@ -28,8 +23,8 @@
     padding: 12px 16px;
     font-size: 16px;
     line-height: 24px;
-    color: #C7C7CC;
-    background: transparent;
+    color: #393649;
+    background: #FFFFFF;
     border: 2px solid #C7C7CC;
     border-radius: 12px;
     outline: none;
@@ -40,25 +35,23 @@
     cursor: pointer;
 
     &::placeholder {
-      color: #C7C7CC;
+      color: #929292;
       transition: color 0.3s ease;
     }
 
     &:focus {
-      border-color: #48484A;
-      color: #48484A;
-      background: transparent;
+      color: #393649;
+      background: #FFFFFF;
       cursor: text;
 
       &::placeholder {
-        color: #48484A;
+        color: #929292;
       }
     }
 
     &:disabled {
-      opacity: 0.5;
       cursor: not-allowed;
-      background: transparent;
+      background: #FFFFFF;
       resize: none;
     }
   }
@@ -66,52 +59,49 @@
   // Hover на весь контейнер
   &:hover:not(&--disabled):not(&--error) {
     .custom-textarea__label {
-      color: #48484A;
+      color: #FFFFFF;
     }
 
     .custom-textarea__field:not(:disabled) {
-      border-color: #48484A;
-      color: #48484A;
+      color: #393649;
 
       &::placeholder {
-        color: #48484A;
+        color: #929292;
       }
     }
 
     .custom-textarea__counter {
-      color: #48484A;
+      color: #393649;
     }
   }
 
   // Состояние фокуса
   &--focused:not(&--error) {
     .custom-textarea__label {
-      color: #48484A;
+      color: #FFFFFF;
     }
 
     .custom-textarea__field {
-      border-color: #48484A;
-      color: #48484A;
+      color: #393649;
     }
 
     .custom-textarea__counter {
-      color: #48484A;
+      color: #393649;
     }
   }
 
   // Состояние с заполненным значением
   &--has-value:not(&--error):not(&--focused) {
     .custom-textarea__label {
-      color: #48484A;
+      color: #FFFFFF;
     }
 
     .custom-textarea__field {
-      border-color: #48484A;
-      color: #48484A;
+      color: #393649;
     }
 
     .custom-textarea__counter {
-      color: #48484A;
+      color: #393649;
     }
   }
 
@@ -121,7 +111,7 @@
     bottom: 12px;
     font-size: 12px;
     line-height: 16px;
-    color: #C7C7CC;
+    color: #393649;
     background: transparent;
     pointer-events: none;
     transition: color 0.3s ease;
@@ -143,16 +133,9 @@
         border-color: #FF3B30;
       }
     }
-
-    .custom-textarea__label {
-      color: #FF3B30;
-    }
   }
 
   &--disabled {
-    .custom-textarea__label {
-      opacity: 0.5;
-    }
   }
 }
 

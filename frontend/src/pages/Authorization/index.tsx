@@ -11,6 +11,7 @@ import { saveTokenToStorage } from "../../redux/user/actions";
 import { useTypedDispatch } from "../../redux/store";
 import { resetValidation, validateEmail, validatePassword, validateValue } from "../../utils/validation";
 import { showErrorToast } from "../../utils/toast";
+import authBackground from '../../assets/auth_back.png';
 import { useSelector } from "react-redux";
 import { selectAuthData } from "../../redux/user/selectors";
 import { LoadStatus } from "../../utils/types";
@@ -59,7 +60,7 @@ function Authorization() {
     }
     
     return (
-        <div className="authorization-page">
+        <div className="authorization-page" style={{ backgroundImage: `url(${authBackground})` }}>
             <div className="container">
                 <div className="wrapper">
                     <div className="authorization-page__content">
@@ -84,7 +85,6 @@ function Authorization() {
                             }}
                             error={email.error}
                             disabled={email.isDisabled}
-                            required
                         />
                         <Password 
                             label="Пароль"
@@ -104,7 +104,6 @@ function Authorization() {
                             }}
                             error={password.error}
                             disabled={password.isDisabled}
-                            required
                         />
                         <div className="authorization-page__buttons">
                             <Button

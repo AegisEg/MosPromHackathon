@@ -9,14 +9,9 @@
     font-weight: 500;
     font-size: 14px;
     line-height: 20px;
-    color: #C7C7CC;
+    color: #FFFFFF;
     transition: color 0.3s ease;
     cursor: default;
-  }
-
-  &__required {
-    color: #FF3B30;
-    margin-left: 4px;
   }
 
   &__wrapper {
@@ -31,8 +26,8 @@
     padding: 12px 48px 12px 16px;
     font-size: 16px;
     line-height: 24px;
-    color: #C7C7CC;
-    background: transparent;
+    color: #393649;
+    background: #FFFFFF;
     border: 2px solid #C7C7CC;
     border-radius: 12px;
     outline: none;
@@ -41,25 +36,23 @@
     cursor: pointer;
 
     &::placeholder {
-      color: #C7C7CC;
+      color: #929292;
       transition: color 0.3s ease;
     }
 
     &:focus {
-      border-color: #48484A;
-      color: #48484A;
-      background: transparent;
+      color: #393649;
+      background: #FFFFFF;
       cursor: text;
 
       &::placeholder {
-        color: #48484A;
+        color: #929292;
       }
     }
 
     &:disabled {
-      opacity: 0.5;
       cursor: not-allowed;
-      background: transparent;
+      background: #FFFFFF;
     }
   }
 
@@ -79,7 +72,7 @@
   }
 
   &__icon {
-    color: #C7C7CC;
+    color: #393649;
     transition: color 0.3s ease;
   }
 
@@ -239,20 +232,19 @@
   // Hover на весь контейнер
   &:hover:not(&--disabled):not(&--error) {
     .custom-date__label {
-      color: #48484A;
+      color: #FFFFFF;
     }
 
     .custom-date__field:not(:disabled) {
-      border-color: #48484A;
-      color: #48484A;
+      color: #393649;
 
       &::placeholder {
-        color: #48484A;
+        color: #929292;
       }
     }
 
     .custom-date__icon {
-      color: #48484A;
+      color: #393649;
     }
   }
 
@@ -304,24 +296,12 @@
       }
     }
 
-    .custom-date__label {
-      color: #FF3B30;
-    }
-
     .custom-date__icon {
       color: #FF3B30;
     }
   }
 
   &--disabled {
-    .custom-date__label {
-      opacity: 0.5;
-    }
-
-    .custom-date__icon {
-      opacity: 0.5;
-    }
-
     .custom-date__icon-button {
       cursor: not-allowed;
     }

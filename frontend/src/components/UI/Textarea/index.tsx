@@ -12,7 +12,6 @@ interface TextareaProps {
   onFocus?: () => void;
   disabled?: boolean;
   error?: string;
-  required?: boolean;
   className?: string;
   autoFocus?: boolean;
   name?: string;
@@ -30,7 +29,6 @@ export default function Textarea({
   onFocus,
   disabled = false,
   error,
-  required = false,
   className = '',
   autoFocus = false,
   name,
@@ -75,7 +73,6 @@ export default function Textarea({
       {label && (
         <label className="custom-textarea__label">
           {label}
-          {required && <span className="custom-textarea__required">*</span>}
         </label>
       )}
       
