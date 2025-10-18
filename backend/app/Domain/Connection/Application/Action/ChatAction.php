@@ -111,4 +111,50 @@ class ChatAction
 
         return $chat->id;
     }
+
+    public function sendMessage(int $chatId, string $text, array $files, User $user): ChatMessageDTO {
+        $chat = Chat::find($chatId);
+
+        if (!$chat) {
+            throw new ChatNotFoundException();
+        }
+        try {
+            DB::beginTransaction();
+            $message = $chat->messages()->create([
+                'user_id' => $user->id,
+                'text'    => $text,
+            ]);
+            $filesDTO = [];
+
+            foreach ($files as $file) {
+                // $file — это UploadedFile
+                $storedPath = $file->store('public/chat/'.$chat->id);
+                $message->files()->create([
+                    'path'          => $storedPath,
+                    'original_name' => $file->getClientOriginalName(),
+                    'size'          => $file->getSize(),
+                    'mime_type'     => $file->getClientMimeType(),
+                ]);
+                $filesDTO[] = new ChatMessageFileDTO(
+                    path: asset(Storage::url($storedPath)),
+                    originalName: $file->getClientOriginalName(),
+                    size: $file->getSize(),
+                    mimeType: $file->getClientMimeType(),
+                );
+            }
+            DB::commit();
+        } catch (Throwable $e) {
+            DB::rollBack();
+            throw $e;
+        }
+
+        return new ChatMessageDTO(
+            id: $message->id,
+            text: $message->text,
+            createdAt: (string) $message->created_at,
+            userId: $user->id,
+            userName: $user->last_name.' '.$user->first_name,
+            files: $filesDTO,
+        );
+    }
 }

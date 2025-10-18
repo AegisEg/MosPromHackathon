@@ -9,9 +9,16 @@
     font-weight: 500;
     font-size: 14px;
     line-height: 20px;
-    color: #FFFFFF;
     transition: color 0.3s ease;
     cursor: default;
+
+    &--black {
+      color: #393649;
+    }
+
+    &--white {
+      color: #FFFFFF;
+    }
   }
 
   &__wrapper {

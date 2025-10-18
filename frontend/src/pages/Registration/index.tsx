@@ -127,6 +127,7 @@ const Registration: React.FC<RegistrationProps> = () => {
                     <div className="registration-page__form">
                         <Input
                             label="Фамилия"
+                            labelColor="white"
                             placeholder="Иванов"
                             value={surname.value}
                             onChange={(value) => setSurname({ ...surname, value, success: true, error: '' })}
@@ -145,6 +146,7 @@ const Registration: React.FC<RegistrationProps> = () => {
                         />
                         <Input
                             label="Имя"
+                            labelColor="white"
                             placeholder="Иван"
                             value={name.value}
                             onChange={(value) => setName({ ...name, value, success: true, error: '' })}
@@ -163,6 +165,7 @@ const Registration: React.FC<RegistrationProps> = () => {
                         />
                         <Input
                             label="Отчество"
+                            labelColor="white"
                             placeholder="Иванович"
                             value={patronymic.value}
                             onChange={(value) => setPatronymic({ ...patronymic, value, success: true, error: '' })}
@@ -179,6 +182,7 @@ const Registration: React.FC<RegistrationProps> = () => {
                         />
                         <Select
                             label="Роль"
+                            labelColor="white"
                             options={userRoleOptions}
                             value={userRoleOptions.find(opt => opt.value === String(userRoleId.value))}
                             onChange={(option: any) => setUserRoleId({ ...userRoleId, value: Number(option?.value || 0), success: true, error: '' })}
@@ -188,6 +192,7 @@ const Registration: React.FC<RegistrationProps> = () => {
                         />
                         <Input
                             label="E-mail"
+                            labelColor="white"
                             type="email"
                             placeholder="example@mail.com"
                             value={email.value}
@@ -208,6 +213,7 @@ const Registration: React.FC<RegistrationProps> = () => {
                         />
                         <Input
                             label="Пароль"
+                            labelColor="white"
                             type="password"
                             placeholder="********"
                             value={password.value}
@@ -228,6 +234,7 @@ const Registration: React.FC<RegistrationProps> = () => {
                         />
                         <Input
                             label="Повторите пароль"
+                            labelColor="white"
                             type="password"
                             placeholder="********"
                             value={confirmPassword.value}

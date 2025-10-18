@@ -1,21 +1,29 @@
 .custom-slider {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 8px;
   width: 100%;
 
   &__label {
-    font-size: 16px;
-    line-height: 24px;
-    color: #FFFFFF;
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 20px;
     transition: color 0.3s ease;
-    cursor: pointer;
+    cursor: default;
+
+    &--black {
+      color: #393649;
+    }
+
+    &--white {
+      color: #FFFFFF;
+    }
   }
 
   &__container {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 4px;
     padding: 0 2px;
   }
 
@@ -35,28 +43,6 @@
     animation: slideDown 0.2s ease;
   }
 
-  // Hover эффект на весь компонент
-  &:hover:not(&--disabled):not(&--error) {
-    .custom-slider__label {
-      color: #FFFFFF;
-    }
-
-    .custom-slider__limits {
-      color: #393649;
-    }
-  }
-
-  // Состояние focused
-  &--focused:not(&--disabled):not(&--error) {
-    .custom-slider__label {
-      color: #48484A;
-    }
-
-    .custom-slider__limits {
-      color: #48484A;
-    }
-  }
-
   // Состояние error
   &--error {
     .custom-slider__limits {
@@ -68,6 +54,11 @@
   &--disabled {
     .custom-slider__label {
       cursor: not-allowed;
+      opacity: 0.5;
+    }
+    
+    .custom-slider__limits {
+      opacity: 0.5;
     }
   }
 }

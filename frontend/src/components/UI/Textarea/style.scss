@@ -8,9 +8,16 @@
     font-weight: 500;
     font-size: 14px;
     line-height: 20px;
-    color: #FFFFFF;
     transition: color 0.3s ease;
     cursor: default;
+
+    &--black {
+      color: #393649;
+    }
+
+    &--white {
+      color: #FFFFFF;
+    }
   }
 
   &__wrapper {
@@ -58,10 +65,6 @@
 
   // Hover на весь контейнер
   &:hover:not(&--disabled):not(&--error) {
-    .custom-textarea__label {
-      color: #FFFFFF;
-    }
-
     .custom-textarea__field:not(:disabled) {
       color: #393649;
 
@@ -77,10 +80,6 @@
 
   // Состояние фокуса
   &--focused:not(&--error) {
-    .custom-textarea__label {
-      color: #FFFFFF;
-    }
-
     .custom-textarea__field {
       color: #393649;
     }
@@ -92,10 +91,6 @@
 
   // Состояние с заполненным значением
   &--has-value:not(&--error):not(&--focused) {
-    .custom-textarea__label {
-      color: #FFFFFF;
-    }
-
     .custom-textarea__field {
       color: #393649;
     }

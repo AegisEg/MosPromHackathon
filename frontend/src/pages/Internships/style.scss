@@ -3,7 +3,7 @@
   position: relative;
 
   .container {
-    padding: 0;
+    max-width: 1500px;
   }
 
   &__content {
@@ -15,26 +15,22 @@
   // Wrapper для правильного позиционирования фильтра
   &__wrapper {
     display: flex;
+    flex-direction: column;
     gap: 24px;
-    align-items: flex-start;
     position: relative;
   }
 
-  // Sidebar с фильтрами
+  // Фильтры
   &__filters {
-    width: 312px;
-    position: sticky;
-    top: 20px;
-    margin-left: calc(-312px - 24px);
-    align-self: flex-start;
+    width: 100%;
+    position: relative;
     background: #FFFFFF;
     border: 2px solid #C7C7CC;
     border-radius: 16px;
     padding: 24px;
-    max-height: calc(100vh - 40px);
-    overflow-y: auto;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   }
-
+  
   &__filters-title {
     font-size: 18px;
     line-height: 40px;
@@ -44,21 +40,26 @@
     margin: 0 0 24px 0;
   }
 
-  &__filters-group {
-    margin-bottom: 20px;
+  &__filters-content {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    align-items: end;
+  }
 
-    &:last-of-type {
-      margin-bottom: 0;
-    }
+  &__filters-group {
+    margin-bottom: 0;
   }
 
   &__filters-actions {
     margin-top: 24px;
     padding-top: 24px;
     border-top: 1px solid #C7C7CC;
+    display: flex;
+    gap: 12px;
 
     .button {
-      width: 100%;
+      flex: 1;
     }
   }
 
@@ -85,102 +86,219 @@
   display: flex;
   flex-direction: column;
 
-  &__company {
-    font-size: 16px;
-    font-weight: 500;
-    color: #393649;
-    margin: 0 0 8px 0;
+  &:hover {
+    border-color: #48484A;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    transform: translateY(-2px);
   }
 
-  &__location {
-    font-size: 14px;
-    color: #8E8E93;
-    margin: 0 0 16px 0;
+  &__header {
+    margin-bottom: 16px;
   }
 
   &__title {
     font-size: 20px;
-    font-weight: 500;
+    font-weight: 600;
     color: #393649;
-    margin: 0 0 12px 0;
+    margin: 0;
     line-height: 1.4;
   }
 
-  &__description {
-    font-size: 16px;
-    line-height: 1.5;
-    color: #393649;
-    margin: 0 0 auto 0;
+  &__info {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: auto;
     flex-grow: 1;
+  }
+
+  &__info-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  &__info-label {
+    font-size: 13px;
+    font-weight: 500;
+    color: #8E8E93;
+  }
+
+  &__info-value {
+    font-size: 16px;
+    color: #393649;
+    font-weight: 500;
   }
 
   &__published {
     font-size: 14px;
     color: #8E8E93;
     margin: 16px 0 0 0;
+    padding-top: 16px;
+    border-top: 1px solid #F2F2F7;
+  }
+}
+
+.no-internships {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 60px 20px;
+  color: #8E8E93;
+
+  p {
+    margin: 0 0 20px 0;
+    font-size: 18px;
+  }
+}
+
+.internships-loading {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  color: #8E8E93;
+
+  p {
+    margin: 16px 0 0 0;
+    font-size: 16px;
+  }
+}
+
+.search-error {
+  background: #FFEBEE;
+  border: 1px solid #FFCDD2;
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 20px;
+  color: #C62828;
+
+  p {
+    margin: 0;
+    font-size: 14px;
   }
 }
 
 // Адаптивность
-@media (max-width: 1600px) {
-  .internships-page {
-    &__filters {
-      left: 20px;
-      position: fixed;
-    }
-  }
-}
-
 @media (max-width: 1200px) {
   .internships-page {
     &__list {
       grid-template-columns: repeat(2, 1fr);
     }
-  }
-}
 
-@media (max-width: 1024px) {
-  .internships-page {
-    &__wrapper {
-      flex-direction: column;
-    }
-
-    &__filters {
-      width: 100%;
-      position: relative;
-      left: auto;
-      top: auto;
-      margin-left: 0;
-    }
-
-    &__filters-sticky {
-      position: relative;
-      top: auto;
-      max-height: none;
+    &__filters-content {
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 16px;
     }
   }
 }
 
 @media (max-width: 768px) {
   .internships-page {
+    margin: 20px 0;
+
+    &__content {
+      padding: 0 16px;
+    }
+
     &__filters {
-      padding: 20px;
+      padding: 16px;
+      border-radius: 12px;
     }
 
     &__filters-title {
-      font-size: 20px;
+      font-size: 18px;
+      margin-bottom: 16px;
+    }
+
+    &__filters-content {
+      grid-template-columns: 1fr;
+      gap: 16px;
+    }
+
+    &__filters-actions {
+      margin-top: 16px;
+      padding-top: 16px;
+      flex-direction: column;
+      gap: 8px;
+
+      .button {
+        flex: none;
+      }
     }
 
     &__list {
       grid-template-columns: 1fr;
+      gap: 12px;
     }
   }
 
   .internship-card {
-    padding: 20px;
+    padding: 16px;
+    border-radius: 12px;
 
     &__title {
       font-size: 18px;
+    }
+
+    &__info-label {
+      font-size: 12px;
+    }
+
+    &__info-value {
+      font-size: 14px;
+    }
+
+    &__published {
+      font-size: 13px;
+      margin-top: 12px;
+      padding-top: 12px;
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .internships-page {
+    &__filters {
+      padding: 12px;
+      margin-bottom: 12px;
+    }
+
+    &__filters-title {
+      font-size: 16px;
+      margin-bottom: 12px;
+    }
+
+    &__filters-group {
+      margin-bottom: 12px;
+    }
+
+    &__filters-actions {
+      margin-top: 12px;
+      padding-top: 12px;
+      flex-direction: column;
+      gap: 8px;
+
+      .button {
+        flex: none;
+      }
+    }
+  }
+
+  .internship-card {
+    padding: 12px;
+
+    &__title {
+      font-size: 16px;
+    }
+
+    &__info-label {
+      font-size: 11px;
+    }
+
+    &__info-value {
+      font-size: 13px;
     }
   }
 }

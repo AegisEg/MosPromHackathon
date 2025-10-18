@@ -4,6 +4,7 @@ import { useState } from 'react';
 
 interface PasswordProps {
   label?: string;
+  labelColor?: 'black' | 'white';
   placeholder?: string;
   value?: string;
   defaultValue?: string;
@@ -20,6 +21,7 @@ interface PasswordProps {
 
 export default function Password({
   label,
+  labelColor = 'black',
   placeholder,
   value: controlledValue,
   defaultValue = '',
@@ -70,7 +72,7 @@ export default function Password({
   return (
     <div className={inputClasses}>
       {label && (
-        <label className="custom-password__label">
+        <label className={`custom-password__label custom-password__label--${labelColor}`}>
           {label}
         </label>
       )}

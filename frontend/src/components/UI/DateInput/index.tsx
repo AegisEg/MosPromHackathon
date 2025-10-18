@@ -6,6 +6,7 @@ import { useId, useState } from "react"
 
 interface DateProps {
   label?: string;
+  labelColor?: 'black' | 'white';
   placeholder?: string;
   value?: string;
   onChange?: (value: string) => void;
@@ -19,6 +20,7 @@ interface DateProps {
 
 export default function DateInput({
   label,
+  labelColor = 'black',
   placeholder = 'ДД.ММ.ГГГГ',
   value,
   onChange,
@@ -83,7 +85,7 @@ export default function DateInput({
   return (
     <div className={dateClasses}>
         {label && (
-          <label className="custom-date__label" {...api.getLabelProps()}>
+          <label className={`custom-date__label custom-date__label--${labelColor}`} {...api.getLabelProps()}>
             {label}
           </label>
         )}
