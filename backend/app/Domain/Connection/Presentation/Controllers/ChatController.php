@@ -59,6 +59,21 @@ class ChatController extends Controller
     }
 
     public function sendMessage(int $id, Request $request) {
-        return response()->json(['message' => 'Message sent']);
+        $requestData = $request->validate([
+            'text'    => 'required|string|max:255',
+            'files'   => 'nullable',
+            'files.*' => 'file|mimes:jpg,png,pdf,doc,docx,xls,xlsx,ppt,pptx|max:2048',
+        ]);
+        $user  = $request->user();
+        $text  = (string) $requestData['text'];
+        $files = $request->file('files') ?? [];
+
+        $message = (new ChatAction())->sendMessage($id, $text, $files, $user);
+
+        return (new ParentResponse(
+            data: $message->toArray(),
+            httpStatus: 200,
+            status: StatusEnum::OK,
+        ))->toResponse();
     }
 }
