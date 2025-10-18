@@ -338,12 +338,6 @@ const JobSeekerDashboard: React.FC = () => {
                             ) : (
                                 <div className="no-resume">
                                     <p>У вас пока нет резюме</p>
-                                    <Button
-                                        variant={ButtonType.RED}
-                                        onClick={() => setIsCreateModalOpen(true)}
-                                    >
-                                        Создать первое резюме
-                                    </Button>
                                 </div>
                             )}
                         </div>
