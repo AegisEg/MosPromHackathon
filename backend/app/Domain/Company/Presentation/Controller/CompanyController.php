@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace App\Domain\Company\Presentation\Controller;
 
 use App\Domain\Company\Application\Action\CompanyAction;
+use App\Domain\Company\Application\Exceptions\ForbiddenCompanyException;
 use App\Domain\Company\Application\Exceptions\NotFoundCompanyException;
 use App\Domain\Company\Presentation\Requests\CompanyStoreRequest;
 use App\Domain\Company\Presentation\Requests\CompanyUpdateRequest;
@@ -13,6 +14,7 @@ use App\Domain\SharedKernel\Responses\StatusEnum;
 use App\Http\Controllers\Controller;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
 class CompanyController extends Controller
 {
@@ -20,6 +22,42 @@ class CompanyController extends Controller
 
     public function __construct() {
         $this->companyAction = new CompanyAction();
+    }
+
+    public function index(Request $request): JsonResponse {
+        $user = $request->user();
+        try {
+            $companies = $this->companyAction->getCompaniesByUser($user);
+            return (new ParentResponse(
+                data: $companies,
+                httpStatus: 200,
+                status: StatusEnum::OK,
+            ))->toResponse();
+        } catch (NotFoundCompanyException $e) {
+            $debugInfo = [
+                'error' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ];
+            return (new ParentResponse(
+                error: new Error(code: $e->getCode(), message: 'Компании не найдены'),
+                httpStatus: 404,
+                debugInfo: $debugInfo,
+                status: StatusEnum::FAIL,
+            ))->toResponse();
+        } catch (\Throwable $e) {
+            $debugInfo = [
+                'error' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ];
+            return (new ParentResponse(
+                error: new Error(code: $e->getCode(), message: 'Непредвиденная ошибка при получении компаний'),
+                httpStatus: 500,
+                debugInfo: $debugInfo,
+                status: StatusEnum::FAIL,
+            ))->toResponse();
+        }
     }
 
     public function store(CompanyStoreRequest $request): JsonResponse {
@@ -105,7 +143,12 @@ class CompanyController extends Controller
 
     public function update(int $id, CompanyUpdateRequest $request): JsonResponse {
         try {
-            $companyId = $this->companyAction->updateCompany($id, $request->validated());
+            $user = $request->user();
+            $companyId = $this->companyAction->updateCompany(
+                user: $user,
+                id: $id,
+                companyArray: $request->validated()
+            );
             return (new ParentResponse(
                 data: ['company_id' => $companyId],
                 httpStatus: 200,
@@ -120,6 +163,18 @@ class CompanyController extends Controller
             return (new ParentResponse(
                 error: new Error(code: $e->getCode(), message: 'Компания не найдена'),
                 httpStatus: 404,
+                debugInfo: $debugInfo,
+                status: StatusEnum::FAIL,
+            ))->toResponse();
+        } catch (ForbiddenCompanyException $e) {
+            $debugInfo = [
+                'error' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ];
+            return (new ParentResponse(
+                error: new Error(code: $e->getCode(), message: 'Действие запрещено для этого пользователя'),
+                httpStatus: 403,
                 debugInfo: $debugInfo,
                 status: StatusEnum::FAIL,
             ))->toResponse();
@@ -138,9 +193,13 @@ class CompanyController extends Controller
         }
     }
 
-    public function destroy(int $id): JsonResponse {
+    public function destroy(int $id, Request $request): JsonResponse {
         try {
-            $this->companyAction->deleteCompany($id);
+            $user = $request->user();
+            $this->companyAction->deleteCompany(
+                user: $user,
+                id: $id
+            );
             return (new ParentResponse(
                 httpStatus: 204,
                 status: StatusEnum::OK,
@@ -154,6 +213,18 @@ class CompanyController extends Controller
             return (new ParentResponse(
                 error: new Error(code: $e->getCode(), message: 'Компания не найдена'),
                 httpStatus: 404,
+                debugInfo: $debugInfo,
+                status: StatusEnum::FAIL,
+            ))->toResponse();
+        } catch (ForbiddenCompanyException $e) {
+            $debugInfo = [
+                'error' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ];
+            return (new ParentResponse(
+                error: new Error(code: $e->getCode(), message: 'Действие запрещено для этого пользователя'),
+                httpStatus: 403,
                 debugInfo: $debugInfo,
                 status: StatusEnum::FAIL,
             ))->toResponse();
