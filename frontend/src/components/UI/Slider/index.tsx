@@ -4,6 +4,7 @@ import './style.scss';
 
 interface SliderProps extends Omit<MuiSliderProps, 'color'> {
   label?: string;
+  labelColor?: 'black' | 'white';
   error?: string;
   formatValue?: (value: number) => string;
 }
@@ -58,6 +59,7 @@ const StyledSlider = styled(MuiSlider, {
 
 export default function Slider({
   label,
+  labelColor = 'black',
   error,
   formatValue,
   className = '',
@@ -65,13 +67,11 @@ export default function Slider({
   max = 100,
   disabled = false,
   valueLabelDisplay = 'auto',
+  onChange,
   ...muiSliderProps
 }: SliderProps) {
-  const [isFocused, setIsFocused] = React.useState(false);
-
   const sliderClasses = [
     'custom-slider',
-    isFocused && 'custom-slider--focused',
     disabled && 'custom-slider--disabled',
     error && 'custom-slider--error',
     className,
@@ -79,14 +79,29 @@ export default function Slider({
 
   const valueLabelFormat = formatValue || muiSliderProps.valueLabelFormat;
 
+  // Проверяем, является ли слайдер range slider (массив значений)
+  const isRangeSlider = Array.isArray(muiSliderProps.value);
+
+  // Обработчик изменения с валидацией для range slider
+  const handleChange = (event: Event, newValue: number | number[], activeThumb: number) => {
+    if (onChange) {
+      // Для range slider проверяем, что левый ползунок не превышает правый
+      if (Array.isArray(newValue) && newValue.length === 2) {
+        const [minVal, maxVal] = newValue;
+        if (minVal <= maxVal) {
+          onChange(event, newValue, activeThumb);
+        }
+      } else {
+        // Для обычного slider просто передаем значение
+        onChange(event, newValue, activeThumb);
+      }
+    }
+  };
+
   return (
-    <div 
-      className={sliderClasses}
-      onMouseEnter={() => !disabled && setIsFocused(true)}
-      onMouseLeave={() => setIsFocused(false)}
-    >
+    <div className={sliderClasses}>
       {label && (
-        <label className="custom-slider__label">
+        <label className={`custom-slider__label custom-slider__label--${labelColor}`}>
           {label}
         </label>
       )}
@@ -100,6 +115,8 @@ export default function Slider({
           error={!!error}
           valueLabelDisplay={valueLabelDisplay}
           valueLabelFormat={valueLabelFormat}
+          onChange={handleChange}
+          disableSwap={isRangeSlider}
         />
 
         <div className="custom-slider__limits">

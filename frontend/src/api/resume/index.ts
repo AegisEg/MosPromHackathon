@@ -34,6 +34,7 @@ export const getUserResumes = (): Promise<ResumeData[]> => {
                 phone: resume.phone,
                 about: resume.about,
                 professionId: resume.profession_id,
+                profession: resume.profession, // Добавляем название профессии
                 salary: resume.salary,
                 status: resume.status,
                 createdAt: resume.created_at,

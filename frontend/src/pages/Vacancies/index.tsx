@@ -21,6 +21,7 @@ import Button, { ButtonType } from '../../components/UI/Button';
 import { DefaultValue } from '../../types/default.types';
 import HR from '../../components/default/HR';
 import Loader from '../../components/default/Loader';
+import RespondButton from '../../components/UI/RespondButton';
 
 function Vacancies() {
   const dispatch = useTypedDispatch();
@@ -96,7 +97,6 @@ function Vacancies() {
     { value: EmploymentType.FULL_TIME.toString(), label: 'Полная занятость' },
     { value: EmploymentType.PART_TIME.toString(), label: 'Частичная занятость' },
     { value: EmploymentType.CONTRACT.toString(), label: 'Договор' },
-    { value: EmploymentType.INTERNSHIP.toString(), label: 'Стажировка' },
     { value: EmploymentType.FREELANCE.toString(), label: 'Фриланс' },
   ];
 
@@ -263,17 +263,20 @@ function Vacancies() {
                     <div key={vacancy.id} className="vacancy-card">
                       <div className="vacancy-card__header">
                         <h3 className="vacancy-card__title">{vacancy.title}</h3>
+                        <div className="vacancy-card__header-right">
+                          <RespondButton vacancyId={vacancy.id!} />
+                        </div>
                       </div>
                       <p className="vacancy-card__profession">
                         {getProfessionName(vacancy.professionId || 0)}
                       </p>
-                      <p className="vacancy-card__description">{vacancy.description}</p>
                       {vacancy.salaryFrom && (
-                          <div className="vacancy-card__salary">
-                            {vacancy.salaryFrom.toLocaleString()} ₽
-                            {vacancy.salaryTo && ` - ${vacancy.salaryTo.toLocaleString()} ₽`}
-                          </div>
-                        )}
+                            <div className="vacancy-card__salary">
+                              {vacancy.salaryFrom.toLocaleString()} ₽
+                              {vacancy.salaryTo && ` - ${vacancy.salaryTo.toLocaleString()} ₽`}
+                            </div>
+                          )}
+                      <p className="vacancy-card__description">{vacancy.description}</p>
                       <div className="vacancy-card__details">
                         <span className="vacancy-card__employment">
                           {getEmploymentTypeLabel(vacancy.employmentType || EmploymentType.FULL_TIME)}

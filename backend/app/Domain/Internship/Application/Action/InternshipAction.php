@@ -16,6 +16,25 @@ class InternshipAction
 {
     public function __construct() {}
 
+    public function internshipList(): array {
+        $internships    = Internship::all();
+        $internshipsDTO = [];
+
+        foreach ($internships as $internship) {
+            $internshipsDTO[] = new ShowInternshipDTO(
+                id: $internship->id,
+                speciality: $internship->speciality,
+                countStudents: $internship->count_students,
+                startDatePeriod: $internship->start_date_period,
+                endDatePeriod: $internship->end_date_period,
+                createdAt: $internship->created_at,
+                updatedAt: $internship->updated_at,
+            );
+        }
+
+        return $internshipsDTO;
+    }
+
     public function show(int $idInternship): ShowInternshipDTO {
         $internship = Internship::find($idInternship);
 

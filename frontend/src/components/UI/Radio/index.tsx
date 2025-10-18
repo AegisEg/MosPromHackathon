@@ -10,6 +10,7 @@ interface RadioOption {
 
 interface RadioProps {
   label?: string;
+  labelColor?: 'black' | 'white';
   options: RadioOption[];
   value?: string;
   defaultValue?: string;
@@ -23,6 +24,7 @@ interface RadioProps {
 
 export default function Radio({
   label,
+  labelColor = 'black',
   options,
   value: controlledValue,
   defaultValue = '',
@@ -57,7 +59,7 @@ export default function Radio({
   return (
     <div className={radioClasses}>
       {label && (
-        <div className="custom-radio__label">
+        <div className={`custom-radio__label custom-radio__label--${labelColor}`}>
           {label}
         </div>
       )}
