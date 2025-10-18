@@ -40,23 +40,15 @@ function AppRoutes() {
       }
       const rect = footerRef.current.getBoundingClientRect();
       const windowHeight = window.innerHeight;
-      const buttonHeight = 56;
       const buttonDefaultBottom = 40;
-      const minGap = 20; // Минимальный отступ от footer
-      
-      // Если footer виден на экране
-      if (rect.top < windowHeight) {
-        // Вычисляем, сколько нужно поднять кнопку
-        const overlap = windowHeight - rect.top - buttonDefaultBottom - buttonHeight - minGap;
-        
-        if (overlap > 0) {
-          setHeightVisibleFooter(overlap);
-        } else {
-          setHeightVisibleFooter(0);
-        }
-      } else {
-        setHeightVisibleFooter(0);
+      const minGap = 20;
+      let visibleFooter = 0;
+      if (rect.top < windowHeight && rect.bottom > 0) {
+        const visibleTop = Math.max(rect.top, 0);
+        const visibleBottom = Math.min(rect.bottom, windowHeight);
+        visibleFooter = Math.max(0, visibleBottom - visibleTop);
       }
+      setHeightVisibleFooter(visibleFooter + buttonDefaultBottom + minGap);
     }
 
     updateFooterVisibility();
@@ -154,7 +146,7 @@ function AppRoutes() {
           className="scroll-to-top"
           onClick={scrollToTop}
           aria-label="Вернуться наверх"
-          style={{ bottom: `${heightVisibleFooter + 40}px` }}
+          style={{ bottom: `${heightVisibleFooter}px` }}
         >
           <svg 
             width="24" 
