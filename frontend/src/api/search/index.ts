@@ -1,4 +1,5 @@
 import api from "..";
+import { mapBackendInternshipsDataToRedux } from "../../utils/internshipDataMapper";
 
 // Вспомогательная функция для удаления пустых значений
 const removeEmptyParams = (params: any): any => {
@@ -65,7 +66,12 @@ export const searchInternships = (params: SearchInternshipsParams): Promise<any>
         .get('search/internships', { params: cleanedParams })
         .then((response) => {
             console.log('Search internships API response:', response.data);
-            return response.data.data || {};
+            const data = response.data.data || {};
+            // Маппим данные из snake_case в camelCase
+            if (data.internships && Array.isArray(data.internships)) {
+                data.internships = mapBackendInternshipsDataToRedux(data.internships);
+            }
+            return data;
         })
         .catch((error) => {
             console.error('Search internships error:', error);
