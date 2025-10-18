@@ -11,4 +11,6 @@ Route::group(['prefix' => 'chat','middleware' => ['auth:sanctum']], function () 
         ->name('chat.show');
     Route::post('/{id}/message', [ChatController::class, 'sendMessage'])
         ->name('chat.send-message');
+    Route::get('/{chatId}/messages', [ChatController::class, 'updateChatMessages'])
+        ->name('chat.update-chat-messages');
 });

@@ -157,4 +157,36 @@ class ChatAction
             files: $filesDTO,
         );
     }
+
+    public function updateChatMessages(int $chatId, int $lastMessageId, User $user): array {
+        $chat = Chat::find($chatId);
+
+        if (!$chat) {
+            throw new ChatNotFoundException();
+        }
+
+        $companyUserId = $chat->respond->vacancy->company->user_id ?? null;
+
+        if (($chat->respond->resume->user_id ?? null) !== $user->id && $companyUserId !== $user->id) {
+            throw new ForbiddenChatException();
+        }
+
+        $messages = $chat->messages()->where('id', '>', $lastMessageId)->get();
+
+        return $messages->map(static function ($m) {
+            return new ChatMessageDTO(
+                id: $m->id,
+                text: $m->text,
+                createdAt: (string) $m->created_at,
+                userId: $m->user?->id,
+                userName: $m->user ? ($m->user->last_name.' '.$m->user->first_name) : null,
+                files: $m->files->map(static fn ($f) => new ChatMessageFileDTO(
+                    path: asset(Storage::url($f->path)),
+                    originalName: $f->original_name,
+                    size: $f->size,
+                    mimeType: $f->mime_type,
+                ))->toArray(),
+            );
+        })->toArray();
+    }
 }
