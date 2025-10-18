@@ -15,6 +15,14 @@ class VacancyAction
 {
     public function __construct() {}
 
+    public function getVacanciesByUser(User $user): array {
+        $vacancies = Vacancies::where('user_id', $user->id)->get();
+        if (!$vacancies) {
+            throw new VacancyNotFoundException();
+        }
+        return $vacancies->toArray();
+    }
+
     public function show(int $idVacancy): ShowVacancyDTO {
         $vacancy = Vacancies::find($idVacancy);
 

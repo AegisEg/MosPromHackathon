@@ -21,6 +21,41 @@ use Throwable;
 
 class VacancyController extends Controller
 {
+    public function index(Request $request): JsonResponse {
+        $user = $request->user();
+        try {
+            $vacancies = (new VacancyAction())->getVacanciesByUser($user);
+            return (new ParentResponse(
+                data: $vacancies,
+                httpStatus: 200,
+                status: StatusEnum::OK,
+            ))->toResponse();
+        } catch (VacancyNotFoundException $e) {
+            $debugInfo = [
+                'error' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ];
+            return (new ParentResponse(
+                error: new Error(code: $e->getCode(), message: 'Вакансии не найдены'),
+                httpStatus: 404,
+                debugInfo: $debugInfo,
+                status: StatusEnum::FAIL,
+            ))->toResponse();
+        } catch (Throwable $e) {
+            $debugInfo = [
+                'error' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ];
+            return (new ParentResponse(
+                error: new Error(code: $e->getCode(), message: 'Непредвиденная ошибка при получении вакансий'),
+                httpStatus: 500,
+                debugInfo: $debugInfo,
+                status: StatusEnum::FAIL,
+            ))->toResponse();
+        }
+    }
     public function show(int $idVacancy): JsonResponse {
         try {
             $vacancy = (new VacancyAction())->show($idVacancy);
