@@ -4,31 +4,38 @@
 
   .container {
     max-width: 1500px;
+    margin: 0 auto;
+    padding: 0 20px;
   }
 
   &__content {
     position: relative;
-    max-width: 1200px;
-    margin: 0 auto;
+    width: 100%;
   }
 
-  // Wrapper для правильного позиционирования фильтра
+  // Wrapper для правильного позиционирования фильтра и контента
   &__wrapper {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     gap: 24px;
     position: relative;
+    align-items: flex-start;
   }
 
   // Фильтры
   &__filters {
-    width: 100%;
-    position: relative;
+    width: 300px;
+    min-width: 300px;
+    position: sticky;
+    top: 20px;
+    align-self: flex-start;
     background: #FFFFFF;
     border: 2px solid #C7C7CC;
     border-radius: 16px;
     padding: 24px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    max-height: calc(100vh - 40px);
+    overflow-y: auto;
   }
   
   &__filters-title {
@@ -41,10 +48,9 @@
   }
 
   &__filters-content {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    display: flex;
+    flex-direction: column;
     gap: 20px;
-    align-items: end;
   }
 
   &__filters-group {
@@ -56,10 +62,11 @@
     padding-top: 24px;
     border-top: 1px solid #C7C7CC;
     display: flex;
+    flex-direction: column;
     gap: 12px;
 
     .button {
-      flex: 1;
+      width: 100%;
     }
   }
 
@@ -71,7 +78,15 @@
   }
 
   & .inner-wrapper {
-    width: 100%;
+    flex: 1;
+    min-width: 0;
+  }
+
+  & .inner-wrapper_title {
+    font-size: 20px;
+    font-weight: 600;
+    color: #393649;
+    margin-bottom: 24px;
   }
 }
 
@@ -179,11 +194,6 @@
     &__list {
       grid-template-columns: repeat(2, 1fr);
     }
-
-    &__filters-content {
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-      gap: 16px;
-    }
   }
 }
 
@@ -191,13 +201,22 @@
   .internships-page {
     margin: 20px 0;
 
-    &__content {
+    .container {
       padding: 0 16px;
     }
 
+    &__wrapper {
+      flex-direction: column;
+    }
+
     &__filters {
+      width: 100%;
+      min-width: unset;
+      position: relative;
+      top: unset;
       padding: 16px;
       border-radius: 12px;
+      max-height: none;
     }
 
     &__filters-title {
@@ -206,7 +225,7 @@
     }
 
     &__filters-content {
-      grid-template-columns: 1fr;
+      flex-direction: column;
       gap: 16px;
     }
 
@@ -217,7 +236,7 @@
       gap: 8px;
 
       .button {
-        flex: none;
+        width: 100%;
       }
     }
 
@@ -255,7 +274,6 @@
   .internships-page {
     &__filters {
       padding: 12px;
-      margin-bottom: 12px;
     }
 
     &__filters-title {
@@ -264,7 +282,7 @@
     }
 
     &__filters-group {
-      margin-bottom: 12px;
+      margin-bottom: 0;
     }
 
     &__filters-actions {
@@ -274,7 +292,7 @@
       gap: 8px;
 
       .button {
-        flex: none;
+        width: 100%;
       }
     }
   }
