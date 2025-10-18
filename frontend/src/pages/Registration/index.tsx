@@ -95,10 +95,9 @@ const Registration: React.FC<RegistrationProps> = () => {
             if (result && result.token) {
                 dispatch(saveTokenToStorage(result.token));
                 showErrorToast('Регистрация прошла успешно!');
-                navigate('/protected');
+                navigate('/auth-proccess');
             }
         } catch (error: any) {
-            console.log('error', error);
             const errorMessage = error.response?.data?.error?.message || 'Произошла ошибка при регистрации';
             showErrorToast(errorMessage);
         } 

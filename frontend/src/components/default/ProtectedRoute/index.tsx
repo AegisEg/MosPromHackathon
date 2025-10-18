@@ -11,10 +11,10 @@ interface ProtectedRouteProps {
 
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
   const {token, status} = useSelector(selectAuthData);
-
+  
   if (status === LoadStatus.IN_PROGRESS) return <Loader />;
 
-  if ((status === LoadStatus.SUCCESS || status === LoadStatus.ERROR) && !token) {
+  if (!token) {
     return <Navigate to="/authorization" replace />;
   }
 

@@ -6,6 +6,7 @@ import { LoadStatus } from "../../../utils/types";
 import { getUserData } from "../../../api/user";
 import { getUserDataAction } from "../../../redux/user/actions";
 import { useTypedDispatch } from "../../../redux/store";
+import { useNavigate } from "react-router-dom";
 
 
 export const AuthorizationProxy = () => {
@@ -16,8 +17,8 @@ export const AuthorizationProxy = () => {
     useEffect(() => {
         if (token && status === LoadStatus.SUCCESS) {
             dispatch(getUserDataAction());
-        } 
-    }, []);
+        }
+    }, [token, status]);
     
     return (
         <div className="authorization-proxy">

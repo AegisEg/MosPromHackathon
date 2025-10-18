@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import Input from "../../components/UI/Input";
 import Button from "../../components/UI/Button";
 import { DefaultValue } from "../../types/default.types";
@@ -22,20 +22,25 @@ function Authorization() {
 
     const {token, status} = useSelector(selectAuthData);
 
-    useEffect(() => {
+    // Все useState хуки должны быть в начале компонента
+    const [email, setEmail] = useState<DefaultValue<string>>({ value: '', success: false, error: '', isDisabled: false });
+    const [password, setPassword] = useState<DefaultValue<string>>({ value: '', success: false, error: '', isDisabled: false });
+    const [isValidateSuccess, setIsValidateSuccess] = useState<boolean>(false);
+
+    const handleRedirect = useCallback(() => {
         if (token && status === LoadStatus.SUCCESS) {
             navigate('/auth-proccess');
         }
     }, [token, status, navigate]);
 
-    // Показываем загрузку пока проверяем токен
-    if (status === LoadStatus.IN_PROGRESS) {
-        return <div>Загрузка...</div>;
-    }
-
-    const [email, setEmail] = useState<DefaultValue<string>>({ value: '', success: false, error: '', isDisabled: false });
-    const [password, setPassword] = useState<DefaultValue<string>>({ value: '', success: false, error: '', isDisabled: false });
-    const [isValidateSuccess, setIsValidateSuccess] = useState<boolean>(false);
+    useEffect(() => {
+        // Используем setTimeout для отложенного выполнения навигации
+        const timer = setTimeout(() => {
+            handleRedirect();
+        }, 0);
+        
+        return () => clearTimeout(timer);
+    }, [handleRedirect]);
     
     useEffect(() => {
         if(email.success && password.success) {
@@ -45,18 +50,34 @@ function Authorization() {
         }
     }, [email.success, password.success]);
 
-    const handleLogin = () => {
-        authorizeUser({
-            email: email.value,
-            password: password.value,
-        }).then((response) => {
+    const handleLogin = useCallback(async () => {
+        try {
+            const response = await authorizeUser({
+                email: email.value,
+                password: password.value,
+            });
+            
             console.log('response', response);
-            dispatch(saveTokenToStorage(response.token));
-            navigate('/protected');
-        }).catch((error) => {
-            const errorMessage = error.response?.data?.error || 'Произошла ошибка при авторизации';
+            
+            if (response && response.token) {
+                dispatch(saveTokenToStorage(response.token));
+                // Отложенная навигация для избежания проблем с concurrent rendering
+                setTimeout(() => {
+                    navigate('/auth-proccess');
+                }, 0);
+            } else {
+                showErrorToast('Неверный ответ сервера');
+            }
+        } catch (error: any) {
+            console.error('Login error:', error);
+            const errorMessage = error.response?.data?.error?.message || error.message || 'Произошла ошибка при авторизации';
             showErrorToast(errorMessage);
-        });
+        }
+    }, [email.value, password.value, dispatch, navigate]);
+
+    // Показываем загрузку пока проверяем токен - после всех хуков
+    if (status === LoadStatus.IN_PROGRESS) {
+        return <div>Загрузка...</div>;
     }
     
     return (

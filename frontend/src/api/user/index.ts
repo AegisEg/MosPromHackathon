@@ -18,7 +18,6 @@ export const registerUser = (payload: RegistrationPayload) => {
     return api
         .post('auth/register', payload)
         .then((response) => {
-            console.log('response', response.data.token);
             return response.data;
         })
         .catch((error) => {
