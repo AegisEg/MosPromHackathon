@@ -15,6 +15,7 @@ import authBackground from '../../assets/auth_back.png';
 import { useSelector } from "react-redux";
 import { selectAuthData } from "../../redux/user/selectors";
 import { LoadStatus } from "../../utils/types";
+import Logo from "../../components/default/Logo";
 
 function Authorization() {
     const dispatch = useTypedDispatch();
@@ -86,6 +87,9 @@ function Authorization() {
     
     return (
         <div className="authorization-page" style={{ backgroundImage: `url(${authBackground})` }}>
+            <div className="authorization-page__logo-header">
+                <Logo type="white" />
+            </div>
             <div className="container">
                 <div className="wrapper">
                     <div className="authorization-page__content">
@@ -135,7 +139,15 @@ function Authorization() {
                                 onClick={() => navigate('/')}
                                 variant={ButtonType.GRAY}
                             >
-                                Вернуться
+                                <span style={{ display: 'inline-flex', alignItems: 'center' }}>
+                                    <svg width="16" height="16" style={{ marginRight: 6 }} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                                </span>
+                            </Button>
+                            <Button
+                                onClick={() => navigate('/registration')}
+                                variant={ButtonType.GRAY}
+                            >
+                                Регистрация
                             </Button>
                             <Button
                                 onClick={handleLogin}

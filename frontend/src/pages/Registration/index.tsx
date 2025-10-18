@@ -15,6 +15,7 @@ import './style.scss';
 import { useSelector } from "react-redux";
 import { selectAuthData } from "../../redux/user/selectors";
 import { LoadStatus } from "../../utils/types";
+import Logo from "../../components/default/Logo";
 
 interface RegistrationProps {}
 
@@ -116,6 +117,9 @@ const Registration: React.FC<RegistrationProps> = () => {
 
     return (
         <div className="registration-page" style={{ backgroundImage: `url(${regBackground})` }}>
+            <div className="registration-page__logo-header">
+                <Logo type="white" />
+            </div>
             <div className="container">
                 <div className="wrapper">
                     <h1 className="registration-page__title">
