@@ -215,7 +215,7 @@ const Registration: React.FC<RegistrationProps> = () => {
                             onFocus={() => {
                                 resetValidation(password, setPassword)
                             }}
-                            error={password.error}
+                        error={password.error}
                             disabled={password.isDisabled}
                         />
                         <Input

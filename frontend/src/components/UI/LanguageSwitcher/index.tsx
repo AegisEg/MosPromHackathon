@@ -1,7 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { ButtonType } from '../Button';
-import Button from '../Button';
+import Select from '../Select';
 import './style.scss';
 
 interface LanguageSwitcherProps {
@@ -16,33 +15,28 @@ const LanguageSwitcher: React.FC<LanguageSwitcherProps> = ({ className = '' }) =
     { code: 'en', name: t('language.english'), flag: '🇺🇸' }
   ];
 
-  const currentLanguage = languages.find(lang => lang.code === i18n.language) || languages[0];
+  const options = languages.map(lang => ({
+    value: lang.code,
+    label: lang.name
+  }));
 
-  const handleLanguageChange = (languageCode: string) => {
-    i18n.changeLanguage(languageCode);
+  const currentValue = options.find(option => option.value === i18n.language) || options[0];
+
+  const handleLanguageChange = (selectedOption: any) => {
+    if (selectedOption && selectedOption.value) {
+      i18n.changeLanguage(selectedOption.value);
+    }
   };
 
   return (
     <div className={`language-switcher ${className}`}>
-      <div className="language-switcher__current">
-        <span className="language-switcher__flag">{currentLanguage.flag}</span>
-        <span className="language-switcher__name">{currentLanguage.name}</span>
-      </div>
-      
-      <div className="language-switcher__dropdown">
-        {languages.map((language) => (
-          <button
-            key={language.code}
-            className={`language-switcher__option ${
-              language.code === i18n.language ? 'language-switcher__option--active' : ''
-            }`}
-            onClick={() => handleLanguageChange(language.code)}
-          >
-            <span className="language-switcher__flag">{language.flag}</span>
-            <span className="language-switcher__name">{language.name}</span>
-          </button>
-        ))}
-      </div>
+      <Select
+        options={options}
+        value={currentValue}
+        onChange={handleLanguageChange}
+        isSearchable={false}
+        className="language-switcher__select"
+      />
     </div>
   );
 };
