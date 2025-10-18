@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Models;
 
@@ -24,38 +25,37 @@ class Resume extends Model
 
     protected $casts = [ // phpcs:ignore
         'date_of_birth' => DateTimeImmutableCast::class,
-        'created_at' => DateTimeImmutableCast::class,
-        'updated_at' => DateTimeImmutableCast::class,
+        'created_at'    => DateTimeImmutableCast::class,
+        'updated_at'    => DateTimeImmutableCast::class,
     ];
 
-    public function user()
-    {
+    public function user() {
         return $this->belongsTo(User::class);
     }
 
-    public function experiences()
-    {
+    public function experiences() {
         return $this->hasMany(Experiences::class);
     }
 
-    public function educations()
-    {
+    public function educations() {
         return $this->hasMany(Education::class);
+    }
+
+    public function responds() {
+        return $this->hasMany(Responds::class, 'resume_id', 'id');
     }
 
     /**
      * Связь с профессией
      */
-    public function profession()
-    {
+    public function profession() {
         return $this->belongsTo(Professions::class);
     }
 
     /**
      * Связь многие ко многим с навыками
      */
-    public function skills()
-    {
+    public function skills() {
         return $this->belongsToMany(Skills::class, 'resume_skill', 'resume_id', 'skill_id');
     }
 }

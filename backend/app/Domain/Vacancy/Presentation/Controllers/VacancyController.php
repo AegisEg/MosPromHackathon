@@ -11,6 +11,7 @@ use App\Domain\Vacancy\Application\Exceptions\AlreadyRespondedVacancyException;
 use App\Domain\Vacancy\Application\Exceptions\ForbiddenVacancyException;
 use App\Domain\Vacancy\Application\Exceptions\VacancyNotFoundException;
 use App\Domain\Vacancy\Presentation\Events\CreateVacancyEvent;
+use App\Domain\Vacancy\Presentation\Events\NewRespondEvent;
 use App\Domain\Vacancy\Presentation\Events\UpdateVacancyEvent;
 use App\Domain\Vacancy\Presentation\Requests\CreateVacancyRequest;
 use App\Domain\Vacancy\Presentation\Requests\RespondRequest;
@@ -183,7 +184,8 @@ class VacancyController extends Controller
         $resumeId = $request->input('resume_id');
         $message  = $request->input('message');
         try {
-            (new VacancyAction())->respond(vacancyId: $idVacancy, resumeId: $resumeId, message: $message);
+            $respondId = (new VacancyAction())->respond(vacancyId: $idVacancy, resumeId: $resumeId, message: $message);
+            NewRespondEvent::dispatch($respondId);
 
             return (new ParentResponse(
                 status: StatusEnum::OK,
