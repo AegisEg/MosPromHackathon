@@ -11,10 +11,26 @@ import { saveTokenToStorage } from "../../redux/user/actions";
 import { useTypedDispatch } from "../../redux/store";
 import { resetValidation, validateEmail, validatePassword, validateValue } from "../../utils/validation";
 import { showErrorToast } from "../../utils/toast";
+import { useSelector } from "react-redux";
+import { selectAuthData } from "../../redux/user/selectors";
+import { LoadStatus } from "../../utils/types";
 
 function Authorization() {
     const dispatch = useTypedDispatch();
     const navigate = useNavigate();
+
+    const {token, status} = useSelector(selectAuthData);
+
+    useEffect(() => {
+        if (token && status === LoadStatus.SUCCESS) {
+            navigate('/auth-proccess');
+        }
+    }, [token, status, navigate]);
+
+    // Показываем загрузку пока проверяем токен
+    if (status === LoadStatus.IN_PROGRESS) {
+        return <div>Загрузка...</div>;
+    }
 
     const [email, setEmail] = useState<DefaultValue<string>>({ value: '', success: false, error: '', isDisabled: false });
     const [password, setPassword] = useState<DefaultValue<string>>({ value: '', success: false, error: '', isDisabled: false });

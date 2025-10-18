@@ -1,9 +1,7 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { useSelector } from "react-redux";
 import { Navigate } from "react-router-dom";
-import { selectAuthStatus, selectToken } from "../../../redux/user/selectors";
-import { getTokenFromStorage } from "../../../redux/user/actions";
-import { useTypedDispatch } from "../../../redux/store";
+import { selectAuthData } from "../../../redux/user/selectors";
 import { LoadStatus } from "../../../utils/types";
 import Loader from "../Loader";
 
@@ -12,23 +10,13 @@ interface ProtectedRouteProps {
 }
 
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
-  const dispatch = useTypedDispatch();
-  
-  const token = useSelector(selectToken);
-  const status = useSelector(selectAuthStatus);
-
-  useEffect(() => {
-    if (!token && status === LoadStatus.NOT_LOADING) {
-      dispatch(getTokenFromStorage());
-    }
-  }, [dispatch, token, status]);
-
-  console.log('token', token);
-  console.log('status', status);
+  const {token, status} = useSelector(selectAuthData);
 
   if (status === LoadStatus.IN_PROGRESS) return <Loader />;
 
-  if ((status === LoadStatus.SUCCESS || status === LoadStatus.ERROR) && !token) return <Navigate to="/authorization" replace />;
+  if ((status === LoadStatus.SUCCESS || status === LoadStatus.ERROR) && !token) {
+    return <Navigate to="/authorization" replace />;
+  }
 
   if (token) return <>{children}</>;
 

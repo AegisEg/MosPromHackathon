@@ -1,5 +1,5 @@
 import { RootState } from '../store';
 
-export const selectToken = (state: RootState) => state.auth.token;
+export const selectAuthData = (state: RootState) => state.auth.authData;
 
-export const selectAuthStatus = (state: RootState) => state.auth.status;
+export const selectUserData = (state: RootState) => state.auth.userData;

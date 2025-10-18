@@ -1,7 +1,18 @@
 import api from "..";
-import {Response} from '../types';
-import {AuthorizationPayload, AuthorizationResponse, RegistrationPayload, RegistrationResponse} from "./types";
+import {AuthorizationPayload, RegistrationPayload} from "./types";
 
+
+export const getUserData = () => {
+    return api
+        .get('user/')
+        .then((response) => {
+            return response.data;
+        })
+        .catch((error) => {
+            console.error('Get user data error:', error);
+            throw error;
+        });
+}
 
 export const registerUser = (payload: RegistrationPayload) => {
     return api

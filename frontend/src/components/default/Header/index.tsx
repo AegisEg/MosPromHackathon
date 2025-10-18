@@ -3,6 +3,7 @@ import './style.scss';
 import Logo from '../Logo';
 import Link from '../../UI/Link';
 import Button, { ButtonType } from '../../UI/Button';
+import LanguageSwitcher from '../../UI/LanguageSwitcher';
 import { useNavigate } from 'react-router-dom';
 import SearchIcon from '@mui/icons-material/Search';
 import NearMeOutlinedIcon from '@mui/icons-material/NearMeOutlined';
@@ -36,10 +37,7 @@ function Header() {
               <SearchIcon color="inherit" />
               Поиск
             </Link>
-            <Link to="/astrakhang">
-              <NearMeOutlinedIcon />
-              Астрахань
-            </Link>
+            <LanguageSwitcher className="header__language-switcher" />
           </div>
           <div className="header__right_buttons-icons">
             <Link to="/chat">
