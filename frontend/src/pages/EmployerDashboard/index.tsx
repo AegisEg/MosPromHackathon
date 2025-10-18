@@ -1,14 +1,57 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 import { selectUserData } from '../../redux/user/selectors';
 import { UserRoleLabels } from '../../enums/UserRole';
 import { LoadStatus } from '../../utils/types';
 import Loader from '../../components/default/Loader';
-import Button, { ButtonType } from '../../components/UI/Button';
+import PanelBlock from '../../components/default/PanelBlock';
+import { 
+    Business as BusinessIcon,
+    Work as WorkIcon,
+    School as SchoolIcon,
+    BarChart as BarChartIcon,
+    CalendarToday as CalendarIcon,
+    SmartToy as SmartToyIcon
+} from '@mui/icons-material';
 import './style.scss';
 
 const EmployerDashboard: React.FC = () => {
+    const navigate = useNavigate();
     const { data: userData, status } = useSelector(selectUserData);
+
+    const panelBlockArray = [
+        {
+            icon: <BusinessIcon />,
+            title: "Создание компании",
+            onClick: () => console.log('Создание компании')
+        },
+        {
+            icon: <WorkIcon />,
+            title: "Ваши вакансии",
+            onClick: () => console.log('Ваши вакансии')
+        },
+        {
+            icon: <SchoolIcon />,
+            title: "Стажировки",
+            onClick: () => navigate('/internships')
+        },
+        {
+            icon: <BarChartIcon />,
+            title: "Аналитика",
+            onClick: () => console.log('Аналитика')
+        },
+        {
+            icon: <CalendarIcon />,
+            title: "Производственный календарь",
+            onClick: () => console.log('Производственный календарь')
+        },
+        {
+            icon: <SmartToyIcon />,
+            title: "ИИ Агент",
+            onClick: () => console.log('ИИ Агент')
+        }
+    ];
 
     if (status === LoadStatus.IN_PROGRESS) {
         return <Loader />;
@@ -136,15 +179,13 @@ const EmployerDashboard: React.FC = () => {
                             </div>
                         </div>
 
-                        <div className="dashboard-card dashboard-card--actions">
-                            <h2 className="dashboard-card__title">Быстрые действия</h2>
-                            <div className="quick-actions">
-                                <Button variant={ButtonType.RED} onClick={() => console.log('Создать вакансию')}>
-                                    Создать вакансию
-                                </Button>
-                                <Button variant={ButtonType.BLACK} onClick={() => console.log('Просмотр вакансий')}>
-                                    Просмотр вакансий
-                                </Button>
+                        {/* Панель управления */}
+                        <div className="dashboard-card dashboard-card--panel">
+                            <h2 className="dashboard-card__title">Панель управления</h2>
+                            <div className="panel-blocks-grid">
+                                {panelBlockArray.map((block) => (
+                                    <PanelBlock key={block.title} icon={block.icon} title={block.title} onClick={block.onClick} />
+                                ))}
                             </div>
                         </div>
                     </div>

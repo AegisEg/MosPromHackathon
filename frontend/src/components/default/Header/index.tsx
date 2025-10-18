@@ -31,7 +31,7 @@ function Header() {
                 <Link to="/lk" className={isActive('/auth-proccess')}>Личный кабинет</Link>
               </li>
               <li className={isAuthenticated ? 'visible' : 'hidden'}>
-                <Link to="/logout" className={isActive('/logout')}>Выйти</Link>
+                <Link to="/lk/logout" className={isActive('/logout')}>Выйти</Link>
               </li>
               <li className={!isAuthenticated ? 'visible' : 'hidden'}>
                 <Link to="/authorization" className={isActive('/authorization')}>Войти</Link>

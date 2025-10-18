@@ -1,330 +1,302 @@
-import React, { useState } from 'react';
-import './style.scss';
+import React, { useState, useEffect } from 'react';
+import { useSelector } from 'react-redux';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useTypedDispatch } from '../../redux/store';
+import {
+    selectCurrentResumeData,
+    selectCurrentResumeStatus,
+    selectUpdateResumeStatus,
+    selectUpdateResumeError
+} from '../../redux/resume/selectors';
+import {
+    getResumeAction,
+    updateResumeAction
+} from '../../redux/resume/actions';
+import { selectProfessionsData, selectCurrentProfessionSkillsData } from '../../redux/profession/selectors';
+import { getProfessionsAction, getProfessionSkillsAction } from '../../redux/profession/actions';
+import { LoadStatus } from '../../utils/types';
+import { UpdateResumePayload } from '../../redux/resume/types';
+import Loader from '../../components/default/Loader';
+import Button, { ButtonType } from '../../components/UI/Button';
 import Input from '../../components/UI/Input';
 import Select from '../../components/UI/Select';
-import Textarea from '../../components/UI/Textarea';
-import Toggle from '../../components/UI/Toggle';
-import Button from '../../components/UI/Button';
-import DateInput from '../../components/UI/DateInput';
-import FileUpload from '../../components/UI/FileUpload';
-import type { 
-  Education, 
-  Experience, 
-  Project, 
-  Certificate, 
-  Language, 
-  Reference, 
-  Link 
-} from '../../types/resume.types';
-import { DefaultValue } from '../../types/default.types';
+import Checkbox from '../../components/UI/Checkbox';
+import './style.scss';
 
-function ResumeEdit() {
-  // Основная информация
-  const [lastName, setLastName] = useState<DefaultValue<string>>({ value: '', success: false, error: '', isDisabled: false });
-  const [firstName, setFirstName] = useState<DefaultValue<string>>({ value: '', success: false, error: '', isDisabled: false });
-  const [middleName, setMiddleName] = useState<DefaultValue<string>>({ value: '', success: false, error: '', isDisabled: false });
-  const [email, setEmail] = useState<DefaultValue<string>>({ value: '', success: false, error: '', isDisabled: false });
-  const [dateOfBirth, setDateOfBirth] = useState<DefaultValue<string>>({ value: '', success: false, error: '', isDisabled: false });
-  const [city, setCity] = useState<DefaultValue<string>>({ value: '', success: false, error: '', isDisabled: false });
-  const [country, setCountry] = useState<DefaultValue<string>>({ value: '', success: false, error: '', isDisabled: false });
-  const [phone, setPhone] = useState<DefaultValue<string>>({ value: '', success: false, error: '', isDisabled: false });
-  const [about, setAbout] = useState<DefaultValue<string>>({ value: '', success: false, error: '', isDisabled: false });
-  const [professionId, setProfessionId] = useState<DefaultValue<number>>({ value: 0, success: false, error: '', isDisabled: false });
-  const [education, setEducation] = useState<DefaultValue<string>>({ value: '', success: false, error: '', isDisabled: false });
-  const [salary, setSalary] = useState<DefaultValue<number>>({ value: 0, success: false, error: '', isDisabled: false });
-  const [status, setStatus] = useState<DefaultValue<boolean>>({ value: false, success: false, error: '', isDisabled: false });
-  const [photo, setPhoto] = useState<DefaultValue<string>>({ value: '', success: false, error: '', isDisabled: false });
-  
-  // Навыки
-  const [skills, setSkills] = useState<DefaultValue<string[]>>({ value: [], success: false, error: '', isDisabled: false });
-  
-  // Образование
-  const [educations, setEducations] = useState<DefaultValue<Education[]>>({ value: [], success: false, error: '', isDisabled: false });
-  
-  // Опыт работы
-  const [experiences, setExperiences] = useState<DefaultValue<Experience[]>>({ value: [], success: false, error: '', isDisabled: false });
-  
-  // Проекты
-  const [projects, setProjects] = useState<DefaultValue<Project[]>>({ value: [], success: false, error: '', isDisabled: false });
-  
-  // Сертификаты
-  const [certificates, setCertificates] = useState<DefaultValue<Certificate[]>>({ value: [], success: false, error: '', isDisabled: false });
-  
-  // Языки
-  const [languages, setLanguages] = useState<DefaultValue<Language[]>>({ value: [], success: false, error: '', isDisabled: false });
-  
-  // Хобби
-  const [hobbies, setHobbies] = useState<DefaultValue<string[]>>({ value: [], success: false, error: '', isDisabled: false });
-  
-  // Рекомендации
-  const [references, setReferences] = useState<DefaultValue<Reference[]>>({ value: [], success: false, error: '', isDisabled: false });
-  
-  // Ссылки
-  const [links, setLinks] = useState<DefaultValue<Link[]>>({ value: [], success: false, error: '', isDisabled: false });
-  
-  // Дополнительная информация
-  const [other, setOther] = useState<DefaultValue<string>>({ value: '', success: false, error: '', isDisabled: false });
+const ResumeEdit: React.FC = () => {
+    const dispatch = useTypedDispatch();
+    const navigate = useNavigate();
+    const [searchParams] = useSearchParams();
+    const resumeId = searchParams.get('id');
 
-  // Опции для селектов
-  const educationOptions = [
-    { value: 'Среднее', label: 'Среднее' },
-    { value: 'Среднее специальное', label: 'Среднее специальное' },
-    { value: 'Высшее (Бакалавр)', label: 'Высшее (Бакалавр)' },
-    { value: 'Высшее (Магистр)', label: 'Высшее (Магистр)' },
-    { value: 'Высшее (Специалист)', label: 'Высшее (Специалист)' },
-    { value: 'Ученая степень', label: 'Ученая степень' },
-  ];
+    // Redux selectors
+    const currentResume = useSelector(selectCurrentResumeData);
+    const currentResumeStatus = useSelector(selectCurrentResumeStatus);
+    const updateResumeStatus = useSelector(selectUpdateResumeStatus);
+    const updateResumeError = useSelector(selectUpdateResumeError);
+    const professions = useSelector(selectProfessionsData);
+    const currentProfessionSkills = useSelector(selectCurrentProfessionSkillsData);
 
-  const professionOptions = [
-    { value: '1', label: 'Frontend разработчик' },
-    { value: '2', label: 'Backend разработчик' },
-    { value: '3', label: 'Fullstack разработчик' },
-    { value: '4', label: 'UI/UX дизайнер' },
-    { value: '5', label: 'Project Manager' },
-    { value: '6', label: 'DevOps инженер' },
-    { value: '7', label: 'QA инженер' },
-    { value: '8', label: 'Data Scientist' },
-  ];
+    // Состояния для формы резюме
+    const [formData, setFormData] = useState<UpdateResumePayload>({
+        id: 0,
+        dateOfBirth: '',
+        city: '',
+        country: '',
+        education: '',
+        phone: '',
+        about: '',
+        professionId: 0,
+        salary: 0,
+        status: true,
+        skills: [],
+        educations: [],
+        experiences: [],
+    });
 
-  const skillsOptions = [
-    { value: 'JavaScript', label: 'JavaScript' },
-    { value: 'TypeScript', label: 'TypeScript' },
-    { value: 'React', label: 'React' },
-    { value: 'Vue', label: 'Vue' },
-    { value: 'Angular', label: 'Angular' },
-    { value: 'Node.js', label: 'Node.js' },
-    { value: 'Python', label: 'Python' },
-    { value: 'Java', label: 'Java' },
-    { value: 'C#', label: 'C#' },
-    { value: 'PHP', label: 'PHP' },
-    { value: 'SQL', label: 'SQL' },
-    { value: 'MongoDB', label: 'MongoDB' },
-    { value: 'Docker', label: 'Docker' },
-    { value: 'Git', label: 'Git' },
-    { value: 'UX', label: 'UX' },
-    { value: 'UI', label: 'UI' },
-    { value: 'Figma', label: 'Figma' },
-  ];
+    // Загружаем профессии и резюме при монтировании
+    useEffect(() => {
+        dispatch(getProfessionsAction());
+        if (resumeId) {
+            dispatch(getResumeAction(parseInt(resumeId)));
+        }
+    }, [dispatch, resumeId]);
 
-  const handlePhotoUpload = (file: File) => {
-    console.log('Uploaded photo file:', file);
-    // Здесь можно добавить логику загрузки файла на сервер
-    // После загрузки можно обновить photo.value с URL загруженного файла
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      setPhoto({ ...photo, value: reader.result as string, success: true, error: '' });
+    // Заполняем форму данными резюме
+    useEffect(() => {
+        if (currentResume) {
+            setFormData({
+                id: currentResume.id || 0,
+                dateOfBirth: currentResume.dateOfBirth || '',
+                city: currentResume.city || '',
+                country: currentResume.country || '',
+                education: currentResume.education || '',
+                phone: currentResume.phone || '',
+                about: currentResume.about || '',
+                professionId: currentResume.professionId || 0,
+                salary: currentResume.salary || 0,
+                status: currentResume.status ?? true,
+                skills: currentResume.skills || [],
+                educations: currentResume.educations || [],
+                experiences: currentResume.experiences || [],
+            });
+            
+            // Загружаем навыки для выбранной профессии
+            if (currentResume.professionId) {
+                dispatch(getProfessionSkillsAction(currentResume.professionId));
+            }
+        }
+    }, [currentResume, dispatch]);
+
+    // Функции для работы с формой
+    const handleInputChange = (field: keyof UpdateResumePayload, value: any) => {
+        setFormData(prev => ({
+            ...prev,
+            [field]: value
+        }));
     };
-    reader.readAsDataURL(file);
-  };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    console.log('Form submitted');
-  };
+    const handleProfessionChange = (option: any) => {
+        if (option && option.value) {
+            const professionId = parseInt(option.value);
+            handleInputChange('professionId', professionId);
+            dispatch(getProfessionSkillsAction(professionId));
+        } else {
+            handleInputChange('professionId', 0);
+        }
+    };
+
+    const handleSkillToggle = (skillId: number) => {
+        setFormData(prev => ({
+            ...prev,
+            skills: prev.skills?.includes(skillId)
+                ? prev.skills.filter(id => id !== skillId)
+                : [...(prev.skills || []), skillId]
+        }));
+    };
+
+    // Функция обновления резюме
+    const handleUpdateResume = async () => {
+        if (!formData.id) {
+            alert('Резюме не найдено');
+            return;
+        }
+        if (!formData.dateOfBirth?.trim()) {
+            alert('Дата рождения обязательна');
+            return;
+        }
+        if (!formData.city?.trim()) {
+            alert('Город обязателен');
+            return;
+        }
+        if (!formData.country?.trim()) {
+            alert('Страна обязательна');
+            return;
+        }
+        if (!formData.phone?.trim()) {
+            alert('Телефон обязателен');
+            return;
+        }
+        if (!formData.about?.trim()) {
+            alert('Информация о себе обязательна');
+            return;
+        }
+        if (!formData.professionId || formData.professionId === 0) {
+            alert('Выберите профессию');
+            return;
+        }
+
+        try {
+            await dispatch(updateResumeAction(formData)).unwrap();
+            alert('Резюме успешно обновлено');
+            navigate('/lk'); // Перенаправляем в личный кабинет
+        } catch (error) {
+            alert(updateResumeError || 'Ошибка при обновлении резюме');
+        }
+    };
   
-  return (
-    <div className="resume-edit">
-      <div className="container">
-        <div className="wrapper">
-        <h1 className="resume-edit__title">Редактирование резюме</h1>
-        <p className="resume-edit__description">
-          Заполните информацию о себе для создания резюме
-        </p>
+    if (currentResumeStatus === LoadStatus.IN_PROGRESS || updateResumeStatus === LoadStatus.IN_PROGRESS) {
+        return <Loader />;
+    }
 
-        <form className="resume-edit__form" onSubmit={handleSubmit}>
-          {/* Основная информация */}
-          <div className="inner-wrapper">
-            <div className="inner-wrapper_title">Основная информация</div>
-            <div className="resume-edit__grid">
-              <Input
-                label="Фамилия"
-                placeholder="Иванов"
-                value={lastName.value}
-                onChange={(value) => setLastName({ ...lastName, value, success: true, error: '' })}
-                error={lastName.error}
-                disabled={lastName.isDisabled}
-              />
-              <Input
-                label="Имя"
-                placeholder="Иван"
-                value={firstName.value}
-                onChange={(value) => setFirstName({ ...firstName, value, success: true, error: '' })}
-                error={firstName.error}
-                disabled={firstName.isDisabled}
-              />
-              <Input
-                label="Отчество"
-                placeholder="Иванович"
-                value={middleName.value}
-                onChange={(value) => setMiddleName({ ...middleName, value, success: true, error: '' })}
-                error={middleName.error}
-                disabled={middleName.isDisabled}
-              />
-              <Input
-                label="Email"
-                type="email"
-                placeholder="example@mail.com"
-                value={email.value}
-                onChange={(value) => setEmail({ ...email, value, success: true, error: '' })}
-                error={email.error}
-                disabled={email.isDisabled}
-              />
-              <DateInput
-                label="Дата рождения"
-                placeholder="ДД.ММ.ГГГГ"
-                value={dateOfBirth.value}
-                onChange={(value) => setDateOfBirth({ ...dateOfBirth, value, success: true, error: '' })}
-                error={dateOfBirth.error}
-                disabled={dateOfBirth.isDisabled}
-              />
-              <Input
-                label="Телефон"
-                placeholder="+7 (999) 999-99-99"
-                mask="+7 (000) 000-00-00"
-                value={phone.value}
-                onChange={(value) => setPhone({ ...phone, value, success: true, error: '' })}
-                error={phone.error}
-                disabled={phone.isDisabled}
-              />
-              <Input
-                label="Город"
-                placeholder="Москва"
-                value={city.value}
-                onChange={(value) => setCity({ ...city, value, success: true, error: '' })}
-                error={city.error}
-                disabled={city.isDisabled}
-              />
-              <Input
-                label="Страна"
-                placeholder="Россия"
-                value={country.value}
-                onChange={(value) => setCountry({ ...country, value, success: true, error: '' })}
-                error={country.error}
-                disabled={country.isDisabled}
-              />
+    if (!currentResume) {
+        return (
+            <div className="resume-edit">
+                <div className="container">
+                    <div className="wrapper">
+                        <h1>Резюме не найдено</h1>
+                        <Button onClick={() => navigate('/lk')}>
+                            Вернуться в личный кабинет
+                        </Button>
+                    </div>
+                </div>
             </div>
-          </div>
+        );
+    }
 
-          {/* Профессиональная информация */}
-          <div className="inner-wrapper">
-            <div className="inner-wrapper_title">Профессиональная информация</div>
-            <div className="resume-edit__grid">
-              <Select
-                label="Профессия"
-                options={professionOptions}
-                value={professionOptions.find(opt => opt.value === String(professionId.value))}
-                onChange={(option: any) => setProfessionId({ ...professionId, value: Number(option?.value || 0), success: true, error: '' })}
-                placeholder="Выберите профессию"
-                error={professionId.error}
-                isDisabled={professionId.isDisabled}
-              />
-              <Select
-                label="Образование"
-                options={educationOptions}
-                value={educationOptions.find(opt => opt.value === education.value)}
-                onChange={(option: any) => setEducation({ ...education, value: option?.value || '', success: true, error: '' })}
-                placeholder="Выберите уровень образования"
-                error={education.error}
-                isDisabled={education.isDisabled}
-              />
-              <Input
-                label="Желаемая зарплата"
-                type="number"
-                placeholder="150000"
-                value={String(salary.value)}
-                onChange={(val) => setSalary({ ...salary, value: Number(val), success: true, error: '' })}
-                error={salary.error}
-                disabled={salary.isDisabled}
-              />
-              <div className="resume-edit__toggle-wrapper">
-                <Toggle
-                  label="Открыт к предложениям"
-                  checked={status.value}
-                  onChange={(checked) => setStatus({ ...status, value: checked, success: true, error: '' })}
-                  error={status.error}
-                  disabled={status.isDisabled}
-                  size="medium"
-                />
-              </div>
+    return (
+        <div className="resume-edit">
+            <div className="container">
+                <div className="wrapper">
+                    <h1 className="resume-edit__title">Редактирование резюме</h1>
+                    <p className="resume-edit__description">
+                        Измените информацию о себе в резюме
+                    </p>
+
+                    <form className="resume-edit__form" onSubmit={(e) => e.preventDefault()}>
+                        {/* Основная информация */}
+                        <div className="inner-wrapper">
+                            <div className="inner-wrapper_title">Основная информация</div>
+                            <div className="resume-edit__grid">
+                                <Input
+                                    label="Дата рождения"
+                                    type="date"
+                                    value={formData.dateOfBirth}
+                                    onChange={(value) => handleInputChange('dateOfBirth', value)}
+                                />
+                                <Input
+                                    label="Город"
+                                    value={formData.city}
+                                    onChange={(value) => handleInputChange('city', value)}
+                                />
+                                <Input
+                                    label="Страна"
+                                    value={formData.country}
+                                    onChange={(value) => handleInputChange('country', value)}
+                                />
+                                <Input
+                                    label="Телефон"
+                                    value={formData.phone}
+                                    onChange={(value) => handleInputChange('phone', value)}
+                                />
+                                <Input
+                                    label="Образование"
+                                    value={formData.education}
+                                    onChange={(value) => handleInputChange('education', value)}
+                                />
+                            </div>
+                        </div>
+
+                        {/* Профессиональная информация */}
+                        <div className="inner-wrapper">
+                            <div className="inner-wrapper_title">Профессиональная информация</div>
+                            <div className="resume-edit__grid">
+                                <Select
+                                    label="Профессия"
+                                    options={professions.map(prof => ({
+                                        value: prof.id.toString(),
+                                        label: prof.name
+                                    }))}
+                                    value={formData.professionId ? {
+                                        value: formData.professionId.toString(),
+                                        label: professions.find(p => p.id === formData.professionId)?.name || ''
+                                    } : undefined}
+                                    onChange={handleProfessionChange}
+                                    placeholder="Выберите профессию"
+                                />
+                                <Input
+                                    label="Желаемая зарплата"
+                                    type="number"
+                                    value={formData.salary?.toString() || ''}
+                                    onChange={(value) => handleInputChange('salary', parseInt(value) || 0)}
+                                />
+                            </div>
+                        </div>
+
+                        {/* Навыки */}
+                        {formData.professionId && formData.professionId > 0 && currentProfessionSkills.length > 0 && (
+                            <div className="inner-wrapper">
+                                <div className="inner-wrapper_title">Навыки</div>
+                                <div className="skills-section">
+                                    <div className="skills-section__checkboxes">
+                                        {currentProfessionSkills.map(skill => (
+                                            <Checkbox
+                                                key={skill.id}
+                                                label={skill.name}
+                                                checked={formData.skills?.includes(skill.id) || false}
+                                                onChange={() => handleSkillToggle(skill.id)}
+                                            />
+                                        ))}
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* О себе */}
+                        <div className="inner-wrapper">
+                            <div className="inner-wrapper_title">О себе</div>
+                            <div className="form-group">
+                                <label className="textarea-label">О себе</label>
+                                <textarea
+                                    className="textarea-input"
+                                    value={formData.about}
+                                    onChange={(e) => handleInputChange('about', e.target.value)}
+                                    rows={4}
+                                    placeholder="Расскажите о себе, своих навыках и опыте..."
+                                />
+                            </div>
+                        </div>
+
+                        {/* Кнопки действий */}
+                        <div className="resume-edit__actions">
+                            <Button
+                                variant={ButtonType.GRAY}
+                                onClick={() => navigate('/lk')}
+                            >
+                                Отмена
+                            </Button>
+                            <Button
+                                onClick={handleUpdateResume}
+                                disabled={updateResumeStatus !== LoadStatus.NOT_LOADING && updateResumeStatus !== LoadStatus.SUCCESS && updateResumeStatus !== LoadStatus.ERROR}
+                            >
+                                {updateResumeStatus !== LoadStatus.NOT_LOADING && updateResumeStatus !== LoadStatus.SUCCESS && updateResumeStatus !== LoadStatus.ERROR ? 'Сохранение...' : 'Сохранить резюме'}
+                            </Button>
+                        </div>
+                    </form>
+                </div>
             </div>
-          </div>
-
-          {/* О себе */}
-          <div className="inner-wrapper">
-            <div className="inner-wrapper_title">О себе</div>
-            <Textarea
-              label="Расскажите о себе"
-              placeholder="Опытный специалист с большим опытом работы..."
-              value={about.value}
-              onChange={(value) => setAbout({ ...about, value, success: true, error: '' })}
-              error={about.error}
-              disabled={about.isDisabled}
-              rows={6}
-              maxLength={1000}
-            />
-          </div>
-
-          {/* Навыки */}
-          <div className="inner-wrapper">
-            <div className="inner-wrapper_title">Навыки</div>
-            <Select
-              label="Ваши навыки"
-              options={skillsOptions}
-              value={skills.value.map(skill => ({ value: skill, label: skill }))}
-              onChange={(options: any) => {
-                if (Array.isArray(options)) {
-                  setSkills({ ...skills, value: options.map((opt: any) => opt.value), success: true, error: '' });
-                } else {
-                  setSkills({ ...skills, value: [], success: true, error: '' });
-                }
-              }}
-              isMulti
-              closeMenuOnSelect={false}
-              placeholder="Выберите навыки"
-              error={skills.error}
-              isDisabled={skills.isDisabled}
-            />
-          </div>
-
-          {/* Фото */}
-          <div className="inner-wrapper">
-            <div className="inner-wrapper_title">Фотография</div>
-            <FileUpload
-              currentImage={photo.value}
-              onFileSelect={handlePhotoUpload}
-              accept="image/*"
-              maxSize={5}
-            />
-          </div>
-
-          {/* Дополнительная информация */}
-          <div className="inner-wrapper">
-            <div className="inner-wrapper_title">Дополнительная информация</div>
-            <Textarea
-              label="Дополнительные сведения"
-              placeholder="Укажите любую дополнительную информацию..."
-              value={other.value}
-              onChange={(value) => setOther({ ...other, value, success: true, error: '' })}
-              error={other.error}
-              disabled={other.isDisabled}
-              rows={4}
-            />
-          </div>
-
-          {/* Кнопки действий */}
-          <div className="resume-edit__actions">
-            <Button type="submit" onClick={() => {}}>
-              Сохранить резюме
-            </Button>
-            <Button onClick={() => window.history.back()}>
-                Отмена
-              </Button>
-            </div>
-          </form>
         </div>
-      </div>
-    </div>
-  );
-}
+    );
+};
 
 export default ResumeEdit;
