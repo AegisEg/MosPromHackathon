@@ -15,5 +15,7 @@ Route::group(['prefix' => 'vacancies'], function () {
         Route::put('/{idVacancy}', [VacancyController::class, 'update'])
             ->name('vacancies.update');
         Route::delete('/{idVacancy}', [VacancyController::class, 'delete']);
+        Route::post('/{idVacancy}/respond', [VacancyController::class, 'respond'])
+            ->name('vacancies.respond')->middleware('seeker');
     });
 });
