@@ -11,6 +11,7 @@ import { AuthorizationProxy } from '../AuthorizationProxy';
 const MainPage = React.lazy(() => import('../../../pages/Main/'));
 const ResumePage = React.lazy(() => import('../../../pages/Resume/'));
 const ResumeEditPage = React.lazy(() => import('../../../pages/ResumeEdit/'));
+const ResumeCreatePage = React.lazy(() => import('../../../pages/ResumeCreate/'));
 const UIPage = React.lazy(() => import('../../../pages/UI/'));
 const AuthorizationPage = React.lazy(() => import('../../../pages/Authorization/'));
 const RegistrationPage = React.lazy(() => import('../../../pages/Registration/'));
@@ -101,6 +102,13 @@ function AppRoutes() {
             <Suspense fallback={renderFallback()}>
               <ProtectedRoute>
                 <ResumeEditPage />
+              </ProtectedRoute>
+            </Suspense>
+          } />
+          <Route path="/resume/create" element={
+            <Suspense fallback={renderFallback()}>
+              <ProtectedRoute>
+                <ResumeCreatePage />
               </ProtectedRoute>
             </Suspense>
           } />
