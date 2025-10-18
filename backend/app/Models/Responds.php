@@ -28,6 +28,10 @@ class Responds extends Model
         return $this->belongsTo(Vacancies::class);
     }
 
+    public function chat() {
+        return $this->hasOne(Chat::class);
+    }
+
     public function resume() {
         return $this->belongsTo(Resume::class);
     }
