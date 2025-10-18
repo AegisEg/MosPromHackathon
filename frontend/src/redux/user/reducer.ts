@@ -60,16 +60,16 @@ const authReducer = createReducer(initialState, (builder) => {
         });
 
     builder
-    .addCase(getUserDataAction.pending, (state) => {
-        state.userData.status = LoadStatus.IN_PROGRESS;
-    })
-    .addCase(getUserDataAction.fulfilled, (state, action) => {
-        state.userData.data = action.payload.userData;
-        state.userData.status = LoadStatus.SUCCESS;
-    })
-    .addCase(getUserDataAction.rejected, (state, action) => {
-        state.userData.status = LoadStatus.ERROR;
-    });
+        .addCase(getUserDataAction.pending, (state) => {
+            state.userData.status = LoadStatus.IN_PROGRESS;
+        })
+        .addCase(getUserDataAction.fulfilled, (state, action) => {
+            state.userData.data = action.payload.userData;
+            state.userData.status = LoadStatus.SUCCESS;
+        })
+        .addCase(getUserDataAction.rejected, (state, action) => {
+            state.userData.status = LoadStatus.ERROR;
+        });
 });
 
 export default authReducer;

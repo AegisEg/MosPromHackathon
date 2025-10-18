@@ -3,25 +3,13 @@ import Logo from '../Logo';
 import Link from '../../UI/Link';
 import LanguageSwitcher from '../../UI/LanguageSwitcher';
 import { useSelector } from 'react-redux';
-import { selectIsAuthenticated, selectUserData } from '../../../redux/user/selectors';
+import { selectIsAuthenticated } from '../../../redux/user/selectors';
 import SearchIcon from '@mui/icons-material/Search';
 import { useLocation } from 'react-router-dom';
-import { useMemo } from 'react';
 
 function Header() {
   const isAuthenticated = useSelector(selectIsAuthenticated);
-  const { data: userData } = useSelector(selectUserData);
-  console.log(userData);
   const location = useLocation();
-
-  const handleDashboardLink = useMemo(() => {
-    if (userData?.role) {
-      // Преобразуем job_seeker -> job-seeker для URL
-      const roleUrl = userData.role.toLowerCase().replace(/_/g, '-');
-      return `/${roleUrl}-dashboard`;
-    }
-    return '/';
-  }, [userData?.role]);
 
   const isActive = (path: string) => location.pathname === path ? 'active' : '';
 
@@ -50,7 +38,7 @@ function Header() {
                 <Link to="/resume" className={isActive('/resume')}>Резюме</Link>
               </li>
               <li className={isAuthenticated ? 'visible' : 'hidden'}>
-                <Link to={handleDashboardLink} className={isActive(handleDashboardLink)}>Личный кабинет</Link>
+                <Link to="/lk" className={isActive('/lk')}>Личный кабинет</Link>
               </li>
               <li className={isAuthenticated ? 'visible' : 'hidden'}>
                 <Link to="/logout" className={isActive('/logout')}>Выйти</Link>
