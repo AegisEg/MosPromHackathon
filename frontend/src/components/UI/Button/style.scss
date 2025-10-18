@@ -35,6 +35,34 @@
         }
     }
 
+    &.secondary {
+        background: #6c757d;
+        border: 1px solid #6c757d;
+
+        &, * {
+            color: #fff;
+        }
+
+        &:hover:not(:disabled) {
+            background: #5a6268;
+            border-color: #545b62;
+        }
+    }
+
+    &.danger {
+        background: #dc3545;
+        border: 1px solid #dc3545;
+
+        &, * {
+            color: #fff;
+        }
+
+        &:hover:not(:disabled) {
+            background: #c82333;
+            border-color: #bd2130;
+        }
+    }
+
     &, * {
         font-weight: 500;
         font-size: 18px;
