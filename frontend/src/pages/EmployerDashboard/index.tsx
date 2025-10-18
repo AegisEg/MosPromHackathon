@@ -47,6 +47,7 @@ import Select from '../../components/UI/Select';
 import Checkbox from '../../components/UI/Checkbox';
 import { showErrorToast, showSuccessToast } from '../../utils/toast';
 import './style.scss';
+import Loader from '../../components/default/Loader';
 
 const EmployerDashboard: React.FC = () => {
     const dispatch = useTypedDispatch();
@@ -123,6 +124,8 @@ const EmployerDashboard: React.FC = () => {
             showSuccessToast('Компания успешно создана');
             setIsCreateModalOpen(false);
             resetForm();
+            // Обновляем список компаний
+            dispatch(getCompaniesAction());
         } catch (error) {
             showErrorToast(createCompanyState.error || 'Ошибка при создании компании');
         }
@@ -148,6 +151,8 @@ const EmployerDashboard: React.FC = () => {
             setIsEditModalOpen(false);
             setEditingCompany(null);
             resetForm();
+            // Обновляем список компаний
+            dispatch(getCompaniesAction());
         } catch (error) {
             showErrorToast(updateCompanyState.error || 'Ошибка при обновлении компании');
         }
@@ -158,6 +163,8 @@ const EmployerDashboard: React.FC = () => {
             try {
                 await dispatch(deleteCompanyAction(id)).unwrap();
                 showSuccessToast('Компания успешно удалена');
+                // Обновляем список компаний
+                dispatch(getCompaniesAction());
             } catch (error) {
                 showErrorToast(deleteCompanyState.error || 'Ошибка при удалении компании');
             }
@@ -217,6 +224,8 @@ const EmployerDashboard: React.FC = () => {
             showSuccessToast('Вакансия успешно создана');
             setIsCreateVacancyModalOpen(false);
             resetVacancyForm();
+            // Обновляем список вакансий
+            dispatch(getVacanciesAction());
         } catch (error) {
             showErrorToast(createVacancyState.error || 'Ошибка при создании вакансии');
         }
@@ -238,6 +247,8 @@ const EmployerDashboard: React.FC = () => {
             setIsEditVacancyModalOpen(false);
             setEditingVacancy(null);
             resetVacancyForm();
+            // Обновляем список вакансий
+            dispatch(getVacanciesAction());
         } catch (error) {
             showErrorToast(updateVacancyState.error || 'Ошибка при обновлении вакансии');
         }
@@ -248,6 +259,8 @@ const EmployerDashboard: React.FC = () => {
             try {
                 await dispatch(deleteVacancyAction(id)).unwrap();
                 showSuccessToast('Вакансия успешно удалена');
+                // Обновляем список вакансий
+                dispatch(getVacanciesAction());
             } catch (error) {
                 showErrorToast(deleteVacancyState.error || 'Ошибка при удалении вакансии');
             }
@@ -350,7 +363,11 @@ const EmployerDashboard: React.FC = () => {
     };
 
     if (companiesStatus === LoadStatus.IN_PROGRESS || vacanciesStatus === LoadStatus.IN_PROGRESS || professionsStatus === LoadStatus.IN_PROGRESS) {
-        return <div className="employer-dashboard">Загрузка...</div>;
+        return (
+            <div className="authorization-proxy">
+                <Loader />
+            </div>
+        );
     }
 
     return (

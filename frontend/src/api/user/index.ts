@@ -5,7 +5,7 @@ import { BackendUserData } from "../../redux/user/types";
 
 export const getUserData = (): Promise<BackendUserData> => {
     return api
-        .get('user/')
+        .get('auth/user/')
         .then((response) => {
             return response.data;
         })
