@@ -135,7 +135,7 @@ class RespondAndInteractionController extends Controller
                 throw new ForbiddenRespondException();
             }
 
-            $bestMatches = $this->respondAndInteractionAction->bestMatchResumesByVacancy($vacancyId);
+            $bestMatches = $this->respondAndInteractionAction->bestMatchResumesByVacancyWithSmart($vacancyId);
             return (new ParentResponse(
                 data: $bestMatches,
                 httpStatus: 200,
