@@ -31,6 +31,9 @@ class DatabaseSeeder extends Seeder
             // Вакансии
             VacanciesSeeder::class,
             
+            // Избранное (связи вакансий с резюме)
+            FavoritesSeeder::class,
+            
             // Стажировки
             InternshipsSeeder::class,
         ]);

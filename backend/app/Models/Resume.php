@@ -58,4 +58,20 @@ class Resume extends Model
     {
         return $this->belongsToMany(Skills::class, 'resume_skill', 'resume_id', 'skill_id');
     }
+
+    /**
+     * Связь многие ко многим с вакансиями через избранное
+     */
+    public function favoriteVacancies()
+    {
+        return $this->belongsToMany(Vacancies::class, 'favorites', 'resume_id', 'vacancy_id');
+    }
+
+    /**
+     * Связь с избранными вакансиями
+     */
+    public function favorites()
+    {
+        return $this->hasMany(Favorite::class);
+    }
 }

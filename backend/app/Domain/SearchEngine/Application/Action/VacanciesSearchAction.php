@@ -51,9 +51,6 @@ class VacanciesSearchAction {
                 $q->whereIn('skills.id', $skillsIdArray);
             });
         }
-
-        
-
         
 
         if (isset($queryArray['title'])) {

@@ -15,12 +15,14 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::group(['prefix' => 'resume'], function () {
-    Route::get('/{id}', [ResumeController::class, 'show'])
+    Route::get('/show/{id}', [ResumeController::class, 'show'])
         ->name('resume.show');
 
     Route::group(['middleware' => ['auth:sanctum']], function () {
+        Route::get('/index', [ResumeController::class, 'index'])
+            ->name('resume.index');
         Route::get('/favorite/{vacancyId}', [ResumeController::class, 'favorite'])
-            ->name('resume.favorite')->middleware('seeker');
+            ->name('resume.favorite')->middleware('company');
         Route::post('/store', [ResumeController::class, 'store'])
             ->name('resume.store')->middleware('seeker');
         Route::patch('/update/{id}', [ResumeController::class, 'update'])
