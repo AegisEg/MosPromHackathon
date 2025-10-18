@@ -1,0 +1,349 @@
+.calendar-page {
+    flex: 1 1 auto;
+    display: flex;
+    margin: 50px 0;
+
+    .container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 0 1rem;
+    }
+
+    .wrapper {
+        background: white;
+        border-radius: 16px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+        padding: 28px;
+        width: 100%;
+    }
+}
+
+.calendar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 40px;
+    padding-bottom: 16px;
+    border-bottom: 2px solid #e2e8f0;
+
+    .calendar-page__title {
+        font-weight: 600;
+        font-size: 42px;
+        color: #393649;
+        margin: 0;
+    }
+
+    .calendar-year-controls {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+
+        .current-year {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #393649;
+            min-width: 80px;
+            text-align: center;
+        }
+
+        .year-control-btn {
+            width: 40px;
+            height: 40px;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            svg {
+                font-size: 1.2rem;
+            }
+        }
+    }
+}
+
+.calendar-content {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 2rem;
+}
+
+.calendar-month {
+    .calendar-month__title {
+        font-size: 1.3rem;
+        font-weight: 600;
+        color: #393649;
+        margin-bottom: 1rem;
+        text-align: center;
+        padding: 0.5rem;
+        background: #f8f9fa;
+        border-radius: 12px;
+    }
+
+    .calendar-grid {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        gap: 2px;
+        background: #e2e8f0;
+        border-radius: 12px;
+        padding: 4px;
+    }
+
+    .calendar-day-header {
+        background: #BA0048;
+        color: white;
+        padding: 0.5rem;
+        text-align: center;
+        font-weight: 600;
+        font-size: 0.9rem;
+        border-radius: 8px;
+    }
+
+    .calendar-day {
+        background: white;
+        min-height: 40px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        border-radius: 8px;
+        position: relative;
+        padding: 0.25rem;
+
+        &--empty {
+            background: transparent;
+            cursor: default;
+        }
+
+        &--today {
+            background: #BA0048;
+            color: white;
+            font-weight: 700;
+        }
+
+        &--weekend {
+            background: #f8f9fa;
+            color: #6c757d;
+        }
+
+        &--has-notes {
+            background: #fff3cd;
+            border: 2px solid #BA0048;
+        }
+
+        &__number {
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        &__notes-indicator {
+            position: absolute;
+            top: 2px;
+            right: 2px;
+            background: #BA0048;
+            color: white;
+            border-radius: 50%;
+            width: 16px;
+            height: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            font-weight: 600;
+
+            .notes-count {
+                line-height: 1;
+            }
+        }
+    }
+}
+
+// Стили для модального окна календаря
+.calendar-modal {
+    max-width: 500px;
+    width: 100%;
+    max-height: 80vh;
+}
+
+.modal-body {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+
+    .selected-date {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: #393649;
+        margin-bottom: 1.5rem;
+        padding: 0.75rem;
+        background: #f8f9fa;
+        border-radius: 12px;
+        text-align: center;
+    }
+
+    .existing-notes {
+        margin-bottom: 1.5rem;
+        max-height: 200px;
+        overflow-y: auto;
+        padding-right: 8px;
+
+        // Кастомный скроллбар
+        &::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        &::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 3px;
+        }
+
+        &::-webkit-scrollbar-thumb {
+            background: #BA0048;
+            border-radius: 3px;
+        }
+
+        &::-webkit-scrollbar-thumb:hover {
+            background: #A0003F;
+        }
+
+        .note-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            padding: 1rem;
+            background: #f8f9fa;
+            border-radius: 12px;
+            margin-bottom: 0.75rem;
+            border-left: 4px solid #BA0048;
+
+            .note-content {
+                flex: 1;
+                margin-right: 1rem;
+
+                .note-text {
+                    margin: 0 0 0.5rem 0;
+                    color: #393649;
+                    line-height: 1.4;
+                }
+
+                .note-date {
+                    font-size: 0.8rem;
+                    color: #6c757d;
+                }
+            }
+
+            .note-actions {
+                display: flex;
+                gap: 0.5rem;
+
+                .note-action-btn {
+                    width: 32px;
+                    height: 32px;
+                    padding: 0;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    border-radius: 8px;
+
+                    svg {
+                        font-size: 1rem;
+                    }
+                }
+            }
+        }
+    }
+
+    .add-note-form,
+    .edit-note-form {
+        .note-textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #C7C7CC;
+            border-radius: 12px;
+            font-size: 14px;
+            font-family: inherit;
+            resize: vertical;
+            margin-bottom: 1rem;
+
+            &:focus {
+                outline: none;
+                border-color: #BA0048;
+            }
+
+            &::placeholder {
+                color: #8E8E93;
+            }
+        }
+
+        .add-note-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+
+            svg {
+                font-size: 1.1rem;
+            }
+        }
+
+        .edit-actions {
+            display: flex;
+            gap: 1rem;
+        }
+    }
+}
+
+// Адаптивность
+@media (max-width: 768px) {
+    .calendar-page {
+        margin: 24px 0;
+
+        .wrapper {
+            padding: 20px;
+        }
+    }
+
+    .calendar-header {
+        flex-direction: column;
+        gap: 1rem;
+        text-align: center;
+        margin-bottom: 24px;
+
+        .calendar-page__title {
+            font-size: 32px;
+        }
+    }
+
+    .calendar-content {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+
+    .calendar-month {
+        .calendar-grid {
+            gap: 1px;
+        }
+
+        .calendar-day {
+            min-height: 35px;
+
+            &__number {
+                font-size: 0.8rem;
+            }
+
+            &__notes-indicator {
+                width: 14px;
+                height: 14px;
+                font-size: 0.6rem;
+            }
+        }
+    }
+
+    .calendar-modal {
+        margin: 1rem;
+        max-height: 90vh;
+    }
+
+    .modal-body {
+        gap: 16px;
+    }
+}
