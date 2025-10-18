@@ -1,15 +1,6 @@
 <?php
 declare(strict_types=1);
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Route;
-
-Route::group(['middleware' => ['auth:sanctum']], function () {
-    Route::get('/user', function (Request $request) {
-        return $request->user();
-    });
-});
-
 // Подключение маршрутов доменов
 
 // Подключаем маршруты домена Resume
