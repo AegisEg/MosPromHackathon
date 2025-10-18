@@ -10,5 +10,11 @@ Route::group(['prefix' => 'responds'], function () {
     Route::group(['middleware' => ['auth:sanctum']], function () {
         Route::get('/show/{vacancyId}', [RespondAndInteractionController::class, 'show'])
             ->name('responds.show')->middleware('company');
+
+        Route::patch('/{respondId}/updateStatus', [RespondAndInteractionController::class, 'updateStatus'])
+            ->name('responds.updateStatus')->middleware('company');
+
+        Route::get('/best-matches/{vacancyId}', [RespondAndInteractionController::class, 'bestMatches'])
+            ->name('responds.bestMatches')->middleware('company');
     });
 });

@@ -34,26 +34,26 @@ class VacanciesSeeder extends Seeder
             [
                 'company_id'      => $companies[0]->id,
                 'user_id'         => $users[0]->id,
-                'title'           => 'Senior PHP Developer',
+                'title'           => 'Senior Full Stack Developer (PHP/Laravel + React)',
                 'profession_id'   => $professions[0]->id, // Программист
-                'description'     => 'Ищем опытного PHP разработчика для работы над крупными веб-проектами. Требуется знание Laravel, MySQL, Git. Опыт работы от 3 лет.',
+                'description'     => 'Ищем опытного Full Stack разработчика для работы над крупными веб-проектами. Требуется знание PHP, Laravel, JavaScript, React, MySQL, Git, Docker. Опыт работы от 4 лет. Участие в архитектурных решениях, менторство junior разработчиков.',
                 'employment_type' => EmploymentType::FULL_TIME,
-                'experience_wide' => ExperienceLevel::MIDDLE->value,
-                'salary_from'     => 120000,
-                'salary_to'       => 180000,
+                'experience_wide' => ExperienceLevel::SENIOR->value,
+                'salary_from'     => 180000,
+                'salary_to'       => 250000,
                 'status'          => true,
             ],
             [
                 'company_id'      => $companies[1]->id,
                 'user_id'         => $users[1]->id,
-                'title'           => 'Менеджер по продажам медицинского оборудования',
-                'profession_id'   => $professions[1]->id, // Менеджер по продажам
-                'description'     => 'Активные продажи медицинского оборудования клиникам и больницам. Ведение клиентской базы, проведение презентаций, работа с возражениями.',
+                'title'           => 'Python Backend Developer (Django/FastAPI)',
+                'profession_id'   => $professions[0]->id, // Программист
+                'description'     => 'Разработка высоконагруженных backend-сервисов на Python. Требуется знание Django/FastAPI, PostgreSQL, Redis, Docker, Git. Опыт работы с микросервисной архитектурой, API design, тестированием. Опыт от 3 лет.',
                 'employment_type' => EmploymentType::FULL_TIME,
-                'experience_wide' => ExperienceLevel::JUNIOR->value,
-                'salary_from'     => 80000,
-                'salary_to'       => 120000,
-                'status'          => false,
+                'experience_wide' => ExperienceLevel::MIDDLE->value,
+                'salary_from'     => 150000,
+                'salary_to'       => 220000,
+                'status'          => true,
             ],
             [
                 'company_id'      => $companies[2]->id,
@@ -695,13 +695,27 @@ class VacanciesSeeder extends Seeder
             ],
         ];
 
-        foreach ($vacancies as $vacancyData) {
+        // Найдем навыки программистов
+        $programmerSkills = Skills::whereIn('name', [
+            'PHP', 'JavaScript', 'Python', 'C#', 'Java', 'Git', 'Docker', 'MySQL', 'Laravel', 'React'
+        ])->get();
+
+        foreach ($vacancies as $index => $vacancyData) {
             $vacancy = Vacancies::create($vacancyData);
 
-            // Привязываем случайные навыки к вакансии
-            if ($skills->count() > 0) {
-                $randomSkills = $skills->random(rand(3, min(6, $skills->count())));
-                $vacancy->skills()->sync($randomSkills->pluck('id'));
+            // Для первых двух вакансий (id=1 и id=2) привязываем навыки программистов
+            if ($index < 2 && $programmerSkills->count() > 0) {
+                // Привязываем все навыки программистов плюс несколько случайных общих навыков
+                $allSkills = $programmerSkills->merge($skills->whereNotIn('name', [
+                    'PHP', 'JavaScript', 'Python', 'C#', 'Java', 'Git', 'Docker', 'MySQL', 'Laravel', 'React'
+                ])->random(rand(2, 4)));
+                $vacancy->skills()->sync($allSkills->pluck('id'));
+            } else {
+                // Для остальных вакансий привязываем случайные навыки
+                if ($skills->count() > 0) {
+                    $randomSkills = $skills->random(rand(3, min(6, $skills->count())));
+                    $vacancy->skills()->sync($randomSkills->pluck('id'));
+                }
             }
         }
 

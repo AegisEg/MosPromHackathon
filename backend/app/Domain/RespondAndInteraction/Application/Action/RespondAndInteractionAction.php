@@ -3,8 +3,11 @@ declare(strict_types=1);
 
 namespace App\Domain\RespondAndInteraction\Application\Action;
 
+use App\Domain\Company\Application\Exceptions\NotFoundCompanyException;
 use App\Domain\RespondAndInteraction\Application\Exceptions\ForbiddenRespondException;
 use App\Domain\RespondAndInteraction\Application\Exceptions\RespondNotFoundException;
+use App\Domain\RespondAndInteraction\Application\Services\BestMatchService;
+use App\Domain\RespondAndInteraction\Enums\RespondStatus;
 use App\Domain\Resume\Application\Service\ResumeService;
 use App\Models\Responds;
 use App\Models\Resume;
@@ -81,4 +84,73 @@ class RespondAndInteractionAction {
         ];
         return $result;
     }
+
+    public function updateRespondStatus(User $user, int $respondId, int $status): void {
+
+        $respond = Responds::find($respondId);
+        if (!$respond) {
+            throw new RespondNotFoundException();
+        }
+        if ($respond->vacancy->user_id !== $user->id) {
+            throw new ForbiddenRespondException();
+        }
+        $status = RespondStatus::tryFrom($status);
+        $respond->status = $status;
+        $respond->save();
+    }
+
+    public function bestMatchResumesByVacancy(int $vacancyId): array {
+        $vacancy = Vacancies::with(['skills', 'profession'])->find($vacancyId);
+        if (!$vacancy) {
+            throw new NotFoundCompanyException();
+        }
+
+        $responds = Responds::where('vacancy_id', $vacancyId)->get();
+        if ($responds->isEmpty()) {
+            throw new RespondNotFoundException();
+        }
+
+        // Получаем резюме с их связями
+        $resumes = Resume::with(['skills', 'profession', 'experiences', 'educations', 'user'])
+            ->whereIn('id', $responds->pluck('resume_id'))
+            ->get();
+
+        // Вычисляем совпадения для каждого резюме
+        $scoredResumes = $resumes->map(function ($resume) use ($vacancy) {
+            $score = BestMatchService::calculateMatchScore($resume, $vacancy);
+            
+            return [
+                'resume' => $resume,
+                'score' => $score,
+                'match_details' => BestMatchService::getMatchDetails($resume, $vacancy)
+            ];
+        });
+
+        // Сортируем по убыванию оценки совпадения
+        $sortedResumes = $scoredResumes->sortByDesc('score');
+
+        // Возвращаем топ-5 наиболее подходящих резюме
+        $topResumes = $sortedResumes->take(5)->map(function ($item) {
+            $resume = $item['resume'];
+            return [
+                'id' => $resume->id,
+                'profession' => $resume->profession->name,
+                'first_name' => $resume->user->first_name,
+                'middle_name' => $resume->user->middle_name,
+                'last_name' => $resume->user->last_name,
+                'date_of_birth' => $resume->date_of_birth?->format('d.m.Y'),
+                'country' => $resume->country,
+                'city' => $resume->city,
+                'status' => $resume->status,
+                'match_score' => round($item['score'], 2),
+                'match_details' => $item['match_details'],
+            ];
+        });
+
+        return [
+            'total' => $topResumes->count(),
+            'top_matches' => $topResumes->values()->toArray(),
+        ];
+    }
+
 }

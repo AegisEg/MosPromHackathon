@@ -4,6 +4,7 @@ namespace App\Enums;
 
 enum EmploymentType: int
 {
+    case UNKNOWN = 0;
     case FULL_TIME = 1;
     case PART_TIME = 2;
     case CONTRACT = 3;
@@ -18,6 +19,7 @@ enum EmploymentType: int
             self::CONTRACT => 'Договор',
             self::INTERNSHIP => 'Стажировка',
             self::FREELANCE => 'Фриланс',
+            default => 'Неизвестно',
         };
     }
 
@@ -29,6 +31,7 @@ enum EmploymentType: int
             self::CONTRACT => 'contract',
             self::INTERNSHIP => 'internship',
             self::FREELANCE => 'freelance',
+            default => 'unknown',
         };
     }
 }
