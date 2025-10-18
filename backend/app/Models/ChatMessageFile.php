@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Casts\DateTimeImmutableCast;
 use Illuminate\Database\Eloquent\Model;
 
 class ChatMessageFile extends Model
@@ -15,6 +16,11 @@ class ChatMessageFile extends Model
         'original_name',
         'size',
         'mime_type',
+    ];
+
+    protected $casts = [
+        'created_at' => DateTimeImmutableCast::class,
+        'updated_at' => DateTimeImmutableCast::class,
     ];
 
     public function chatMessage() {

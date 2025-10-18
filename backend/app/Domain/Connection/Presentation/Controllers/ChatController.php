@@ -76,4 +76,40 @@ class ChatController extends Controller
             status: StatusEnum::OK,
         ))->toResponse();
     }
+
+    public function updateChatMessages(int $chatId, Request $request) {
+        $requestData = $request->validate([
+            'lastMessageId' => 'required|integer|exists:chat_messages,id|min:1',
+        ]);
+        try {
+            $user          = $request->user();
+            $lastMessageId = (int) $requestData['lastMessageId'];
+            $messages      = (new ChatAction())->updateChatMessages($chatId, $lastMessageId, $user);
+            $messagesArray = array_map(fn ($message) => $message->toArray(), $messages);
+
+            return (new ParentResponse(
+                data: $messagesArray,
+                httpStatus: 200,
+                status: StatusEnum::OK,
+            ))->toResponse();
+        } catch (ForbiddenChatException $e) {
+            return (new ParentResponse(
+                data: [],
+                httpStatus: 403,
+                status: StatusEnum::FAIL,
+            ))->toResponse();
+        } catch (ChatNotFoundException $e) {
+            return (new ParentResponse(
+                data: [],
+                httpStatus: 404,
+                status: StatusEnum::FAIL,
+            ))->toResponse();
+        } catch (Throwable $e) {
+            return (new ParentResponse(
+                data: [],
+                httpStatus: 500,
+                status: StatusEnum::FAIL,
+            ))->toResponse();
+        }
+    }
 }
