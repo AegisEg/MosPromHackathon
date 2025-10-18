@@ -9,7 +9,7 @@ class SemanticSearchService
     protected string $promptKey;
     protected string $prompt;
     protected string $apiKey;
-    protected CONST BASE_PROMPT = 'Подбери наиболее подходящие элементы из списка которые подошли бы под описание: ';
+    protected CONST BASE_PROMPT = 'Подбери наиболее подходящие элементы из списка которые подошли бы под описание и выведи id через запятую. Описание: ';
 
     public function __construct() {
             $this->apiKey = env('GPT_API_KEY');
@@ -21,7 +21,7 @@ class SemanticSearchService
         return $this->GPTRequestAPI($this->prompt, $listItems);
     }
 
-    protected function GPTRequestAPI(string $systemText, array $listItems) {
+    protected function GPTRequestAPI(string $systemText, array $listItems): ?array {
             $requestArray = [
                 "modelUri" => "gpt://b1gcof6jm3k515g3b7tb/yandexgpt/rc",
                 "completionOptions" => [
@@ -39,16 +39,21 @@ class SemanticSearchService
                     ],
                     [
                         "role" => "user",
-                        "text" => $listItems
+                        "text" => json_encode($listItems)
                     ]
                 ]
             ];
 
             $response = Http::withHeaders([
                 'Authorization' => 'Bearer ' . $this->apiKey,
-            ])->post('https://llm.api.cloud.yandex.net/foundationModels/v1/completion', [
-                $requestArray,
-            ]);
-        return $response->json();
+                'Content-Type' => 'application/json',
+            ])->post('https://llm.api.cloud.yandex.net/foundationModels/v1/completion', $requestArray);
+            $responseArray = $response->json();
+            $result = $responseArray['result']['alternatives'][0]['message']['text'];
+            if ($result) {
+                $resultArray = array_map('intval', explode(',', $result));
+                return $resultArray;
+            }
+            return null;
     }
 }

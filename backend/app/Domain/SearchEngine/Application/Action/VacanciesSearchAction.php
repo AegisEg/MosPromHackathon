@@ -52,29 +52,33 @@ class VacanciesSearchAction {
             $vacanciesIdAfterTitle = $query->where('title', 'ilike', '%' . $queryArray['title'] . '%')
                   ->whereIn('id', $vacanciesIdAfterFilter)->get('id');
 
-        $queryAfterTitle = Vacancies::query();
+            $queryAfterTitle = Vacancies::query();
 
-        $vacanciesIdNotTitle = $queryAfterTitle->where('title', 'not ilike', '%' . $queryArray['title'] . '%')
-        ->whereIn('id', $vacanciesIdAfterFilter)->get(['id', 'title']);
+            $vacanciesIdNotTitle = $queryAfterTitle->where('title', 'not ilike', '%' . $queryArray['title'] . '%')
+            ->whereIn('id', $vacanciesIdAfterFilter)->get(['id', 'title']);
 
-        $notTitleList = $vacanciesIdNotTitle->pluck('title', 'id')->toArray();
+            $notTitleList = $vacanciesIdNotTitle->pluck('title', 'id')->toArray();
 
-        $semantic = new SemanticSearchService();
-        $semanticResult = $semantic->search($queryArray['title'], $notTitleList);
+            $semantic = new SemanticSearchService();
+            $semanticResult = $semantic->search($queryArray['title'], $notTitleList);
 
+            $vacanciesIdAfterFilterArray = $vacanciesIdAfterTitle->pluck('id')->toArray();
+            if ($semanticResult) {
+                $vacancies = array_merge($vacanciesIdAfterFilterArray, $semanticResult);
+                $vacanciesById = Vacancies::whereIn('id', $vacancies)->get();
+                $vacancies = $vacanciesById;
+            } else {
+                $vacancies = Vacancies::whereIn('id', $vacanciesIdAfterTitle)->get();
+            }
 
-
-
+        } else {
+            $vacancies = $query->get();
         }
-
-        $vacancies = $query->get();
-
 
         $resultList = [
             'total' => $vacancies->count(),
             'vacancies' => $vacancies->toArray(),
         ];
-
         return $resultList;
     }
 }
