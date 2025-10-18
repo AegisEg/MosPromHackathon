@@ -40,8 +40,6 @@ class ResumesSeeder extends Seeder
             EmploymentType::FREELANCE->value,    // Фриланс
             EmploymentType::FREELANCE->value,
             EmploymentType::INTERNSHIP->value,   // Стажировка
-            null,                                // Отсутствующий тип (UNKNOWN)
-            null,                                // Отсутствующий тип (UNKNOWN)
         ];
         $aboutTexts = [
             'Опытный специалист с многолетним стажем работы. Ответственный, коммуникабельный, готов к обучению и профессиональному росту.',
