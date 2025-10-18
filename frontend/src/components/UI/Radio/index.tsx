@@ -16,7 +16,6 @@ interface RadioProps {
   onChange?: (value: string) => void;
   disabled?: boolean;
   error?: string;
-  required?: boolean;
   className?: string;
   name?: string;
   direction?: 'vertical' | 'horizontal';
@@ -30,7 +29,6 @@ export default function Radio({
   onChange,
   disabled = false,
   error,
-  required = false,
   className = '',
   name,
   direction = 'vertical',
@@ -61,7 +59,6 @@ export default function Radio({
       {label && (
         <div className="custom-radio__label">
           {label}
-          {required && <span className="custom-radio__required">*</span>}
         </div>
       )}
       

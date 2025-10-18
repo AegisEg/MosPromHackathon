@@ -1,5 +1,6 @@
 import axios from 'axios';
 import {configuration} from "../utils/configuration";
+import { LocalStorageKeys } from '../utils/localStorage';
 
 const api = axios.create({
     baseURL: configuration.siteURL,
@@ -11,7 +12,7 @@ const api = axios.create({
 
 api.interceptors.request.use(
     (config) => {
-        const token = localStorage.getItem('token');
+        const token = localStorage.getItem(LocalStorageKeys.ACCESS_TOKEN);
         if (token) {
             config.headers['Authorization'] = `Bearer ${token}`;
         }

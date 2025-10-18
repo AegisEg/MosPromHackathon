@@ -46,6 +46,7 @@
     }
 
     &:disabled {
-        cursor: not-allowed;
+        cursor: default;
+        background-color: #929292;
     }
 }

@@ -51,20 +51,6 @@
     transition: color 0.3s ease;
   }
 
-  // Hover эффект
-  &:hover:not(&--disabled):not(&--error):not(&--checked) {
-    .custom-toggle__switch {
-      border-color: #48484A;
-    }
-
-    .custom-toggle__slider {
-      background: #48484A;
-    }
-
-    .custom-toggle__label {
-      color: #48484A;
-    }
-  }
 
   &__error {
     font-size: 12px;
@@ -156,10 +142,6 @@
       background: #FF3B30;
     }
 
-    .custom-toggle__label {
-      color: #FF3B30;
-    }
-
     &.custom-toggle--checked {
       .custom-toggle__switch {
         background: #48484A;
@@ -185,7 +167,6 @@
   &--disabled {
     .custom-toggle__container {
       cursor: not-allowed;
-      opacity: 0.5;
     }
 
     .custom-toggle__switch {

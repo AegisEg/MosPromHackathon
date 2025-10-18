@@ -17,7 +17,6 @@ interface SelectProps {
   isClearable?: boolean;
   isLoading?: boolean;
   error?: string;
-  required?: boolean;
   className?: string;
   closeMenuOnSelect?: boolean;
 }
@@ -35,7 +34,6 @@ export default function Select({
   isClearable = false,
   isLoading = false,
   error,
-  required = false,
   className = '',
   closeMenuOnSelect = true,
 }: SelectProps) {
@@ -70,9 +68,9 @@ export default function Select({
       padding: '4px 8px',
       fontSize: '16px',
       lineHeight: '24px',
-      color: state.hasValue || state.isFocused ? '#48484A' : '#C7C7CC',
-      background: 'transparent',
-      border: error ? '2px solid #FF3B30' : (state.hasValue || state.isFocused ? '2px solid #48484A' : '2px solid #C7C7CC'),
+      color: '#393649',
+      background: '#FFFFFF',
+      border: error ? '2px solid #FF3B30' : '2px solid #C7C7CC',
       borderRadius: '12px',
       outline: 'none',
       transition: 'all 0.3s ease',
@@ -81,21 +79,32 @@ export default function Select({
       minHeight: '48px',
       cursor: isDisabled ? 'not-allowed' : 'pointer',
       '&:hover': {
-        borderColor: error ? '#FF3B30' : '#48484A',
+        border: error ? '2px solid #FF3B30' : '2px solid #C7C7CC',
       },
+    }),
+    menuPortal: (provided: any) => ({
+      ...provided,
+      zIndex: 9999,
     }),
     menu: (provided: any) => ({
       ...provided,
-      background: 'transparent',
-      border: '2px solid #48484A',
+      background: '#FFFFFF',
+      border: '2px solid #C7C7CC',
       borderRadius: '12px',
       overflow: 'hidden',
       marginTop: '4px',
-      backdropFilter: 'blur(10px)',
+      minWidth: '100%',
+      width: 'max-content',
+      maxWidth: 'calc(100vw - 40px)',
     }),
     menuList: (provided: any) => ({
       ...provided,
-      padding: 0,
+      padding: '20px',
+      display: 'grid',
+      gridTemplateColumns: 'repeat(2, 1fr)',
+      gap: '12px',
+      maxHeight: 'none',
+      overflow: 'visible',
     }),
     option: (provided: any, state: any) => ({
       ...provided,
@@ -104,10 +113,9 @@ export default function Select({
       padding: '12px 16px',
       cursor: 'pointer',
       transition: 'all 0.2s ease',
-      borderBottom: '1px solid rgba(72, 72, 74, 0.2)',
-      '&:last-child': {
-        borderBottom: 'none',
-      },
+      border: '1px solid #C7C7CC',
+      borderRadius: '8px',
+      textAlign: 'center',
       '&:active': {
         backgroundColor: '#48484A',
         color: '#FFFFFF',
@@ -120,35 +128,35 @@ export default function Select({
     }),
     multiValue: (provided: any) => ({
       ...provided,
-      backgroundColor: '#48484A',
+      backgroundColor: '#C7C7CC',
       borderRadius: '6px',
     }),
     multiValueLabel: (provided: any) => ({
       ...provided,
-      color: '#FFFFFF',
+      color: '#393649',
     }),
     multiValueRemove: (provided: any) => ({
       ...provided,
-      color: '#FFFFFF',
+      color: '#393649',
       '&:hover': {
-        backgroundColor: '#FF3B30',
-        color: '#FFFFFF',
+        backgroundColor: 'transparent',
+        color: '#393649',
       },
     }),
     placeholder: (provided: any, state: any) => ({
       ...provided,
-      color: state.isFocused ? '#48484A' : '#C7C7CC',
+      color: '#929292',
     }),
     input: (provided: any, state: any) => ({
       ...provided,
-      color: state.selectProps.menuIsOpen ? '#48484A' : '#C7C7CC',
+      color: '#393649',
     }),
     indicatorSeparator: () => ({
       display: 'none',
     }),
     dropdownIndicator: (provided: any, state: any) => ({
       ...provided,
-      color: state.isFocused || state.selectProps.menuIsOpen ? '#48484A' : '#C7C7CC',
+      color: '#393649',
       transition: 'color 0.3s ease',
       '&:hover': {
         color: '#48484A',
@@ -156,7 +164,7 @@ export default function Select({
     }),
     clearIndicator: (provided: any, state: any) => ({
       ...provided,
-      color: state.isFocused ? '#48484A' : '#C7C7CC',
+      color: '#393649',
       '&:hover': {
         color: '#FF3B30',
       },
@@ -172,6 +180,14 @@ export default function Select({
     noOptionsMessage: (provided: any) => ({
       ...provided,
       color: '#48484A',
+      textAlign: 'center',
+      padding: '20px',
+      fontSize: '16px',
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
+      width: '100%',
+      gridColumn: '1 / -1',
     }),
     loadingMessage: (provided: any) => ({
       ...provided,
@@ -208,7 +224,6 @@ export default function Select({
       {label && (
         <label className="custom-select__label">
           {label}
-          {required && <span className="custom-select__required">*</span>}
         </label>
       )}
       
@@ -231,6 +246,10 @@ export default function Select({
           onBlur={handleBlur}
           styles={customStyles}
           theme={customTheme}
+          noOptionsMessage={() => 'Ничего нет'}
+          menuPortalTarget={document.body}
+          menuPosition="absolute"
+          menuPlacement="auto"
         />
       </div>
       
