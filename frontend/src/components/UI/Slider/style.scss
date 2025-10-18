@@ -7,14 +7,9 @@
   &__label {
     font-size: 16px;
     line-height: 24px;
-    color: #C7C7CC;
+    color: #FFFFFF;
     transition: color 0.3s ease;
     cursor: pointer;
-  }
-
-  &__required {
-    color: #FF3B30;
-    margin-left: 4px;
   }
 
   &__container {
@@ -29,7 +24,7 @@
     justify-content: space-between;
     font-size: 12px;
     line-height: 16px;
-    color: #C7C7CC;
+    color: #393649;
     transition: color 0.3s ease;
   }
 
@@ -43,11 +38,11 @@
   // Hover эффект на весь компонент
   &:hover:not(&--disabled):not(&--error) {
     .custom-slider__label {
-      color: #48484A;
+      color: #FFFFFF;
     }
 
     .custom-slider__limits {
-      color: #48484A;
+      color: #393649;
     }
   }
 
@@ -64,10 +59,6 @@
 
   // Состояние error
   &--error {
-    .custom-slider__label {
-      color: #FF3B30;
-    }
-
     .custom-slider__limits {
       color: #FF3B30;
     }

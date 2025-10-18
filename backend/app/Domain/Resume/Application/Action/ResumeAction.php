@@ -2,6 +2,7 @@
 
 namespace App\Domain\Resume\Application\Action;
 
+use App\Domain\Resume\Application\Exception\ForbiddenResumeException;
 use App\Domain\Resume\Application\Exception\NotFoundResumeException;
 use App\Domain\Resume\Application\Service\ResumeService;
 use App\Domain\SharedKernel\Services\DateHelper;
@@ -94,10 +95,14 @@ class ResumeAction {
         }
     }
 
-    public function updateResume(int $id, array $resumeArray): int {
+    public function updateResume(User $user, int $id, array $resumeArray): int {
         $resume = Resume::find($id);
         if (!$resume) {
             throw new NotFoundResumeException();
+        }
+
+        if ($resume->user_id !== $user->id) {
+            throw new ForbiddenResumeException();
         }
 
         DB::beginTransaction();
@@ -130,11 +135,16 @@ class ResumeAction {
         }
     }
 
-    public function deleteResume(int $id): void {
+    public function deleteResume(User $user, int $id): void {
         $resume = Resume::find($id);
         if (!$resume) {
             throw new NotFoundResumeException();
         }
+
+        if ($resume->user_id !== $user->id) {
+            throw new ForbiddenResumeException();
+        }
+
         DB::beginTransaction();
         try {
             $resume->delete();

@@ -14,7 +14,6 @@ interface InputProps {
   onFocus?: () => void;
   disabled?: boolean;
   error?: string;
-  required?: boolean;
   mask?: string;
   className?: string;
   maxLength?: number;
@@ -33,7 +32,6 @@ export default function Input({
   onFocus,
   disabled = false,
   error,
-  required = false,
   mask,
   className = '',
   maxLength,
@@ -78,7 +76,6 @@ export default function Input({
       {label && (
         <label className="custom-input__label">
           {label}
-          {required && <span className="custom-input__required">*</span>}
         </label>
       )}
       

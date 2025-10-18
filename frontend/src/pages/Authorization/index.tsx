@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import Input from "../../components/UI/Input";
 import Button from "../../components/UI/Button";
 import { DefaultValue } from "../../types/default.types";
@@ -6,55 +6,140 @@ import Password from "../../components/UI/Password";
 import './style.scss';
 import { useNavigate } from "react-router-dom";
 import { ButtonType } from "../../components/UI/Button";
+import { authorizeUser } from "../../api/user";
+import { saveTokenToStorage } from "../../redux/user/actions";
+import { useTypedDispatch } from "../../redux/store";
+import { resetValidation, validateEmail, validatePassword, validateValue } from "../../utils/validation";
+import { showErrorToast } from "../../utils/toast";
+import authBackground from '../../assets/auth_back.png';
+import { useSelector } from "react-redux";
+import { selectAuthData } from "../../redux/user/selectors";
+import { LoadStatus } from "../../utils/types";
 
 function Authorization() {
+    const dispatch = useTypedDispatch();
     const navigate = useNavigate();
 
+    const {token, status} = useSelector(selectAuthData);
+
+    // Все useState хуки должны быть в начале компонента
     const [email, setEmail] = useState<DefaultValue<string>>({ value: '', success: false, error: '', isDisabled: false });
     const [password, setPassword] = useState<DefaultValue<string>>({ value: '', success: false, error: '', isDisabled: false });
+    const [isValidateSuccess, setIsValidateSuccess] = useState<boolean>(false);
 
-    const handleLogin = () => {
-        console.log(email, password);
+    const handleRedirect = useCallback(() => {
+        if (token && status === LoadStatus.SUCCESS) {
+            navigate('/auth-proccess');
+        }
+    }, [token, status, navigate]);
+
+    useEffect(() => {
+        // Используем setTimeout для отложенного выполнения навигации
+        const timer = setTimeout(() => {
+            handleRedirect();
+        }, 0);
+        
+        return () => clearTimeout(timer);
+    }, [handleRedirect]);
+    
+    useEffect(() => {
+        if(email.success && password.success) {
+            setIsValidateSuccess(true);
+        } else {
+            setIsValidateSuccess(false);
+        }
+    }, [email.success, password.success]);
+
+    const handleLogin = useCallback(async () => {
+        try {
+            const response = await authorizeUser({
+                email: email.value,
+                password: password.value,
+            });
+            
+            console.log('response', response);
+            
+            if (response && response.token) {
+                dispatch(saveTokenToStorage(response.token));
+                // Отложенная навигация для избежания проблем с concurrent rendering
+                setTimeout(() => {
+                    navigate('/auth-proccess');
+                }, 0);
+            } else {
+                showErrorToast('Неверный ответ сервера');
+            }
+        } catch (error: any) {
+            console.error('Login error:', error);
+            const errorMessage = error.response?.data?.error?.message || error.message || 'Произошла ошибка при авторизации';
+            showErrorToast(errorMessage);
+        }
+    }, [email.value, password.value, dispatch, navigate]);
+
+    // Показываем загрузку пока проверяем токен - после всех хуков
+    if (status === LoadStatus.IN_PROGRESS) {
+        return <div>Загрузка...</div>;
     }
     
     return (
-        <div className="authorization-page">
-            <div className="wrapper">
-                <div className="authorization-page__content">
-                    <h1 className="authorization-page__title">
-                        Авторизация
-                    </h1>
-                    <Input
-                        label="Электронная почта"
-                        placeholder="example@mail.com"
-                        value={email.value}
-                        onChange={(value) => setEmail({ ...email, value, success: true, error: '' })}
-                        error={email.error}
-                        disabled={email.isDisabled}
-                        required
-                    />
-                    <Password 
-                        label="Пароль"
-                        placeholder="********"
-                        value={password.value}
-                        onChange={(value) => setPassword({ ...password, value, success: true, error: '' })}
-                        error={password.error}
-                        disabled={password.isDisabled}
-                        required
-                    />
-                    <div className="authorization-page__buttons">
-                        <Button
-                            onClick={() => navigate('/')}
-                            variant={ButtonType.GRAY}
-                        >
-                            Вернуться
-                        </Button>
-                        <Button
-                            onClick={handleLogin}
-                            disabled={email.isDisabled || password.isDisabled}
-                        >
-                            Войти
-                        </Button>
+        <div className="authorization-page" style={{ backgroundImage: `url(${authBackground})` }}>
+            <div className="container">
+                <div className="wrapper">
+                    <div className="authorization-page__content">
+                        <h1 className="authorization-page__title">
+                            Авторизация
+                        </h1>
+                        <Input
+                            label="Электронная почта"
+                            placeholder="example@mail.com"
+                            value={email.value}
+                            onChange={(value) => setEmail({ ...email, value, success: true, error: '' })}
+                            onBlur={() => {
+                                validateValue({
+                                    value: email.value,
+                                    setField: setEmail,
+                                    validateFnc: validateEmail,
+                                    needValidate: true,
+                                })
+                            }}
+                            onFocus={() => {
+                                resetValidation(email, setEmail)
+                            }}
+                            error={email.error}
+                            disabled={email.isDisabled}
+                        />
+                        <Password 
+                            label="Пароль"
+                            placeholder="********"
+                            value={password.value}
+                            onChange={(value) => setPassword({ ...password, value, success: true, error: '' })}
+                            onBlur={() => {
+                                validateValue({
+                                    value: password.value,
+                                    setField: setPassword,
+                                    validateFnc: validatePassword,
+                                    needValidate: true,
+                                })
+                            }}
+                            onFocus={() => {
+                                resetValidation(password, setPassword)
+                            }}
+                            error={password.error}
+                            disabled={password.isDisabled}
+                        />
+                        <div className="authorization-page__buttons">
+                            <Button
+                                onClick={() => navigate('/')}
+                                variant={ButtonType.GRAY}
+                            >
+                                Вернуться
+                            </Button>
+                            <Button
+                                onClick={handleLogin}
+                                disabled={!isValidateSuccess}
+                            >
+                                Войти
+                            </Button>
+                        </div>
                     </div>
                 </div>
             </div>

@@ -5,9 +5,12 @@ use App\Domain\Company\Presentation\Controller\CompanyController;
 use Illuminate\Support\Facades\Route;
 
 Route::group(['prefix' => 'companies'], function () {
+
     Route::get('/{id}', [CompanyController::class, 'show'])
         ->name('companies.show');
     Route::group(['middleware' => ['auth:sanctum']], function () {
+        Route::get('/', [CompanyController::class, 'index'])
+        ->name('companies.index');
         Route::post('/store', [CompanyController::class, 'store'])
             ->name('companies.store')->middleware('company');
 

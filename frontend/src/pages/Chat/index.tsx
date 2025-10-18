@@ -61,6 +61,7 @@ function Chat() {
 
   return (
     <div className="chat-page">
+      <div className="container">
         <div className="chat-container">
           {/* Левая панель - список чатов */}
           <div className="chat-sidebar">
@@ -194,6 +195,7 @@ function Chat() {
               </div>
             )}
           </div>
+        </div>
       </div>
     </div>
   );

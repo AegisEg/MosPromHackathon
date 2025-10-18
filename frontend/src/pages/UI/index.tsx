@@ -106,7 +106,6 @@ function UI() {
               onChange={(value) => setInput2({ ...input2, value, success: true, error: '' })}
               error={input2.error}
               disabled={input2.isDisabled}
-              required
             />
             <Input
               label="С ошибкой"
@@ -163,7 +162,6 @@ function UI() {
               onChange={(value) => setSelect2({ ...select2, value, success: true, error: '' })}
               error={select2.error}
               isDisabled={select2.isDisabled}
-              required
             />
             <Select
               label="С ошибкой"
@@ -295,7 +293,6 @@ function UI() {
               error={radio1.error}
               disabled={radio1.isDisabled}
               name="radio-vertical"
-              required
             />
             <Radio
               label="Горизонтальное расположение"

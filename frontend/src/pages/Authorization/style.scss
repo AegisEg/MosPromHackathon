@@ -1,13 +1,17 @@
 .authorization-page {
+    flex: 1 1 auto;
     display: flex;
     justify-content: center;
     align-items: center;
+    min-height: calc(100vh - 100px);
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
 
     &__content {
         display: flex;
         flex-direction: column;
         gap: 16px;
-        min-width: 600px;
     }
 
     &__title {
@@ -30,6 +34,21 @@
         align-items: center;
 
         & .button {
+            width: 100%;
+        }
+    }
+    .container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-shrink: 0;
+
+        .wrapper {
+            background: #FFFFFF4D;
+            backdrop-filter: blur(30px);
+            max-width: 610px;
+            max-height: 410px;
+            flex-shrink: 0;
             width: 100%;
         }
     }

@@ -8,21 +8,10 @@
     font-weight: 500;
     font-size: 14px;
     line-height: 20px;
-    color: #C7C7CC;
+    color: #FFFFFF;
     transition: color 0.3s ease;
   }
 
-  // Hover на всю группу
-  &:hover:not(&--disabled):not(&--error) {
-    .custom-radio__label {
-      color: #48484A;
-    }
-  }
-
-  &__required {
-    color: #FF3B30;
-    margin-left: 4px;
-  }
 
   &__options {
     display: flex;
@@ -124,10 +113,6 @@
 
   // Состояние error
   &--error {
-    .custom-radio__label {
-      color: #FF3B30;
-    }
-
     .custom-radio__circle {
       border-color: #FF3B30;
     }
@@ -139,13 +124,8 @@
 
   // Состояние disabled
   &--disabled {
-    .custom-radio__label {
-      opacity: 0.5;
-    }
-
     .custom-radio__option {
       cursor: not-allowed;
-      opacity: 0.5;
     }
   }
 }

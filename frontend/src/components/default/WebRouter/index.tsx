@@ -1,95 +1,212 @@
-import React, { Suspense } from 'react';
+import React, { Suspense, useState, useEffect, useRef } from 'react';
 import './style.scss';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import Loader from '../Loader/';
 import Header from '../Header/';
 import Footer from '../Footer/';
 import NotFound from '../NotFound/';
+import ProtectedRoute from '../ProtectedRoute';
+import { AuthorizationProxy } from '../AuthorizationProxy';
 
-function WebRouter() {
-  function renderFallback() {
-    return (
-       <Loader />
-    );
-  }
+const MainPage = React.lazy(() => import('../../../pages/Main/'));
+const ResumePage = React.lazy(() => import('../../../pages/Resume/'));
+const ResumeEditPage = React.lazy(() => import('../../../pages/ResumeEdit/'));
+const UIPage = React.lazy(() => import('../../../pages/UI/'));
+const AuthorizationPage = React.lazy(() => import('../../../pages/Authorization/'));
+const RegistrationPage = React.lazy(() => import('../../../pages/Registration/'));
+const ChatPage = React.lazy(() => import('../../../pages/Chat/'));
+const VacanciesPage = React.lazy(() => import('../../../pages/Vacancies/'));
+const InternshipsPage = React.lazy(() => import('../../../pages/Internships/'));
+const EmployerDashboard = React.lazy(() => import('../../../pages/EmployerDashboard/'));
+const JobSeekerDashboard = React.lazy(() => import('../../../pages/JobSeekerDashboard/'));
+const AdminDashboard = React.lazy(() => import('../../../pages/AdminDashboard/'));
+const InstituteDashboard = React.lazy(() => import('../../../pages/InstituteDashboard/'));
 
-  const MainPage = React.lazy(() => import('../../../pages/Main/'));
-  
-  const ResumePage = React.lazy(() => import('../../../pages/Resume/'));
+function renderFallback() {
+  return <Loader />;
+}
 
-  const ResumeEditPage = React.lazy(() => import('../../../pages/ResumeEdit/'));
+function AppRoutes() {
+  const location = useLocation();
+  const showHeaderAndFooter = !['/authorization', '/registration'].includes(location.pathname);
+  const footerRef = useRef<HTMLElement>(null);
 
-  const UIPage = React.lazy(() => import('../../../pages/UI/'));
+  // Состояние для кнопки "Вверх"
+  const [showScrollTop, setShowScrollTop] = useState(false);
 
-  const AuthorizationPage = React.lazy(() => import('../../../pages/Authorization/'));
+  // Здесь мне нужно получить сколько пикселей футера в высоту видно на экране
+  const [heightVisibleFooter, setHeightVisibleFooter] = useState(0);
 
-  const RegistrationPage = React.lazy(() => import('../../../pages/Registration/'));
+  useEffect(() => {
+    function updateFooterVisibility() {
+      if (!footerRef.current) {
+        setHeightVisibleFooter(0);
+        return;
+      }
+      const rect = footerRef.current.getBoundingClientRect();
+      const windowHeight = window.innerHeight;
+      const buttonDefaultBottom = 40;
+      const minGap = 20;
+      let visibleFooter = 0;
+      if (rect.top < windowHeight && rect.bottom > 0) {
+        const visibleTop = Math.max(rect.top, 0);
+        const visibleBottom = Math.min(rect.bottom, windowHeight);
+        visibleFooter = Math.max(0, visibleBottom - visibleTop);
+      }
+      setHeightVisibleFooter(visibleFooter + buttonDefaultBottom + minGap);
+    }
 
-  const ChatPage = React.lazy(() => import('../../../pages/Chat/'));
+    updateFooterVisibility();
+    window.addEventListener('scroll', updateFooterVisibility, { passive: true });
+    window.addEventListener('resize', updateFooterVisibility, { passive: true });
+    return () => {
+      window.removeEventListener('scroll', updateFooterVisibility);
+      window.removeEventListener('resize', updateFooterVisibility);
+    };
+  }, []);
 
-  const VacanciesPage = React.lazy(() => import('../../../pages/Vacancies/'));
+  useEffect(() => {
+    const handleScroll = () => {
+      // Показываем кнопку, если прокрутили больше 150px
+      setShowScrollTop(window.scrollY > 150);
+    };
 
-  const InternshipsPage = React.lazy(() => import('../../../pages/Internships/'));
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const scrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    });
+  };
 
   return (
-      <Router basename={'/'}>
-        <Header />
-        <div className="route_container">
-          <div className="main">
-            <div className="container">
-              <Routes>
-                <Route path="/" element={
-                  <Suspense fallback={renderFallback()}>
-                    <MainPage />
-                  </Suspense>
-                } />
-                <Route path="/resume" element={
-                  <Suspense fallback={renderFallback()}>
-                    <ResumePage />
-                  </Suspense>
-                } />
-                <Route path="/resume/edit" element={
-                  <Suspense fallback={renderFallback()}>
-                    <ResumeEditPage />
-                  </Suspense>
-                } />
-                <Route path="/authorization" element={
-                  <Suspense fallback={renderFallback()}>
-                      <AuthorizationPage />
-                  </Suspense>
-                } />
-                <Route path="/registration" element={
-                  <Suspense fallback={renderFallback()}>
-                      <RegistrationPage />
-                  </Suspense>
-                } />
-                <Route path="/ui" element={
-                  <Suspense fallback={renderFallback()}>
-                    <UIPage />
-                  </Suspense>
-                } />
-                <Route path="/chat" element={
-                  <Suspense fallback={renderFallback()}>
-                    <ChatPage />
-                  </Suspense>
-                } />
-                <Route path="/vacancies" element={
-                  <Suspense fallback={renderFallback()}>
-                    <VacanciesPage />
-                  </Suspense>
-                } />
-                <Route path="/internships" element={
-                  <Suspense fallback={renderFallback()}>
-                    <InternshipsPage />
-                  </Suspense>
-                } />
-                <Route path="*" element={<NotFound />} />
-              </Routes>
-            </div>
-          </div>
-        </div>
-        <Footer />
-      </Router>
+    <>
+      {showHeaderAndFooter && <Header />}
+      <div className="route_container">
+        <Routes>
+          <Route path="/" element={
+            <Suspense fallback={renderFallback()}>
+              <MainPage />
+            </Suspense>
+          } />
+          <Route path="/resume" element={
+            <Suspense fallback={renderFallback()}>
+              <ResumePage />
+            </Suspense>
+          } />
+          <Route path="/resume/edit" element={
+            <Suspense fallback={renderFallback()}>
+              <ResumeEditPage />
+            </Suspense>
+          } />
+          <Route path="/authorization" element={
+            <Suspense fallback={renderFallback()}>
+              <AuthorizationPage />
+            </Suspense>
+          } />
+          <Route path="/registration" element={
+            <Suspense fallback={renderFallback()}>
+              <RegistrationPage />
+            </Suspense>
+          } />
+          <Route path="/ui" element={
+            <Suspense fallback={renderFallback()}>
+              <UIPage />
+            </Suspense>
+          } />
+          <Route path="/chat" element={
+            <Suspense fallback={renderFallback()}>
+              <ChatPage />
+            </Suspense>
+          } />
+          <Route path="/vacancies" element={
+            <Suspense fallback={renderFallback()}>
+              <VacanciesPage />
+            </Suspense>
+          } />
+          <Route path="/internships" element={
+            <Suspense fallback={renderFallback()}>
+              <InternshipsPage />
+            </Suspense>
+          } />
+          <Route path="/auth-proccess" element={
+            <Suspense fallback={renderFallback()}>
+                <ProtectedRoute>
+                    <AuthorizationProxy />
+                </ProtectedRoute>
+            </Suspense>
+          } />
+          <Route path="/employer-dashboard" element={
+            <Suspense fallback={renderFallback()}>
+              <ProtectedRoute>
+                <EmployerDashboard />
+              </ProtectedRoute>
+            </Suspense>
+          } />
+          <Route path="/job-seeker-dashboard" element={
+            <Suspense fallback={renderFallback()}>
+              <ProtectedRoute>
+                <JobSeekerDashboard />
+              </ProtectedRoute>
+            </Suspense>
+          } />
+          <Route path="/admin-dashboard" element={
+            <Suspense fallback={renderFallback()}>
+              <ProtectedRoute>
+                <AdminDashboard />
+              </ProtectedRoute>
+            </Suspense>
+          } />
+          <Route path="/institute-dashboard" element={
+            <Suspense fallback={renderFallback()}>
+              <ProtectedRoute>
+                <InstituteDashboard />
+              </ProtectedRoute>
+            </Suspense>
+          } />
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </div>
+      
+      {showHeaderAndFooter && <Footer ref={footerRef} />}
+      
+      {/* Кнопка "Вверх" */}
+      {showScrollTop && (
+        <button 
+          className="scroll-to-top"
+          onClick={scrollToTop}
+          aria-label="Вернуться наверх"
+          style={{ bottom: `${heightVisibleFooter}px` }}
+        >
+          <svg 
+            width="24" 
+            height="24" 
+            viewBox="0 0 24 24" 
+            fill="none" 
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path 
+              d="M12 19V5M12 5L5 12M12 5L19 12" 
+              stroke="white" 
+              strokeWidth="2" 
+              strokeLinecap="round" 
+              strokeLinejoin="round"
+            />
+          </svg>
+        </button>
+      )}
+    </>
+  );
+}
+
+function WebRouter() {
+  return (
+    <Router basename={'/'}>
+      <AppRoutes />
+    </Router>
   );
 }
 

@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace App\Domain\Company\Application\Action;
 
 use App\Domain\Company\Application\Enum\SizeCompanyEnum;
+use App\Domain\Company\Application\Exceptions\ForbiddenCompanyException;
 use App\Domain\Company\Application\Exceptions\NotFoundCompanyException;
 use App\Models\Companies;
 use App\Models\User;
@@ -12,6 +13,14 @@ use Throwable;
 
 class CompanyAction {
     public function __construct() {}
+
+    public function getCompaniesByUser(User $user): array {
+        $companies = Companies::where('user_id', $user->id)->get();
+        if (!$companies) {
+            throw new NotFoundCompanyException();
+        }
+        return $companies->toArray();
+    }
 
     public function createCompany(User $user, array $companyArray): int {
         $companyArray['user_id'] = $user->id;
@@ -45,10 +54,13 @@ class CompanyAction {
         return $company;
     }
 
-    public function updateCompany(int $id, array $companyArray): int {
+    public function updateCompany(User $user, int $id, array $companyArray): int {
         $company = Companies::find($id);
         if (!$company) {
             throw new NotFoundCompanyException();
+        }
+        if ($company->user_id !== $user->id) {
+            throw new ForbiddenCompanyException();
         }
         DB::beginTransaction();
         try {
@@ -61,10 +73,13 @@ class CompanyAction {
         }
     }
     
-    public function deleteCompany(int $id): void {
+    public function deleteCompany(User $user, int $id): void {
         $company = Companies::find($id);
         if (!$company) {
             throw new NotFoundCompanyException();
+        }
+        if ($company->user_id !== $user->id) {
+            throw new ForbiddenCompanyException();
         }
         DB::beginTransaction();
         try {

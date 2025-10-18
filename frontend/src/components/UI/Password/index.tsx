@@ -12,7 +12,6 @@ interface PasswordProps {
   onFocus?: () => void;
   disabled?: boolean;
   error?: string;
-  required?: boolean;
   className?: string;
   maxLength?: number;
   autoFocus?: boolean;
@@ -29,7 +28,6 @@ export default function Password({
   onFocus,
   disabled = false,
   error,
-  required = false,
   className = '',
   maxLength,
   autoFocus = false,
@@ -74,7 +72,6 @@ export default function Password({
       {label && (
         <label className="custom-password__label">
           {label}
-          {required && <span className="custom-password__required">*</span>}
         </label>
       )}
       
