@@ -5,10 +5,12 @@ import { UserRoleLabels } from '../../enums/UserRole';
 import { LoadStatus } from '../../utils/types';
 import Loader from '../../components/default/Loader';
 import Button, { ButtonType } from '../../components/UI/Button';
+import { useNavigate } from 'react-router-dom';
 import './style.scss';
 
 const JobSeekerDashboard: React.FC = () => {
     const { data: userData, status } = useSelector(selectUserData);
+    const navigate = useNavigate();
 
     if (status === LoadStatus.IN_PROGRESS) {
         return <Loader />;
@@ -139,10 +141,10 @@ const JobSeekerDashboard: React.FC = () => {
                         <div className="dashboard-card dashboard-card--actions">
                             <h2 className="dashboard-card__title">Быстрые действия</h2>
                             <div className="quick-actions">
-                                <Button variant={ButtonType.RED} onClick={() => console.log('Создать резюме')}>
+                                <Button variant={ButtonType.RED} onClick={() => navigate('/resume/create')}>
                                     Создать резюме
                                 </Button>
-                                <Button variant={ButtonType.BLACK} onClick={() => console.log('Просмотр резюме')}>
+                                <Button variant={ButtonType.BLACK} onClick={() => navigate('/resume')}>
                                     Просмотр резюме
                                 </Button>
                             </div>

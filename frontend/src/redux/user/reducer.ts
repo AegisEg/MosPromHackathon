@@ -40,7 +40,8 @@ const authReducer = createReducer(initialState, (builder) => {
         })
         .addCase(getTokenFromStorage.fulfilled, (state, action) => {
             state.authData.token = action.payload.token;
-            state.authData.status = !!action.payload.token ? LoadStatus.SUCCESS : LoadStatus.NOT_LOADING;
+            // SUCCESS означает что проверка завершена (независимо от наличия токена)
+            state.authData.status = LoadStatus.SUCCESS;
         })
         .addCase(getTokenFromStorage.rejected, (state, action) => {
             state.authData.status = LoadStatus.ERROR;
