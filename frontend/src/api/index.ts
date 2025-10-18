@@ -3,8 +3,7 @@ import {configuration} from "../utils/configuration";
 import { LocalStorageKeys } from '../utils/localStorage';
 
 const api = axios.create({
-    baseURL: configuration.siteURL,
-    timeout: 10000,
+    baseURL: configuration.apiURL,
     headers: {
         'Content-Type': 'application/json',
     },

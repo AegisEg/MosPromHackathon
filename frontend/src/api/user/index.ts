@@ -5,7 +5,7 @@ import { BackendUserData } from "../../redux/user/types";
 
 export const getUserData = (): Promise<BackendUserData> => {
     return api
-        .get('user/')
+        .get('auth/user/')
         .then((response) => {
             return response.data;
         })
@@ -26,6 +26,19 @@ export const registerUser = (payload: RegistrationPayload) => {
             throw error;
         });
 }
+
+export const logoutUser = () => {
+    return api
+        .post('auth/logout', {})
+        .then((response) => {
+            return response.data;
+        })
+        .catch((error) => {
+            console.error('Logout error:', error);
+            throw error;
+        });
+}
+
 
 export const authorizeUser = (payload: AuthorizationPayload) => {
     return api

@@ -21,6 +21,7 @@ const EmployerDashboard = React.lazy(() => import('../../../pages/EmployerDashbo
 const JobSeekerDashboard = React.lazy(() => import('../../../pages/JobSeekerDashboard/'));
 const AdminDashboard = React.lazy(() => import('../../../pages/AdminDashboard/'));
 const InstituteDashboard = React.lazy(() => import('../../../pages/InstituteDashboard/'));
+const LogoutPage = React.lazy(() => import('../../../pages/Logout/'));
 
 function renderFallback() {
   return <Loader />;
@@ -94,12 +95,16 @@ function AppRoutes() {
           } />
           <Route path="/resume" element={
             <Suspense fallback={renderFallback()}>
-              <ResumePage />
+              <ProtectedRoute>
+                <ResumePage />
+              </ProtectedRoute>
             </Suspense>
           } />
           <Route path="/resume/edit" element={
             <Suspense fallback={renderFallback()}>
-              <ResumeEditPage />
+              <ProtectedRoute>
+                <ResumeEditPage />
+              </ProtectedRoute>
             </Suspense>
           } />
           <Route path="/authorization" element={
@@ -119,7 +124,9 @@ function AppRoutes() {
           } />
           <Route path="/chat" element={
             <Suspense fallback={renderFallback()}>
-              <ChatPage />
+              <ProtectedRoute>
+                <ChatPage />
+              </ProtectedRoute>
             </Suspense>
           } />
           <Route path="/vacancies" element={
@@ -164,6 +171,13 @@ function AppRoutes() {
             <Suspense fallback={renderFallback()}>
               <ProtectedRoute>
                 <InstituteDashboard />
+              </ProtectedRoute>
+            </Suspense>
+          } />
+          <Route path="/logout" element={
+            <Suspense fallback={renderFallback()}>
+              <ProtectedRoute>
+                <LogoutPage />
               </ProtectedRoute>
             </Suspense>
           } />

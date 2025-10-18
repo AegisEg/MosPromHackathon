@@ -5,11 +5,12 @@ import './style.scss';
 interface LinkProps {
   to: string;
   children: React.ReactNode;
+  className?: string;
 }
 
-export default function Link({ to, children }: LinkProps) {
+export default function Link({ to, children, className = '' }: LinkProps) {
   return (
-    <RouterLink to={to} className="link">
+    <RouterLink to={to} className={`link ${className}`}>
       {children}
     </RouterLink>
   );
