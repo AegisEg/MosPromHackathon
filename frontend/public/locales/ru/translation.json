@@ -2,5 +2,9 @@
   "welcome": "Добро пожаловать",
   "registrationTitle": "Регистрация",
   "email": "Электронная почта",
-  "password": "Пароль"
+  "password": "Пароль",
+  "language": {
+    "russian": "Русский",
+    "english": "English"
+  }
 }

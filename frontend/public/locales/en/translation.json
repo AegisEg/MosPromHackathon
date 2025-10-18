@@ -2,5 +2,9 @@
   "welcome": "welcome",
   "registrationTitle": "register",
   "email": "email",
-  "password": "password"
+  "password": "password",
+  "language": {
+    "russian": "Русский",
+    "english": "English"
+  }
 }

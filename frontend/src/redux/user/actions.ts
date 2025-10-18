@@ -1,5 +1,6 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { getFromLocalStorage, LocalStorageKeys, removeFromLocalStorage, saveToLocalStorage } from '../../utils/localStorage';
+import { getUserData } from '../../api/user';
 
 // Async thunks
 export const saveTokenToStorage = createAsyncThunk(
@@ -34,6 +35,19 @@ export const clearTokenFromStorage = createAsyncThunk(
             return null;
         } catch (error) {
             return rejectWithValue('Ошибка при удалении токена');
+        }
+    }
+);
+
+export const getUserDataAction = createAsyncThunk(
+    'auth/getUserDataAction',
+    async (_, { rejectWithValue }) => {
+        try {
+            const response = await getUserData();
+            console.log('userDataString', response);
+            return { userData: response };
+        } catch (error) {
+            return rejectWithValue('Ошибка при получении данных пользователя');
         }
     }
 );

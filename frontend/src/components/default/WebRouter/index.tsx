@@ -6,6 +6,7 @@ import Header from '../Header/';
 import Footer from '../Footer/';
 import NotFound from '../NotFound/';
 import ProtectedRoute from '../ProtectedRoute';
+import { AuthorizationProxy } from '../AuthorizationProxy';
 
 const MainPage = React.lazy(() => import('../../../pages/Main/'));
 const ResumePage = React.lazy(() => import('../../../pages/Resume/'));
@@ -128,10 +129,10 @@ function AppRoutes() {
             </Suspense>
           } />
           <Route path="*" element={<NotFound />} />
-          <Route path="/protected" element={
+          <Route path="/auth-proccess" element={
             <Suspense fallback={renderFallback()}>
                 <ProtectedRoute>
-                    <div>Protected content</div>
+                    <AuthorizationProxy />
                 </ProtectedRoute>
             </Suspense>
         } />
