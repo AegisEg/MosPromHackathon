@@ -1,6 +1,7 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { getFromLocalStorage, LocalStorageKeys, removeFromLocalStorage, saveToLocalStorage } from '../../utils/localStorage';
 import { getUserData } from '../../api/user';
+import { mapBackendUserDataToRedux } from '../../utils/userDataMapper';
 
 // Async thunks
 export const saveTokenToStorage = createAsyncThunk(
@@ -43,8 +44,9 @@ export const getUserDataAction = createAsyncThunk(
     'auth/getUserDataAction',
     async (_, { rejectWithValue }) => {
         try {
-            const response = await getUserData();
-            return { userData: response };
+            const backendData = await getUserData();
+            const mappedUserData = mapBackendUserDataToRedux(backendData);
+            return { userData: mappedUserData };
         } catch (error) {
             return rejectWithValue('Ошибка при получении данных пользователя');
         }

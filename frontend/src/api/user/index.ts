@@ -1,8 +1,9 @@
 import api from "..";
 import {AuthorizationPayload, RegistrationPayload} from "./types";
+import { BackendUserData } from "../../redux/user/types";
 
 
-export const getUserData = () => {
+export const getUserData = (): Promise<BackendUserData> => {
     return api
         .get('user/')
         .then((response) => {

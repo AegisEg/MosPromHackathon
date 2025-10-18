@@ -17,6 +17,10 @@ const RegistrationPage = React.lazy(() => import('../../../pages/Registration/')
 const ChatPage = React.lazy(() => import('../../../pages/Chat/'));
 const VacanciesPage = React.lazy(() => import('../../../pages/Vacancies/'));
 const InternshipsPage = React.lazy(() => import('../../../pages/Internships/'));
+const EmployerDashboard = React.lazy(() => import('../../../pages/EmployerDashboard/'));
+const JobSeekerDashboard = React.lazy(() => import('../../../pages/JobSeekerDashboard/'));
+const AdminDashboard = React.lazy(() => import('../../../pages/AdminDashboard/'));
+const InstituteDashboard = React.lazy(() => import('../../../pages/InstituteDashboard/'));
 
 function renderFallback() {
   return <Loader />;
@@ -128,14 +132,42 @@ function AppRoutes() {
               <InternshipsPage />
             </Suspense>
           } />
-          <Route path="*" element={<NotFound />} />
           <Route path="/auth-proccess" element={
             <Suspense fallback={renderFallback()}>
                 <ProtectedRoute>
                     <AuthorizationProxy />
                 </ProtectedRoute>
             </Suspense>
-        } />
+          } />
+          <Route path="/employer-dashboard" element={
+            <Suspense fallback={renderFallback()}>
+              <ProtectedRoute>
+                <EmployerDashboard />
+              </ProtectedRoute>
+            </Suspense>
+          } />
+          <Route path="/job-seeker-dashboard" element={
+            <Suspense fallback={renderFallback()}>
+              <ProtectedRoute>
+                <JobSeekerDashboard />
+              </ProtectedRoute>
+            </Suspense>
+          } />
+          <Route path="/admin-dashboard" element={
+            <Suspense fallback={renderFallback()}>
+              <ProtectedRoute>
+                <AdminDashboard />
+              </ProtectedRoute>
+            </Suspense>
+          } />
+          <Route path="/institute-dashboard" element={
+            <Suspense fallback={renderFallback()}>
+              <ProtectedRoute>
+                <InstituteDashboard />
+              </ProtectedRoute>
+            </Suspense>
+          } />
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </div>
       

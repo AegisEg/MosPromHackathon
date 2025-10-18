@@ -1,6 +1,8 @@
 import { LoadStatus } from "../../utils/types";
+import { UserRole } from "../../enums/UserRole";
 
-export interface UserData {
+// Данные с бэкенда в snake_case
+export interface BackendUserData {
     id?: number;
     first_name?: string;
     last_name?: string;
@@ -8,6 +10,23 @@ export interface UserData {
     email?: string;
     role?: number;
     is_active?: boolean;
+    email_verified_at?: string | null;
+    created_at?: string;
+    updated_at?: string;
+}
+
+// Данные в Redux с маппингом роли
+export interface UserData {
+    id?: number;
+    firstName?: string;
+    lastName?: string;
+    middleName?: string;
+    email?: string;
+    role?: UserRole;
+    isActive?: boolean;
+    emailVerifiedAt?: string | null;
+    createdAt?: string;
+    updatedAt?: string;
 }
 
 export interface AuthState {
