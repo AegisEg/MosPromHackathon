@@ -18,7 +18,10 @@ class VacancyAction
     public function __construct() {}
 
     public function getVacanciesByUser(User $user): array {
-        $vacancies = Vacancies::where('user_id', $user->id)->get();
+        $vacancies = Vacancies::with('company', 'profession', 'skills')
+            ->withCount('responds')
+            ->where('user_id', $user->id)
+            ->get();
 
         if (!$vacancies) {
             throw new VacancyNotFoundException();
