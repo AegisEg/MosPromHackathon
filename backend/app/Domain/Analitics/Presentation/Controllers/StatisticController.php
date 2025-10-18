@@ -5,9 +5,11 @@ namespace App\Domain\Analitics\Presentation\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Domain\Analitics\Application\Action\ActionStatisticsResume;
+use App\Domain\Analitics\Application\Action\ActionStatisticsVacancy;
 use App\Domain\Analitics\Application\DTO\InputStatisticDTO;
 use App\Domain\Analitics\Presentation\Requests\StatisticRequest;
 use App\Domain\SharedKernel\Responses\ParentResponse;
+use Illuminate\Http\Request;
 use App\Domain\SharedKernel\Responses\StatusEnum;
 
 class StatisticController extends Controller
@@ -102,6 +104,89 @@ class StatisticController extends Controller
 
         return (new ParentResponse(
             data: $dto->toArray(),
+            httpStatus: 200,
+            status: StatusEnum::OK,
+        ))->toResponse();
+    }
+
+    public function avarageCountRespondsVacancy(StatisticRequest $request) {
+        $user      = $request->user();
+        $startDate = $request->input('startDate');
+        $endDate   = $request->input('endDate');
+        $inputDto  = new InputStatisticDTO(
+            limit: 1,
+            startDate: $startDate,
+            endDate: $endDate,
+            professionId: null,
+        );
+        $avg = (new ActionStatisticsVacancy())->avarageCountRespondsVacancy($inputDto, $user);
+
+        return (new ParentResponse(
+            data: ['averageResponds' => $avg],
+            httpStatus: 200,
+            status: StatusEnum::OK,
+        ))->toResponse();
+    }
+
+    public function averageMedianSalaryResponds(StatisticRequest $request) {
+        $user      = $request->user();
+        $startDate = $request->input('startDate');
+        $endDate   = $request->input('endDate');
+
+        $inputDto = new InputStatisticDTO(
+            limit: 1,
+            startDate: $startDate,
+            endDate: $endDate,
+            professionId: null,
+        );
+
+        $dto = (new ActionStatisticsVacancy())->averageMedianSalaryResponds($inputDto, $user);
+
+        return (new ParentResponse(
+            data: $dto->toArray(),
+            httpStatus: 200,
+            status: StatusEnum::OK,
+        ))->toResponse();
+    }
+
+    public function respondsStatusStats(Request $request) {
+        $user = $request->user();
+        $rows = (new ActionStatisticsVacancy())->respondsStatusStats($user);
+
+        return (new ParentResponse(
+            data: $rows,
+            httpStatus: 200,
+            status: StatusEnum::OK,
+        ))->toResponse();
+    }
+
+    public function averageAgeResponds(Request $request) {
+        $user = $request->user();
+        $avg  = (new ActionStatisticsVacancy())->averageAgeResponds($user);
+
+        return (new ParentResponse(
+            data: ['averageAge' => $avg],
+            httpStatus: 200,
+            status: StatusEnum::OK,
+        ))->toResponse();
+    }
+
+    public function respondsTimeline(StatisticRequest $request) {
+        $user      = $request->user();
+        $startDate = $request->input('startDate');
+        $endDate   = $request->input('endDate');
+
+        $inputDto = new InputStatisticDTO(
+            limit: 1,
+            startDate: $startDate,
+            endDate: $endDate,
+            professionId: null,
+        );
+
+        $rows = (new ActionStatisticsVacancy())->respondsTimeline($inputDto, $user);
+
+        return (new ParentResponse(
+            data: $rows,
             httpStatus: 200,
             status: StatusEnum::OK,
         ))->toResponse();

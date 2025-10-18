@@ -50,7 +50,7 @@ class ChatAction
             return (new ChatMessageDTO(
                 id: $m->id,
                 text: $m->text,
-                createdAt: (string) $m->created_at,
+                createdAt: $m->created_at->format(\DateTime::ATOM),
                 userId: $m->user?->id,
                 userName: $m->user ? ($m->user->last_name.' '.$m->user->first_name) : null,
                 files: $files,
@@ -177,7 +177,7 @@ class ChatAction
             return new ChatMessageDTO(
                 id: $m->id,
                 text: $m->text,
-                createdAt: (string) $m->created_at,
+                createdAt: $m->created_at->format(\DateTime::ATOM),
                 userId: $m->user?->id,
                 userName: $m->user ? ($m->user->last_name.' '.$m->user->first_name) : null,
                 files: $m->files->map(static fn ($f) => new ChatMessageFileDTO(
