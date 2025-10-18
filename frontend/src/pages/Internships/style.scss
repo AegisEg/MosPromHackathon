@@ -82,15 +82,8 @@
   border-radius: 16px;
   padding: 24px;
   cursor: pointer;
-  transition: all 0.3s ease;
   display: flex;
   flex-direction: column;
-
-  &:hover {
-    border-color: #48484A;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    transform: translateY(-2px);
-  }
 
   &__header {
     margin-bottom: 16px;

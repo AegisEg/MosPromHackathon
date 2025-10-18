@@ -12,7 +12,7 @@ use App\Domain\AssistantAI\Services\SemanticSearchService;
 class InternshipsSearchAction {
 
     public function searchInternships(array $queryArray): array {
-        $query = Internship::query()->with('user:id,name');
+        $query = Internship::query()->with('user:id,first_name,last_name,middle_name');
 
         // Фильтр по пользователю
         if (isset($queryArray['user_id'])) {
@@ -55,7 +55,7 @@ class InternshipsSearchAction {
             $internshipsIdAfterSpeciality = $query->where('speciality', 'ilike', '%' . $queryArray['speciality'] . '%')
                   ->whereIn('id', $internshipsIdAfterFilter)->get('id');
 
-            $queryAfterSpeciality = Internship::query()->with('user:id,name');
+            $queryAfterSpeciality = Internship::query()->with('user:id,first_name,last_name,middle_name');
 
             $internshipsIdNotSpeciality = $queryAfterSpeciality->where('speciality', 'not ilike', '%' . $queryArray['speciality'] . '%')
             ->whereIn('id', $internshipsIdAfterFilter)->get(['id', 'speciality']);
@@ -68,10 +68,10 @@ class InternshipsSearchAction {
             $internshipsIdAfterFilterArray = $internshipsIdAfterSpeciality->pluck('id')->toArray();
             if ($semanticResult) {
                 $internships = array_merge($internshipsIdAfterFilterArray, $semanticResult);
-                $internshipsById = Internship::with('user:id,name')->whereIn('id', $internships)->get();
+                $internshipsById = Internship::with('user:id,first_name,last_name,middle_name')->whereIn('id', $internships)->get();
                 $internships = $internshipsById;
             } else {
-                $internships = Internship::with('user:id,name')->whereIn('id', $internshipsIdAfterSpeciality)->get();
+                $internships = Internship::with('user:id,first_name,last_name,middle_name')->whereIn('id', $internshipsIdAfterSpeciality)->get();
             }
 
         } else {

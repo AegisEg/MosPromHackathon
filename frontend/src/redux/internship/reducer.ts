@@ -39,6 +39,7 @@ const internshipReducer = createReducer(initialState, (builder) => {
             state.internships.status = LoadStatus.IN_PROGRESS;
         })
         .addCase(getInternshipsAction.fulfilled, (state, action) => {
+            console.log(123, action.payload.internships);
             state.internships.data = action.payload.internships;
             state.internships.status = LoadStatus.SUCCESS;
         })
