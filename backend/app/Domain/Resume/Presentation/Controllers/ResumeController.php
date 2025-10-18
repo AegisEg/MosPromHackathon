@@ -74,6 +74,41 @@ class ResumeController extends Controller
         }
     }
 
+    public function favorite(int $vacancyId, Request $request): JsonResponse {
+        try {
+            $user = $request->user();
+            $this->resumeAction->favoriteResumeByVacancy($user, $vacancyId);
+            return (new ParentResponse(
+                httpStatus: 200,
+                status: StatusEnum::OK,
+            ))->toResponse();
+        } catch (NotFoundResumeException $e) {
+            $debugInfo = [
+                'error' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ];
+            return (new ParentResponse(
+                error: new Error(code: $e->getCode(), message: 'Резюме не найдено'),
+                httpStatus: 404,
+
+                debugInfo: $debugInfo,
+                status: StatusEnum::FAIL,
+            ))->toResponse();
+        } catch (\Throwable $e) {
+            $debugInfo = [
+                'error' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ];
+            return (new ParentResponse(
+                error: new Error(code: $e->getCode(), message: 'Непредвиденная ошибка при получении резюме'),
+                httpStatus: 500,
+                debugInfo: $debugInfo,
+                status: StatusEnum::FAIL,
+            ))->toResponse();
+        }
+    }
     /**
      * Получить конкретное резюме
      */

@@ -9,7 +9,7 @@ use App\Domain\AssistantAI\Services\SemanticSearchService;
 class VacanciesSearchAction {
 
     public function searchVacancies(array $queryArray): array {
-        $query = Vacancies::query();
+        $query = Vacancies::query()->with('company:id,name,logo_url');
 
         $query->where('status', true);
 
@@ -45,6 +45,15 @@ class VacanciesSearchAction {
             $query->where('user_id', $queryArray['user_id']);
         }
 
+        if (isset($queryArray['skills'])) {
+            $skillsIdArray = explode(',', $queryArray['skills']);
+            $query->whereHas('skills', function ($q) use ($skillsIdArray) {
+                $q->whereIn('skills.id', $skillsIdArray);
+            });
+        }
+
+        
+
         
 
         if (isset($queryArray['title'])) {
@@ -52,7 +61,7 @@ class VacanciesSearchAction {
             $vacanciesIdAfterTitle = $query->where('title', 'ilike', '%' . $queryArray['title'] . '%')
                   ->whereIn('id', $vacanciesIdAfterFilter)->get('id');
 
-            $queryAfterTitle = Vacancies::query();
+            $queryAfterTitle = Vacancies::query()->with('company:id,name,logo_url');
 
             $vacanciesIdNotTitle = $queryAfterTitle->where('title', 'not ilike', '%' . $queryArray['title'] . '%')
             ->whereIn('id', $vacanciesIdAfterFilter)->get(['id', 'title']);
@@ -65,10 +74,10 @@ class VacanciesSearchAction {
             $vacanciesIdAfterFilterArray = $vacanciesIdAfterTitle->pluck('id')->toArray();
             if ($semanticResult) {
                 $vacancies = array_merge($vacanciesIdAfterFilterArray, $semanticResult);
-                $vacanciesById = Vacancies::whereIn('id', $vacancies)->get();
+                $vacanciesById = Vacancies::with('company:id,name,logo_url')->whereIn('id', $vacancies)->get();
                 $vacancies = $vacanciesById;
             } else {
-                $vacancies = Vacancies::whereIn('id', $vacanciesIdAfterTitle)->get();
+                $vacancies = Vacancies::with('company:id,name,logo_url')->whereIn('id', $vacanciesIdAfterTitle)->get();
             }
 
         } else {

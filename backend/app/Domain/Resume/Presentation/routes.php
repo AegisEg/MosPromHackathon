@@ -19,6 +19,8 @@ Route::group(['prefix' => 'resume'], function () {
         ->name('resume.show');
 
     Route::group(['middleware' => ['auth:sanctum']], function () {
+        Route::get('/favorite/{vacancyId}', [ResumeController::class, 'favorite'])
+            ->name('resume.favorite')->middleware('seeker');
         Route::post('/store', [ResumeController::class, 'store'])
             ->name('resume.store')->middleware('seeker');
         Route::patch('/update/{id}', [ResumeController::class, 'update'])
