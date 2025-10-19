@@ -9,7 +9,6 @@ import { formatWithDeclension, formatTimePeriod } from '../../utils/declension';
 import Loader from '../../components/default/Loader';
 import './style.scss';
 import HR from '../../components/default/HR';
-import Photo from '../../components/Photo';
 
 function Resume() {
   const { id } = useParams<{ id: string }>();
@@ -238,16 +237,24 @@ function Resume() {
                   <span>Общий опыт работы:</span> {formatTimePeriod(Math.floor((resume as any).experienceTime / 12), (resume as any).experienceTime % 12)}
                 </p>
               )}
+              <p className="resume__header-info-subtitle">
+                <span>Образование:</span> {(resume as any)?.education || 'Отсутствует'}
+              </p>
             </div>
             <div className="resume__header-photo">
               <div className="resume__header-photo-container">
-                <Photo photo={''} onChange={() => {}} />
-                <div className="resume__header-photo-fio">
-                  {(resume as any)?.firstName && (resume as any)?.lastName 
-                    ? `${(resume as any).firstName} ${(resume as any).lastName}`
-                    : 'Кандидат'
-                  }
-                </div>
+                {(() => {
+                  const firstName = (resume as any)?.firstName || '';
+                  const lastName = (resume as any)?.lastName || '';
+                  const initials = `${firstName[0] || ''}${lastName[0] || ''}`.toUpperCase();
+                  return initials || 'К';
+                })()}
+              </div>
+              <div className="resume__header-photo-fio">
+                {(resume as any)?.firstName && (resume as any)?.lastName 
+                  ? `${(resume as any).firstName} ${(resume as any).lastName}`
+                  : 'Кандидат'
+                }
               </div>
             </div>
             <div className="resume__header-skills">
@@ -384,12 +391,6 @@ function Resume() {
                     </div>
                   ))}
                 </div>
-              </div>
-            )}
-            {safeResume.education && typeof safeResume.education === 'string' && safeResume.education !== '' && (
-              <div className="inner-wrapper">
-                <div className="inner-wrapper_title">Образование (общее)</div>
-                <div className="inner-wrapper_text">{safeResume.education}</div>
               </div>
             )}
           </div>
