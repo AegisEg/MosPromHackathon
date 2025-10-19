@@ -3,12 +3,14 @@ declare(strict_types=1);
 
 namespace App\Domain\RespondAndInteraction\Application\Action;
 
+use App\Domain\AssistantAI\Services\SemanticSearchService;
 use App\Domain\Company\Application\Exceptions\NotFoundCompanyException;
 use App\Domain\RespondAndInteraction\Application\Exceptions\ForbiddenRespondException;
 use App\Domain\RespondAndInteraction\Application\Exceptions\RespondNotFoundException;
 use App\Domain\RespondAndInteraction\Application\Services\BestMatchService;
 use App\Domain\RespondAndInteraction\Enums\RespondStatus;
 use App\Domain\Resume\Application\Service\ResumeService;
+use App\Models\Education;
 use App\Models\Responds;
 use App\Models\Resume;
 use App\Models\User;
@@ -173,7 +175,7 @@ class RespondAndInteractionAction
         return $sortedResumes;
     }
 
-    public function bestMatchResumesByVacancyWithAI(int $vacancyId): void {
+    public function bestMatchResumesByVacancyWithAI(int $vacancyId): array {
         
         $resumes = $this->bestMatchResumesByVacancy($vacancyId);
 
@@ -182,5 +184,98 @@ class RespondAndInteractionAction
         if (!$vacancy) {
             throw new NotFoundCompanyException();
         }
+
+        // Преобразуем вакансию в простой массив
+        $vacancyArray = [
+            'title' => $vacancy->title,
+            'description' => $vacancy->description,
+            'salary_from' => $vacancy->salary_from,
+            'salary_to' => $vacancy->salary_to,
+            'employment_type' => $vacancy->employment_type?->label(),
+            'profession' => $vacancy->profession->name ?? null,
+            'skills' => implode(', ', $vacancy->skills->pluck('name')->toArray()),
+        ];
+
+
+
+        // Создаем массив резюме с требуемыми полями
+        $resumesArray = $resumes->map(function ($item) {
+            $resume = $item['resume'];
+
+            return [
+                'id_resume' => $resume->id,
+                'profession' => $resume->profession->name ?? null,
+                'about' => $resume->about ?? null,
+                'employment_type' => $resume->employment_type->label() ?? null,
+                'educations' => $resume->educations->map(function ($education) {
+                    return [
+                        'id' => $education->id,
+                        'institution_name' => $education->institution_name,
+                        'degree' => $education->degree,
+                        'specialization' => $education->specialization,
+                        'start_date' => $education->start_date?->format('Y-m-d'),
+                        'end_date' => $education->end_date?->format('Y-m-d'),
+                    ];
+                })->toArray(),
+                'experiences' => $resume->experiences->map(function ($experience) {
+                    return [
+                        'id' => $experience->id,
+                        'company_name' => $experience->company_name,
+                        'position' => $experience->position,
+                        'start_date' => $experience->start_date?->format('Y-m-d'),
+                        'end_date' => $experience->end_date?->format('Y-m-d'),
+                        'description' => $experience->description,
+                    ];
+                })->toArray(),
+                'skills' => $resume->skills->map(function ($skill) {
+                    return [
+                        'id' => $skill->id,
+                        'name' => $skill->name,
+                    ];
+                })->toArray(),
+            ];
+        })->toArray();
+
+
+
+        $bestMatch = (new SemanticSearchService())->bestMatch($resumesArray, json_encode($vacancyArray));
+
+        // Сортируем по рейтингу от меньшего к большему
+        uasort($bestMatch, function($a, $b) {
+            return (int)$a['rating'] <=> (int)$b['rating'];
+        });
+
+        // Формируем итоговый массив с полной информацией о резюме
+        $resumesArray = [];
+        foreach ($bestMatch as $match) {
+            $resumeId = $match['resume_id'];
+            
+            // Находим резюме по ID из исходного массива
+            $resumeData = collect($resumes)->first(function($item) use ($resumeId) {
+                return $item['resume']->id == $resumeId;
+            });
+
+            if ($resumeData) {
+                $resume = $resumeData['resume'];
+                
+                $resumesArray[] = [
+                    'id'             => $resume->id,
+                    'profession'     => $resume->profession->name,
+                    'first_name'     => $resume->user->first_name,
+                    'middle_name'    => $resume->user->middle_name,
+                    'last_name'      => $resume->user->last_name,
+                    'date_of_birth'  => $resume->date_of_birth?->format('d.m.Y'),
+                    'country'        => $resume->country,
+                    'city'           => $resume->city,
+                    'status'         => $resume->status,
+                    'respond_id'     => $resume->responds->where('vacancy_id', $vacancy->id)->first()?->id,
+                    'respond_status' => $resume->responds->where('vacancy_id', $vacancy->id)->first()?->status->label(),
+                    'opinion' => $match['about'],
+                    'rating' => $match['rating'],
+                ];
+            }
+        }
+
+        return $resumesArray;
     }
 }

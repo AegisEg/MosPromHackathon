@@ -207,9 +207,9 @@ class RespondAndInteractionController extends Controller
                 throw new ForbiddenRespondException();
             }
 
-            $this->respondAndInteractionAction->bestMatchResumesByVacancyWithAI($vacancyId);
+            $bestMatches = $this->respondAndInteractionAction->bestMatchResumesByVacancyWithAI($vacancyId);
             return (new ParentResponse(
-                data: ['vacancy_id' => $vacancyId],
+                data: $bestMatches,
                 httpStatus: 200,
                 status: StatusEnum::OK,
             ))->toResponse();
