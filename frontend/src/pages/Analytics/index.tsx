@@ -62,12 +62,12 @@ import Loader from '../../components/default/Loader';
 
 const COLORS = [
   '#D00E46', // Основной фирменный цвет
-  'rgba(208, 14, 70, 0.8)', // 80% прозрачности
-  'rgba(208, 14, 70, 0.6)', // 60% прозрачности
-  'rgba(208, 14, 70, 0.4)', // 40% прозрачности
-  'rgba(208, 14, 70, 0.2)', // 20% прозрачности
-  'rgba(208, 14, 70, 0.1)', // 10% прозрачности
-  'rgba(208, 14, 70, 0.05)' // 5% прозрачности
+  '#D00E46', // Основной фирменный цвет
+  '#D00E46', // Основной фирменный цвет
+  '#D00E46', // Основной фирменный цвет
+  '#D00E46', // Основной фирменный цвет
+  '#D00E46', // Основной фирменный цвет
+  '#D00E46' // Основной фирменный цвет
 ];
 
 const Analytics: React.FC = () => {
@@ -176,8 +176,8 @@ const Analytics: React.FC = () => {
   // Подготовка данных для статусов откликов
   const statusData = respondsStatusStats ? [
     { name: 'Ожидают', value: respondsStatusStats.pending, color: '#D00E46' },
-    { name: 'Приняты', value: respondsStatusStats.accepted, color: 'rgba(208, 14, 70, 0.8)' },
-    { name: 'Отклонены', value: respondsStatusStats.rejected, color: 'rgba(208, 14, 70, 0.6)' },
+    { name: 'Приняты', value: respondsStatusStats.accepted, color: '#D00E46' },
+    { name: 'Отклонены', value: respondsStatusStats.rejected, color: '#D00E46' },
   ] : [];
 
   const isLoading = user?.data?.role === 'admin' 
@@ -221,7 +221,6 @@ const Analytics: React.FC = () => {
       </div>
     );
   }
-
 
   return (
     <div className="analytics">
@@ -311,7 +310,7 @@ const Analytics: React.FC = () => {
                           <Tooltip 
                             formatter={(value: number) => [formatCount(value), 'Количество']}
                           />
-                          <Bar dataKey="vacanciesCount" fill="rgba(208, 14, 70, 0.8)" />
+                          <Bar dataKey="vacanciesCount" fill="#D00E46" />
                         </BarChart>
                       </ResponsiveContainer>
                     </div>

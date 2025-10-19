@@ -25,13 +25,10 @@ function Header() {
                 <Link to="/chat" className={isActive('/chat')}>Чат</Link>
               </li>
               <li className={isAuthenticated ? 'visible' : 'hidden'}>
-                <Link to="/notifications" className={isActive('/notifications')}>Уведомления</Link>
+                <Link to="/lk" className={isActive('/lk')}>Личный кабинет</Link>
               </li>
               <li className={isAuthenticated ? 'visible' : 'hidden'}>
-                <Link to="/lk" className={isActive('/auth-proccess')}>Личный кабинет</Link>
-              </li>
-              <li className={isAuthenticated ? 'visible' : 'hidden'}>
-                <Link to="/lk/logout" className={isActive('/logout')}>Выйти</Link>
+                <Link to="/lk/logout" className={isActive('/lk/logout')}>Выйти</Link>
               </li>
               <li className={!isAuthenticated ? 'visible' : 'hidden'}>
                 <Link to="/authorization" className={isActive('/authorization')}>Войти</Link>

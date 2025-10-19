@@ -44,12 +44,12 @@ const EmployerDashboard: React.FC = () => {
         {
             icon: <CalendarIcon />,
             title: "Производственный календарь",
-            onClick: () => navigate('/calendar')
+            onClick: () => navigate('/lk/calendar')
         },
         {
             icon: <SmartToyIcon />,
             title: "ИИ Агент",
-            onClick: () => console.log('ИИ Агент')
+            onClick: () => navigate('/chat')
         }
     ];
 

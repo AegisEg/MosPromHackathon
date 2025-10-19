@@ -199,14 +199,14 @@ function AppRoutes() {
                     </ProtectedRoute>
                 </Suspense>
             } />
-          <Route path="/logout" element={
+          <Route path="/lk/logout" element={
             <Suspense fallback={renderFallback()}>
               <ProtectedRoute>
                 <LogoutPage />
               </ProtectedRoute>
             </Suspense>
           } />
-          <Route path="/calendar" element={
+          <Route path="/lk/calendar" element={
             <Suspense fallback={renderFallback()}>
               <ProtectedRoute>
                 <CalendarPage />
