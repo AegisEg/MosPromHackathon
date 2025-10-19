@@ -8,6 +8,7 @@ use App\Domain\Connection\Application\DTO\ChatMessageDTO;
 use App\Domain\Connection\Application\DTO\ChatMessageFileDTO;
 use App\Domain\Connection\Application\Exceptions\ChatNotFoundException;
 use App\Domain\Connection\Application\Exceptions\ForbiddenChatException;
+use App\Enums\RespondType;
 use App\Enums\UserRole;
 use App\Models\Chat;
 use App\Models\User;
@@ -30,7 +31,14 @@ class ChatAction
 
         $companyUserId = $chat->respond->vacancy->company->user_id ?? null;
 
-        if (($chat->respond->resume->user_id ?? null) !== $user->id && $companyUserId !== $user->id) {
+        if ($chat->respond_type === RespondType::INTERNSHIP->value) {
+            $companyUserId   = $chat->internshipRespond->company->user_id         ?? null;
+            $instituteUserId = $chat->internshipRespond->internship->institute_id ?? null;
+
+            if ($companyUserId !== $user->id && $instituteUserId !== $user->id) {
+                throw new ForbiddenChatException();
+            }
+        } elseif (($chat->respond->resume->user_id ?? null) !== $user->id && $companyUserId !== $user->id) {
             throw new ForbiddenChatException();
         }
 
@@ -63,7 +71,7 @@ class ChatAction
      * @return ChatOutputDTO[]
      */
     public function chatList(User $user): array {
-        $query = Chat::query()->with(['respond.resume', 'respond.vacancy']);
+        $query = Chat::query()->with(['respond.resume', 'respond.vacancy', 'internshipRespond.internship.institute']);
 
         if ($user->role === UserRole::JOB_SEEKER) {
             $query->whereHas('respond.resume', function ($q) use ($user) {
@@ -71,6 +79,12 @@ class ChatAction
             });
         } elseif ($user->role === UserRole::EMPLOYER) {
             $query->whereHas('respond.vacancy.company', function ($q) use ($user) {
+                $q->where('user_id', '=', $user->id);
+            })->orWhereHas('internshipRespond.company', function ($q) use ($user) {
+                $q->where('user_id', '=', $user->id);
+            });
+        } elseif ($user->role === UserRole::INSTITUTE) {
+            $query->whereHas('internshipRespond.internship.institute', function ($q) use ($user) {
                 $q->where('user_id', '=', $user->id);
             });
         }
@@ -82,11 +96,24 @@ class ChatAction
         foreach ($chats as $chat) {
             $chat->lastMessage = $chat->messages()->latest()->first();
 
-            if ($user->role === UserRole::JOB_SEEKER) {
-                $title = $chat->respond->vacancy->company->name.': '.$chat->respond->vacancy->title;
+            if ($chat->respond_type === RespondType::INTERNSHIP->value) {
+                if ($user->role === UserRole::EMPLOYER) {
+                    $title = $chat->internshipRespond->internship->institute->name .': '. $chat->internshipRespond->internship->speciality;
+                }
+
+                if ($user->role === UserRole::INSTITUTE) {
+                    $title = 'Стажировка: '.($chat->internshipRespond->internship->speciality ?? '').' — '.$chat->internshipRespond->company->name;
+                }
             } else {
-                $title = $chat->respond->vacancy->title .': '. $chat->respond->resume->user->last_name.' '.$chat->respond->resume->user->first_name;
+                if ($user->role === UserRole::JOB_SEEKER) {
+                    $title = $chat->respond->vacancy->company->name.': '.$chat->respond->vacancy->title;
+                }
+
+                if ($user->role === UserRole::EMPLOYER) {
+                    $title = $chat->respond->vacancy->title .': '. $chat->respond->resume->user->last_name.' '.$chat->respond->resume->user->first_name;
+                }
             }
+
             $chatOutputDTOs[] = new ChatOutputDTO(
                 id: $chat->id,
                 title: $title,
@@ -151,7 +178,7 @@ class ChatAction
         return new ChatMessageDTO(
             id: $message->id,
             text: $message->text,
-            createdAt: (string) $message->created_at,
+            createdAt: (string) $message->created_at->format(\DateTime::ATOM),
             userId: $user->id,
             userName: $user->last_name.' '.$user->first_name,
             files: $filesDTO,
@@ -165,10 +192,19 @@ class ChatAction
             throw new ChatNotFoundException();
         }
 
-        $companyUserId = $chat->respond->vacancy->company->user_id ?? null;
+        if ($chat->respond_type === RespondType::INTERNSHIP->value) {
+            $companyUserId   = $chat->internshipRespond->company->user_id         ?? null;
+            $instituteUserId = $chat->internshipRespond->internship->institute_id ?? null;
 
-        if (($chat->respond->resume->user_id ?? null) !== $user->id && $companyUserId !== $user->id) {
-            throw new ForbiddenChatException();
+            if ($companyUserId !== $user->id && $instituteUserId !== $user->id) {
+                throw new ForbiddenChatException();
+            }
+        } else {
+            $companyUserId = $chat->respond->vacancy->company->user_id ?? null;
+
+            if (($chat->respond->resume->user_id ?? null) !== $user->id && $companyUserId !== $user->id) {
+                throw new ForbiddenChatException();
+            }
         }
 
         $messages = $chat->messages()->where('id', '>', $lastMessageId)->get();

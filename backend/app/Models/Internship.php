@@ -13,7 +13,7 @@ class Internship extends Model
     use HasFactory;
 
     protected $fillable = [
-        'user_id',
+        'institute_id',
         'speciality',
         'count_students',
         'start_date_period',
@@ -28,17 +28,10 @@ class Internship extends Model
     ];
 
     /**
-     * Получить пользователя, которому принадлежит стажировка
-     */
-    public function user(): BelongsTo {
-        return $this->belongsTo(User::class);
-    }
-
-    /**
      * Институт-владелец стажировки
      */
     public function institute(): BelongsTo {
-        return $this->belongsTo(User::class, 'institute_id', 'id');
+        return $this->belongsTo(Institute::class);
     }
 
     /**

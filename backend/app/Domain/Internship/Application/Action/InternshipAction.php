@@ -55,8 +55,8 @@ class InternshipAction
 
     public function create(User $user, CreateUpdateInputDTO $internshipData): int {
         try {
-            $internshipArray            = $internshipData->toArray();
-            $internshipArray['user_id'] = $user->id;
+            $internshipArray                 = $internshipData->toArray();
+            $internshipArray['institute_id'] = $user->institutes->first()->id;
             DB::beginTransaction();
             $internship = Internship::create($internshipArray);
             DB::commit();
@@ -78,7 +78,7 @@ class InternshipAction
         /**
          * Если пользователь не является владельцем стажировки, выбрасываем исключение
          */
-        if ($internship->user_id !== $user->id) {
+        if ($internship->institute->user_id !== $user->id) {
             throw new ForbiddenInternshipException();
         }
 
@@ -104,7 +104,7 @@ class InternshipAction
         /**
          * Если пользователь не является владельцем стажировки, выбрасываем исключение
          */
-        if ($internship->user_id !== $user->id) {
+        if ($internship->institute->user_id !== $user->id) {
             throw new ForbiddenInternshipException();
         }
 
@@ -112,6 +112,30 @@ class InternshipAction
             DB::beginTransaction();
             $internship->delete();
             DB::commit();
+        } catch (Throwable $e) {
+            DB::rollBack();
+            throw $e;
+        }
+    }
+
+    public function respond(int $idInternship, User $user, string $message): int {
+        $internship = Internship::find($idInternship);
+        $company    = $user->companies->first();
+        $companyId  = $company->id;
+
+        if (!$internship || !$company) {
+            throw new InternshipNotFoundException();
+        }
+
+        try {
+            DB::beginTransaction();
+            $respond = $internship->responds()->create([
+                'company_id' => $companyId,
+                'message'    => $message,
+            ]);
+            DB::commit();
+
+            return $respond->id;
         } catch (Throwable $e) {
             DB::rollBack();
             throw $e;

@@ -12,6 +12,7 @@ class Chat extends Model
 
     protected $fillable = [
         'respond_id',
+        'respond_type',
     ];
 
     protected $casts = [
@@ -21,6 +22,10 @@ class Chat extends Model
 
     public function respond() {
         return $this->belongsTo(Responds::class);
+    }
+
+    public function internshipRespond() {
+        return $this->belongsTo(InternshipRespond::class, 'respond_id', 'id');
     }
 
     public function messages() {

@@ -3,30 +3,20 @@ declare(strict_types=1);
 
 namespace App\Domain\Connection\Application\Listeners;
 
-use App\Domain\Vacancy\Presentation\Events\NewRespondEvent;
+use App\Domain\Internship\Presentation\Events\NewInternshipRespondEvent;
 use App\Enums\RespondType;
 use App\Models\Chat;
 use Illuminate\Support\Facades\DB;
 use Throwable;
 
-class CreateChatListener
+class CreateChatForInternshipListener
 {
-    /**
-     * Create the event listener.
-     */
-    public function __construct() {
-        //
-    }
-
-    /**
-     * Handle the event.
-     */
-    public function handle(NewRespondEvent $event): void {
+    public function handle(NewInternshipRespondEvent $event): void {
         try {
             DB::beginTransaction();
             Chat::firstOrCreate([
                 'respond_id'   => $event->respondId,
-                'respond_type' => RespondType::VACANCY->value,
+                'respond_type' => RespondType::INTERNSHIP->value,
             ]);
             DB::commit();
         } catch (Throwable $e) {
@@ -35,3 +25,5 @@ class CreateChatListener
         }
     }
 }
+
+

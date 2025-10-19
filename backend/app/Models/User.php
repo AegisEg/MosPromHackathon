@@ -103,6 +103,6 @@ class User extends Authenticatable
      * Институты, где пользователь является владельцем (роль INSTITUTE)
      */
     public function institutes() {
-        return $this->hasMany(Internship::class, 'institute_id', 'id');
+        return $this->hasMany(Institute::class);
     }
 }

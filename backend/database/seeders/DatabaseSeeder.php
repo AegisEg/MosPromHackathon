@@ -21,6 +21,7 @@ class DatabaseSeeder extends Seeder
             // Пользователи и компании
             UsersSeeder::class,
             CompaniesSeeder::class,
+            InstitutesSeeder::class,
 
             // Резюме и связанные данные
             ResumesSeeder::class,
@@ -40,11 +41,11 @@ class DatabaseSeeder extends Seeder
             // Отклики, чаты и сообщения
             RespondsSeeder::class,
             // Чаты и сообщения
-            ChatsSeeder::class,
-            // Сообщения чата
-            ChatMessagesSeeder::class,
-            // Файлы сообщений чата
-            ChatMessageFilesSeeder::class,
+            // ChatsSeeder::class,
+            // // Сообщения чата
+            // ChatMessagesSeeder::class,
+            // // Файлы сообщений чата
+            // ChatMessageFilesSeeder::class,
         ]);
     }
 }

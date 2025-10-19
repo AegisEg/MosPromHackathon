@@ -4,8 +4,7 @@ declare(strict_types=1);
 namespace Database\Seeders;
 
 use App\Models\Internship;
-use App\Models\User;
-use App\Enums\UserRole;
+use App\Models\Institute;
 use Illuminate\Database\Seeder;
 
 class InternshipsSeeder extends Seeder
@@ -14,12 +13,11 @@ class InternshipsSeeder extends Seeder
      * Run the database seeds.
      */
     public function run(): void {
-        // Пользователи
-        $users      = User::all();
-        $institutes = User::query()->where('role', UserRole::INSTITUTE)->get();
+        // Институты
+        $institutes = Institute::all();
 
-        if ($users->isEmpty()) {
-            $this->command->warn('Нет пользователей для создания стажировок. Сначала запустите UsersSeeder.');
+        if ($institutes->isEmpty()) {
+            $this->command->warn('Нет институтов для создания стажировок. Сначала запустите UsersSeeder и InstitutesSeeder.');
 
             return;
         }
@@ -76,12 +74,10 @@ class InternshipsSeeder extends Seeder
         ];
 
         foreach ($internships as $internshipData) {
-            $user      = $users->random();
-            $institute = $institutes->isNotEmpty() ? $institutes->random() : null;
+            $institute = $institutes->random();
 
             Internship::create([
-                'user_id'           => $user->id,
-                'institute_id'      => $institute?->id,
+                'institute_id'      => $institute->id,
                 'speciality'        => $internshipData['speciality'],
                 'count_students'    => $internshipData['count_students'],
                 'start_date_period' => $internshipData['start_date_period'],

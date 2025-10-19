@@ -16,5 +16,7 @@ Route::group(['prefix' => 'internships'], function () {
             ->name('internships.update');
         Route::delete('/{idInternship}', [InternshipController::class, 'delete'])
             ->name('internships.delete');
+        Route::post('/{idInternship}/respond', [InternshipController::class, 'respond'])
+            ->name('internships.respond')->middleware('company');
     });
 });

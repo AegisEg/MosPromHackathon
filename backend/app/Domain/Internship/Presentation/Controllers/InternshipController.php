@@ -11,6 +11,7 @@ use App\Domain\Internship\Application\DTO\CreateUpdateInputDTO;
 use App\Domain\Internship\Application\Exceptions\ForbiddenInternshipException;
 use App\Domain\Internship\Application\Exceptions\InternshipNotFoundException;
 use App\Domain\Internship\Presentation\Events\CreateInternshipEvent;
+use App\Domain\Internship\Presentation\Events\NewInternshipRespondEvent;
 use App\Domain\Internship\Presentation\Events\ShowInternshipEvent;
 use App\Domain\Internship\Presentation\Events\UpdateInternshipEvent;
 use App\Domain\Internship\Presentation\Requests\CreateInternshipRequest;
@@ -26,8 +27,8 @@ class InternshipController extends Controller
     public function index(Request $request): JsonResponse {
         try {
             $internshipsDTOs = (new InternshipAction())->internshipList();
-            $internships    = [];
-    
+            $internships     = [];
+
             foreach ($internshipsDTOs as $internshipDTO) {
                 $internships[] = $internshipDTO->toArray();
             }
@@ -156,6 +157,38 @@ class InternshipController extends Controller
         $user = $request->user();
         try {
             (new InternshipAction())->delete($user, $idInternship);
+
+            return (new ParentResponse(
+                status: StatusEnum::OK,
+                httpStatus: 204,
+            ))->toResponse();
+        } catch (ForbiddenInternshipException $e) {
+            return (new ParentResponse(
+                error: new Error(code: $e->getCode(), message: $e->getMessage()),
+                httpStatus: 403,
+                status: StatusEnum::FAIL,
+            ))->toResponse();
+        } catch (InternshipNotFoundException $e) {
+            return (new ParentResponse(
+                error: new Error(code: $e->getCode(), message: $e->getMessage()),
+                httpStatus: 404,
+                status: StatusEnum::FAIL,
+            ))->toResponse();
+        } catch (Throwable $e) {
+            return (new ParentResponse(
+                error: new Error(code: $e->getCode(), message: $e->getMessage()),
+                httpStatus: 500,
+                status: StatusEnum::FAIL,
+            ))->toResponse();
+        }
+    }
+
+    public function respond(int $idInternship, Request $request): JsonResponse {
+        $user    = $request->user();
+        $message = $request->input('message');
+        try {
+            $respondId = (new InternshipAction())->respond($idInternship, $user, $message);
+            NewInternshipRespondEvent::dispatch($respondId);
 
             return (new ParentResponse(
                 status: StatusEnum::OK,

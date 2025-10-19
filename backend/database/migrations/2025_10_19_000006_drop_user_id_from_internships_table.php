@@ -8,13 +8,22 @@ use Illuminate\Support\Facades\Schema;
 return new class () extends Migration {
     public function up(): void {
         Schema::table('internships', function (Blueprint $table) {
-            $table->foreignId('institute_id')->after('user_id')->constrained('institutes')->nullOnDelete();
+            if (Schema::hasColumn('internships', 'user_id')) {
+                try {
+                    $table->dropForeign(['user_id']);
+                } catch (Throwable $e) {
+                    // ignore
+                }
+                $table->dropColumn('user_id');
+            }
         });
     }
 
     public function down(): void {
         Schema::table('internships', function (Blueprint $table) {
-            $table->dropConstrainedForeignId('institute_id');
+            $table->foreignId('user_id')->nullable()->constrained('users')->nullOnDelete()->after('id');
         });
     }
 };
+
+
