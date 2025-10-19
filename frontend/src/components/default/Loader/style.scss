@@ -9,7 +9,7 @@
   display: flex;
   flex-direction: row;
   align-items: center;
-  gap: 40px;
+  gap: 10px;
 }
 
 .web-animation {
@@ -118,8 +118,6 @@
 }
 
 .logo-line {
-  opacity: 0;
-  animation: textFadeIn 0.8s ease-out forwards;
   line-height: 70%;
   
   &.logo-line-1 {
@@ -172,18 +170,6 @@
     opacity: 0;
     stroke-dasharray: 100 0;
     stroke-width: 0.5;
-  }
-}
-
-
-@keyframes textFadeIn {
-  0% {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0);
   }
 }
 

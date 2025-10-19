@@ -42,11 +42,11 @@ class RespondsSeeder extends Seeder
                 }
             }
             
-            // Создаем 20 откликов от программистов к вакансии с id=1
-            // Берем последние 20 резюме (это резюме программистов)
-            $programmerResumeIds = array_slice($resumeIds, -20);
+            // Создаем 50 откликов от программистов к вакансии с id=1
+            // Берем последние 50 резюме (это резюме программистов)
+            $programmerResumeIds = array_slice($resumeIds, -50);
             if (in_array(1, $vacancyIds) && count($programmerResumeIds) > 0) {
-                for ($i = 0; $i < 20; $i++) {
+                for ($i = 0; $i < 50; $i++) {
                     Responds::create([
                         'vacancy_id' => 1,
                         'resume_id'  => $programmerResumeIds[array_rand($programmerResumeIds)],

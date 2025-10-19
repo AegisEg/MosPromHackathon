@@ -75,12 +75,12 @@ const JobSeekerDashboard: React.FC = () => {
         {
             icon: <VisibilityIcon />,
             title: "Просмотр откликов",
-            onClick: () => console.log('Просмотр откликов')
+            onClick: () => navigate('/lk/resume')
         },
         {
             icon: <DescriptionIcon />,
             title: "Ваши резюме",
-            onClick: () => console.log('Ваши резюме')
+            onClick: () => navigate('/lk/resume')
         },
         {
             icon: <WorkIcon />,
@@ -95,7 +95,7 @@ const JobSeekerDashboard: React.FC = () => {
         {
             icon: <BarChartIcon />,
             title: "Аналитика",
-            onClick: () => console.log('Аналитика')
+            onClick: () => navigate('/lk/analytics')
         },
         {
             icon: <EditIcon />,

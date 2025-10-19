@@ -1,14 +1,18 @@
 import api from "..";
 import { ResumeData, BackendResumeData, CreateResumePayload, UpdateResumePayload } from "../../redux/resume/types";
-import { mapBackendResumeDataToRedux, mapResumeDataToBackend } from "../../utils/resumeDataMapper";
+import { mapBackendResumeDataToRedux, mapCreateResumePayloadToBackend, mapUpdateResumePayloadToBackend } from "../../utils/resumeDataMapper";
 import { ResumeResponse } from "./types";
 
-export const getResume = (id: number): Promise<ResumeData> => {
+export const getResumeById = (id: number): Promise<ResumeData> => {
     return api
         .get(`resume/show/${id}`)
         .then((response) => {
+            console.log('Raw API response:', response.data);
             const backendData = response.data.data;
-            return mapBackendResumeDataToRedux(backendData);
+            console.log('Backend data before mapping:', backendData);
+            const mappedData = mapBackendResumeDataToRedux(backendData);
+            console.log('Mapped data:', mappedData);
+            return mappedData;
         })
         .catch((error) => {
             console.error('Get resume error:', error);
@@ -33,7 +37,7 @@ export const getUserResumes = (): Promise<ResumeData[]> => {
                 education: resume.education,
                 phone: resume.phone,
                 about: resume.about,
-                professionId: resume.profession_id,
+                professionId: resume.profession_id || (resume.profession ? parseInt(resume.profession) : 0),
                 profession: resume.profession, // Добавляем название профессии
                 salary: resume.salary,
                 status: resume.status,
@@ -51,7 +55,7 @@ export const getUserResumes = (): Promise<ResumeData[]> => {
 };
 
 export const createResume = (payload: CreateResumePayload): Promise<ResumeResponse> => {
-    const backendPayload = mapResumeDataToBackend(payload);
+    const backendPayload = mapCreateResumePayloadToBackend(payload);
     
     return api
         .post('resume/store', backendPayload)
@@ -66,7 +70,7 @@ export const createResume = (payload: CreateResumePayload): Promise<ResumeRespon
 
 export const updateResume = (payload: UpdateResumePayload): Promise<ResumeResponse> => {
     const { id, ...updateData } = payload;
-    const backendPayload = mapResumeDataToBackend(updateData);
+    const backendPayload = mapUpdateResumePayloadToBackend(updateData);
     
     return api
         .patch(`resume/update/${id}`, backendPayload)
@@ -78,7 +82,6 @@ export const updateResume = (payload: UpdateResumePayload): Promise<ResumeRespon
             throw error;
         });
 };
-
 export const deleteResume = (id: number): Promise<void> => {
     return api
         .delete(`resume/delete/${id}`)
@@ -90,3 +93,4 @@ export const deleteResume = (id: number): Promise<void> => {
             throw error;
         });
 };
+

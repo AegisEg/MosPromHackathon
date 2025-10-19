@@ -1,5 +1,11 @@
 import { LoadStatus } from "../../utils/types";
 
+// Интерфейс для навыка
+export interface SkillData {
+    id: number;
+    name: string;
+}
+
 // Данные с бэкенда в snake_case
 export interface BackendResumeData {
     id?: number;
@@ -16,7 +22,7 @@ export interface BackendResumeData {
     status?: boolean;
     created_at?: string;
     updated_at?: string;
-    skills?: number[];
+    skills?: SkillData[];
     educations?: BackendEducationData[];
     experiences?: BackendExperienceData[];
 }
@@ -61,7 +67,7 @@ export interface ResumeData {
     status?: boolean;
     createdAt?: string;
     updatedAt?: string;
-    skills?: number[];
+    skills?: SkillData[];
     educations?: EducationData[];
     experiences?: ExperienceData[];
 }

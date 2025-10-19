@@ -1,0 +1,102 @@
+.company-vacancies-page {
+    min-height: 100vh;
+    background: #f8f9fa;
+    padding: 0;
+
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 40px 20px;
+    }
+
+    .wrapper {
+        background: #ffffff;
+        border: 1px solid #e5e5e5;
+        border-radius: 8px;
+        padding: 40px;
+    }
+
+    &__content {
+        width: 100%;
+    }
+
+    &__header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 36px;
+
+        .company-vacancies-page__title {
+            font-size: 32px;
+            font-weight: 700;
+            color: #333333;
+            margin: 0;
+        }
+
+        .company-vacancies-page__create-vacancy-button {
+            background: #f5f5f5;
+            color: #333333;
+            border: 1px solid #e5e5e5;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+
+            &::before {
+                content: '+';
+                font-size: 18px;
+                font-weight: bold;
+                color: #333333;
+            }
+        }
+    }
+
+    &__tabs {
+        display: flex;
+        gap: 0;
+        margin-bottom: 32px;
+        border-bottom: 1px solid #e5e5e5;
+    }
+
+    &__tab {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 16px 24px;
+        border: none;
+        background: transparent;
+        color: #666666;
+        font-weight: 500;
+        cursor: pointer;
+        border-bottom: 2px solid transparent;
+        transition: all 0.2s ease;
+
+        svg {
+            color: currentColor;
+        }
+
+        &:hover {
+            color: #333333;
+        }
+
+        &.active {
+            color: #dc3545;
+            border-bottom-color: #dc3545;
+        }
+    }
+
+    &__content-area {
+        min-height: 400px;
+    }
+}
+
+.active-vacancies {
+    .vacancy-card {
+        &:last-child {
+            margin-bottom: 0;
+        }
+    }
+}

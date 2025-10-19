@@ -279,10 +279,10 @@ function Vacancies() {
                       <p className="vacancy-card__description">{vacancy.description}</p>
                       <div className="vacancy-card__details">
                         <span className="vacancy-card__employment">
-                          {getEmploymentTypeLabel(vacancy.employmentType || EmploymentType.FULL_TIME)}
+                          {vacancy.employmentType || 'Полная занятость'}
                         </span>
                         <span className="vacancy-card__experience">
-                          {getExperienceLevelLabel(vacancy.experienceWide || ExperienceLevel.NO_EXPERIENCE)}
+                          {vacancy.experienceWide || 'Без опыта'}
                         </span>
                       </div>
                     </div>

@@ -4,7 +4,9 @@ import {
     BackendEducationData, 
     EducationData, 
     BackendExperienceData, 
-    ExperienceData 
+    ExperienceData,
+    CreateResumePayload,
+    UpdateResumePayload
 } from '../redux/resume/types';
 
 // Функция для преобразования snake_case в camelCase
@@ -36,17 +38,16 @@ const snakeToCamelCase = (obj: any): any => {
 export const mapBackendResumeDataToRedux = (backendData: BackendResumeData): ResumeData => {
     const mappedData = snakeToCamelCase(backendData) as ResumeData;
     
-    // Преобразуем skills из массива объектов в массив ID
-    if (mappedData.skills && Array.isArray(mappedData.skills)) {
-        mappedData.skills = mappedData.skills.map((skill: any) => {
-            // Если skill - это объект с id, берем id
-            if (typeof skill === 'object' && skill.id) {
-                return skill.id;
-            }
-            // Если skill - это уже число, возвращаем как есть
-            return skill;
-        });
+    // Преобразуем profession в professionId (если profession - это строка с ID)
+    if (mappedData.profession && typeof mappedData.profession === 'string') {
+        const professionId = parseInt(mappedData.profession);
+        if (!isNaN(professionId)) {
+            mappedData.professionId = professionId;
+        }
     }
+    
+    // Оставляем skills как объекты с id и name для отображения
+    // Преобразование в ID происходит только при отправке на бэкенд
     
     return mappedData;
 };
@@ -85,9 +86,40 @@ const camelToSnakeCase = (obj: any): any => {
 export const mapResumeDataToBackend = (resumeData: Partial<ResumeData>): Partial<BackendResumeData> => {
     const backendData = camelToSnakeCase(resumeData) as any;
     
-    // Специальная обработка для skills - убеждаемся, что это массив чисел
+    // Специальная обработка для skills - преобразуем объекты в ID для отправки на бэкенд
     if (backendData.skills && Array.isArray(backendData.skills)) {
-        backendData.skills = backendData.skills.filter((skill: any) => typeof skill === 'number' && !isNaN(skill));
+        backendData.skills = backendData.skills.map((skill: any) => {
+            // Если skill - это объект с id, берем id
+            if (typeof skill === 'object' && skill.id) {
+                return skill.id;
+            }
+            // Если skill - это уже число, возвращаем как есть
+            return skill;
+        }).filter((skillId: any) => typeof skillId === 'number' && !isNaN(skillId));
+    }
+    
+    return backendData;
+};
+
+// Функция для преобразования CreateResumePayload в формат для отправки на бэкенд
+export const mapCreateResumePayloadToBackend = (payload: CreateResumePayload): any => {
+    const backendData = camelToSnakeCase(payload) as any;
+    
+    // Навыки уже приходят как ID, просто фильтруем их
+    if (backendData.skills && Array.isArray(backendData.skills)) {
+        backendData.skills = backendData.skills.filter((skillId: any) => typeof skillId === 'number' && !isNaN(skillId));
+    }
+    
+    return backendData;
+};
+
+// Функция для преобразования UpdateResumePayload в формат для отправки на бэкенд
+export const mapUpdateResumePayloadToBackend = (payload: Omit<UpdateResumePayload, 'id'>): any => {
+    const backendData = camelToSnakeCase(payload) as any;
+    
+    // Навыки уже приходят как ID, просто фильтруем их
+    if (backendData.skills && Array.isArray(backendData.skills)) {
+        backendData.skills = backendData.skills.filter((skillId: any) => typeof skillId === 'number' && !isNaN(skillId));
     }
     
     return backendData;

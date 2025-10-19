@@ -16,5 +16,8 @@ Route::group(['prefix' => 'responds'], function () {
 
         Route::get('/best-matches/{vacancyId}', [RespondAndInteractionController::class, 'bestMatches'])
             ->name('responds.bestMatches')->middleware('company');
+
+        Route::get('/best-matches-ai/{vacancyId}/', [RespondAndInteractionController::class, 'bestMatchesAI'])
+            ->name('responds.bestMatchesAI')->middleware('company');
     });
 });

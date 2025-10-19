@@ -7,6 +7,7 @@ import Footer from '../Footer/';
 import NotFound from '../NotFound/';
 import ProtectedRoute from '../ProtectedRoute';
 import { AuthorizationProxy } from '../AuthorizationProxy';
+import { CompanyVacancies } from '../../../pages/CompanyVacancies';
 
 const MainPage = React.lazy(() => import('../../../pages/Main/'));
 const ResumePage = React.lazy(() => import('../../../pages/Resume/'));
@@ -20,7 +21,11 @@ const VacanciesPage = React.lazy(() => import('../../../pages/Vacancies/'));
 const InternshipsPage = React.lazy(() => import('../../../pages/Internships/'));
 const PersonalCabinet = React.lazy(() => import('../../../pages/PersonalCabinet/'));
 const LogoutPage = React.lazy(() => import('../../../pages/Logout/'));
+const CreateVacancyPage = React.lazy(() => import('../../../pages/CreateVacancy/'));
+const EditVacancyPage = React.lazy(() => import('../../../pages/EditVacancy/'));
+const VacancyDetailPage = React.lazy(() => import('../../../pages/VacancyDetail/'));
 const CalendarPage = React.lazy(() => import('../../../pages/Calendar/'));
+const AnalyticsPage = React.lazy(() => import('../../../pages/Analytics/'));
 
 function renderFallback() {
   return <Loader />;
@@ -159,6 +164,41 @@ function AppRoutes() {
               </ProtectedRoute>
             </Suspense>
           } />
+            <Route path="/lk/vacancies" element={
+                <Suspense fallback={renderFallback()}>
+                    <ProtectedRoute>
+                        <CompanyVacancies />
+                    </ProtectedRoute>
+                </Suspense>
+            } />
+            <Route path="/lk/vacancies/create" element={
+                <Suspense fallback={renderFallback()}>
+                    <ProtectedRoute>
+                        <CreateVacancyPage />
+                    </ProtectedRoute>
+                </Suspense>
+            } />
+            <Route path="/lk/vacancies/edit/:id" element={
+                <Suspense fallback={renderFallback()}>
+                    <ProtectedRoute>
+                        <EditVacancyPage />
+                    </ProtectedRoute>
+                </Suspense>
+            } />
+            <Route path="/lk/vacancies/:id" element={
+                <Suspense fallback={renderFallback()}>
+                    <ProtectedRoute>
+                        <VacancyDetailPage />
+                    </ProtectedRoute>
+                </Suspense>
+            } />
+            <Route path="/resume/:id" element={
+                <Suspense fallback={renderFallback()}>
+                    <ProtectedRoute>
+                        <ResumePage />
+                    </ProtectedRoute>
+                </Suspense>
+            } />
           <Route path="/lk/logout" element={
             <Suspense fallback={renderFallback()}>
               <ProtectedRoute>
@@ -166,10 +206,17 @@ function AppRoutes() {
               </ProtectedRoute>
             </Suspense>
           } />
-          <Route path="/calendar" element={
+          <Route path="/lk/calendar" element={
             <Suspense fallback={renderFallback()}>
               <ProtectedRoute>
                 <CalendarPage />
+              </ProtectedRoute>
+            </Suspense>
+          } />
+          <Route path="/lk/analytics" element={
+            <Suspense fallback={renderFallback()}>
+              <ProtectedRoute>
+                <AnalyticsPage />
               </ProtectedRoute>
             </Suspense>
           } />

@@ -109,7 +109,7 @@ class ResumesSeeder extends Seeder
         ];
 
         $resumes = [];
-        $resumeCount = min(85, $users->count()); // Создаем до 85 резюме (25 + 40 + 20 новых программистов)
+        $resumeCount = min(115, $users->count()); // Создаем до 115 резюме (25 + 40 + 20 + 30 новых программистов)
 
         // Найдем профессию "Программист"
         $programmerProfession = $professions->where('name', 'Программист')->first();
@@ -117,7 +117,7 @@ class ResumesSeeder extends Seeder
         for ($i = 0; $i < $resumeCount; $i++) {
             $user = $users[$i % $users->count()];
             
-            // Для последних 20 резюме (программисты) используем специальную логику
+            // Для последних 50 резюме (программисты) используем специальную логику
             if ($i >= 65 && $programmerProfession) {
                 $profession = $programmerProfession;
                 $about = $programmerAboutTexts[($i - 65) % count($programmerAboutTexts)];
@@ -161,13 +161,15 @@ class ResumesSeeder extends Seeder
 
         // Найдем навыки программистов
         $programmerSkills = Skills::whereIn('name', [
-            'PHP', 'JavaScript', 'Python', 'C#', 'Java', 'Git', 'Docker', 'MySQL', 'Laravel', 'React'
+            'PHP', 'JavaScript', 'Python', 'C#', 'Java', 'Git', 'Docker', 'MySQL', 'Laravel', 'React',
+            'PostgreSQL', 'C++', 'Python', 'Ruby', 'Swift', 'Kotlin', 'Scala', 'Go', 'Rust', 'TypeScript', 'HTML', 'CSS', 'SQL',
+            'C++', 'Python', 'Ruby', 'Swift', 'Kotlin', 'Scala', 'Go', 'Rust', 'TypeScript', 'HTML', 'CSS', 'SQL',
         ])->get();
 
         foreach ($resumes as $index => $resumeData) {
             $resume = Resume::create($resumeData);
             
-            // Для резюме программистов (последние 20) привязываем навыки программистов
+            // Для резюме программистов (последние 50) привязываем навыки программистов
             if ($index >= 65 && $programmerSkills->count() > 0) {
                 // Привязываем все навыки программистов плюс несколько случайных общих навыков
                 $allSkills = $programmerSkills->merge($skills->whereNotIn('name', [

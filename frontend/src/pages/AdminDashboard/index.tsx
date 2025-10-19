@@ -1,14 +1,125 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 import { selectUserData } from '../../redux/user/selectors';
 import { UserRoleLabels } from '../../enums/UserRole';
 import { LoadStatus } from '../../utils/types';
 import Loader from '../../components/default/Loader';
 import Button, { ButtonType } from '../../components/UI/Button';
+import PanelBlock from '../../components/default/PanelBlock';
+import { 
+    Add as AddIcon,
+    Visibility as VisibilityIcon,
+    Description as DescriptionIcon,
+    Work as WorkIcon,
+    School as SchoolIcon,
+    BarChart as BarChartIcon,
+    Edit as EditIcon,
+    CheckCircle as CheckCircleIcon,
+    SmartToy as SmartToyIcon,
+    Business as BusinessIcon,
+    CalendarToday as CalendarIcon,
+    People as PeopleIcon,
+    AdminPanelSettings as AdminIcon,
+    Security as SecurityIcon,
+    Settings as SettingsIcon
+} from '@mui/icons-material';
 import './style.scss';
 
 const AdminDashboard: React.FC = () => {
+    const navigate = useNavigate();
     const { data: userData, status } = useSelector(selectUserData);
+
+    // Объединенный массив панелек из JobSeeker и Employer + админские функции
+    const panelBlockArray = [
+        // Функции соискателя
+        {
+            icon: <AddIcon />,
+            title: "Создание резюме",
+            onClick: () => navigate('/lk/resume/create')
+        },
+        {
+            icon: <VisibilityIcon />,
+            title: "Просмотр откликов",
+            onClick: () => navigate('/lk/resume')
+        },
+        {
+            icon: <DescriptionIcon />,
+            title: "Ваши резюме",
+            onClick: () => navigate('/lk/resume')
+        },
+        {
+            icon: <EditIcon />,
+            title: "Черновики",
+            onClick: () => console.log('Черновики')
+        },
+        {
+            icon: <CheckCircleIcon />,
+            title: "Подтверждение навыков",
+            onClick: () => console.log('Подтверждение навыков')
+        },
+        
+        // Функции работодателя
+        {
+            icon: <BusinessIcon />,
+            title: "Создание компании",
+            onClick: () => console.log('Создание компании')
+        },
+        {
+            icon: <WorkIcon />,
+            title: "Ваши вакансии",
+            onClick: () => navigate('/lk/vacancies')
+        },
+        {
+            icon: <CalendarIcon />,
+            title: "Производственный календарь",
+            onClick: () => navigate('/lk/calendar')
+        },
+        
+        // Общие функции
+        {
+            icon: <WorkIcon />,
+            title: "Вакансии",
+            onClick: () => navigate('/vacancies')
+        },
+        {
+            icon: <SchoolIcon />,
+            title: "Стажировки",
+            onClick: () => navigate('/internships')
+        },
+        {
+            icon: <BarChartIcon />,
+            title: "Аналитика",
+            onClick: () => navigate('/lk/analytics')
+        },
+        {
+            icon: <SmartToyIcon />,
+            title: "ИИ агент",
+            onClick: () => navigate('/chat')
+        },
+        
+        // Админские функции
+        {
+            icon: <PeopleIcon />,
+            title: "Управление пользователями",
+            onClick: () => console.log('Управление пользователями')
+        },
+        {
+            icon: <AdminIcon />,
+            title: "Модерация контента",
+            onClick: () => console.log('Модерация контента')
+        },
+        {
+            icon: <SecurityIcon />,
+            title: "Безопасность",
+            onClick: () => console.log('Безопасность')
+        },
+        {
+            icon: <SettingsIcon />,
+            title: "Настройки системы",
+            onClick: () => console.log('Настройки системы')
+        }
+    ];
 
     if (status === LoadStatus.IN_PROGRESS) {
         return <Loader />;
@@ -136,15 +247,13 @@ const AdminDashboard: React.FC = () => {
                             </div>
                         </div>
 
-                        <div className="dashboard-card dashboard-card--actions">
-                            <h2 className="dashboard-card__title">Быстрые действия</h2>
-                            <div className="quick-actions">
-                                <Button variant={ButtonType.RED} onClick={() => console.log('Управление пользователями')}>
-                                    Управление пользователями
-                                </Button>
-                                <Button variant={ButtonType.BLACK} onClick={() => console.log('Модерация')}>
-                                    Модерация
-                                </Button>
+                        {/* Панель управления */}
+                        <div className="dashboard-card dashboard-card--panel">
+                            <h2 className="dashboard-card__title">Панель управления</h2>
+                            <div className="panel-blocks-grid">
+                                {panelBlockArray.map((block) => (
+                                    <PanelBlock key={block.title} icon={block.icon} title={block.title} onClick={block.onClick} />
+                                ))}
                             </div>
                         </div>
                     </div>

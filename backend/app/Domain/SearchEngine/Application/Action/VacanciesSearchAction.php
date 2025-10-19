@@ -59,12 +59,12 @@ class VacanciesSearchAction {
         if (isset($queryArray['title'])) {
             $vacanciesIdAfterFilter = $query->get(['id']);
             $vacanciesIdAfterTitle = $query->where('title', 'ilike', '%' . $queryArray['title'] . '%')
-                  ->whereIn('id', $vacanciesIdAfterFilter)->get('id');
+                  ->whereIn('id', $vacanciesIdAfterFilter->pluck('id'))->get(['id']);
 
             $queryAfterTitle = Vacancies::query()->with('company:id,name,logo_url');
 
             $vacanciesIdNotTitle = $queryAfterTitle->where('title', 'not ilike', '%' . $queryArray['title'] . '%')
-            ->whereIn('id', $vacanciesIdAfterFilter)->get(['id', 'title']);
+            ->whereIn('id', $vacanciesIdAfterFilter->pluck('id'))->get(['id', 'title']);
 
             $notTitleList = $vacanciesIdNotTitle->pluck('title', 'id')->toArray();
 
