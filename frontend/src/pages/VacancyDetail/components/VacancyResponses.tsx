@@ -40,7 +40,7 @@ const VacancyResponses: React.FC<VacancyResponsesProps> = ({ vacancyId }) => {
     const aiMatchesStatus = useSelector((state: RootState) => selectAIMatchesStatus(state, vacancyId));
     const aiMatchesError = useSelector((state: RootState) => selectAIMatchesError(state, vacancyId));
 
-    const [selectedFilters, setSelectedFilters] = useState<string[]>(['new']);
+    const [selectedFilters, setSelectedFilters] = useState<string[]>([]);
     const [showReports, setShowReports] = useState<{ [respondId: number]: boolean }>({});
     const [showAIReports, setShowAIReports] = useState<{ [respondId: number]: boolean }>({});
 
@@ -94,6 +94,11 @@ const VacancyResponses: React.FC<VacancyResponsesProps> = ({ vacancyId }) => {
         return match || null;
     };
 
+    // Функция для получения лучшего совпадения по ID отклика
+    const getBestMatchForRespond = (respondId: number): BestMatchData | null => {
+        return bestMatches.find(match => match.id === respondId) || null;
+    };
+
     // Функция для определения цвета на основе процента совпадения
     const getMatchScoreColor = (percentage: number): string => {
         if (percentage >= 80) return '#28a745'; // Зеленый для высоких процентов
@@ -138,27 +143,34 @@ const VacancyResponses: React.FC<VacancyResponsesProps> = ({ vacancyId }) => {
         }) : [];
 
         // Фильтруем отклики по выбранным фильтрам
-        const filteredResponses = responses.filter(response => {
-            const filterKey = statusMapping[response.status] || 'new';
-            return selectedFilters.includes(filterKey);
-        });
+        // Если не выбран ни один фильтр, показываем все отклики
+        const filteredResponses = selectedFilters.length === 0 
+            ? responses 
+            : responses.filter(response => {
+                const filterKey = statusMapping[response.status] || 'new';
+                return selectedFilters.includes(filterKey);
+            });
 
-        // Сортируем отклики по рейтингу ИИ (если есть AI матчи)
+        // Сортируем отклики по комбинированному рейтингу (процент совпадения + рейтинг ИИ)
         const sortedResponses = filteredResponses.sort((a, b) => {
             const aiMatchA = getAIMatchForRespond(a.respondId || a.id);
             const aiMatchB = getAIMatchForRespond(b.respondId || b.id);
+            const bestMatchA = getBestMatchForRespond(a.id);
+            const bestMatchB = getBestMatchForRespond(b.id);
             
-            // Если у обоих есть рейтинг ИИ, сортируем по убыванию (высший рейтинг первым)
-            if (aiMatchA && aiMatchB) {
-                return aiMatchB.rating - aiMatchA.rating;
-            }
+            // Получаем процент совпадения (0-100) и рейтинг ИИ (1-10, где 1 лучше)
+            const scoreA = bestMatchA?.match_score || 0;
+            const scoreB = bestMatchB?.match_score || 0;
+            const aiRatingA = aiMatchA?.rating || 10; // Если нет рейтинга ИИ, считаем худшим
+            const aiRatingB = aiMatchB?.rating || 10;
             
-            // Если рейтинг есть только у одного, он идет первым
-            if (aiMatchA && !aiMatchB) return -1;
-            if (!aiMatchA && aiMatchB) return 1;
+            // Комбинированный рейтинг: процент совпадения - рейтинг ИИ * 10
+            // Это дает приоритет высокому проценту совпадения, но учитывает рейтинг ИИ
+            const combinedScoreA = scoreA - (aiRatingA - 1) * 5; // Преобразуем 1-10 в 0-45 и вычитаем
+            const combinedScoreB = scoreB - (aiRatingB - 1) * 5;
             
-            // Если у обоих нет рейтинга, сохраняем исходный порядок
-            return 0;
+            // Сортируем по убыванию комбинированного рейтинга (лучший первым)
+            return combinedScoreB - combinedScoreA;
         });
 
 
@@ -174,6 +186,8 @@ const VacancyResponses: React.FC<VacancyResponsesProps> = ({ vacancyId }) => {
     const handleGetBestMatches = async () => {
         try {
             await dispatch(getBestMatchesAction(vacancyId)).unwrap();
+            // Сбрасываем фильтры при запросе отчета
+            setSelectedFilters([]);
         } catch (error) {
             console.error('Ошибка при получении лучших совпадений:', error);
             alert('Ошибка при получении лучших совпадений');
@@ -183,6 +197,8 @@ const VacancyResponses: React.FC<VacancyResponsesProps> = ({ vacancyId }) => {
     const handleGetAIMatches = async () => {
         try {
             await dispatch(getAIMatchesAction(vacancyId)).unwrap();
+            // Сбрасываем фильтры при запросе AI отчета
+            setSelectedFilters([]);
         } catch (error) {
             console.error('Ошибка при получении AI совпадений:', error);
             alert('Ошибка при получении AI совпадений');
@@ -203,9 +219,6 @@ const VacancyResponses: React.FC<VacancyResponsesProps> = ({ vacancyId }) => {
         }));
     };
 
-    const getBestMatchForRespond = (respondId: number): BestMatchData | null => {
-        return bestMatches.find(match => match.id === respondId) || null;
-    };
 
 
     const handleOpenResume = (resumeId: number) => {
@@ -543,9 +556,6 @@ const VacancyResponses: React.FC<VacancyResponsesProps> = ({ vacancyId }) => {
                                 <div className="vacancy-responses__ai-report">
                                     <div className="vacancy-responses__ai-report-header">
                                         <h4>🤖 Отчёт ИИ о кандидате</h4>
-                                        <span className="vacancy-responses__ai-rating">
-                                            Рейтинг ИИ: {getAIMatchForRespond(response.respondId || response.id)?.rating}/10
-                                        </span>
                                     </div>
                                     <div className="vacancy-responses__ai-report-content">
                                         {(() => {
