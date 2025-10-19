@@ -27,7 +27,6 @@ class InternshipRespondsSeeder extends Seeder
                     InternshipRespond::create([
                         'internship_id' => $internshipId,
                         'company_id'    => $companyIds[array_rand($companyIds)],
-                        'status'        => 0,
                         'message'       => fake()->boolean(60) ? fake()->sentence(10) : null,
                     ]);
                 }

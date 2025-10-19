@@ -14,7 +14,6 @@ return new class () extends Migration {
             $table->id();
             $table->foreignId('internship_id')->constrained('internships')->cascadeOnDelete();
             $table->foreignId('company_id')->constrained('companies')->cascadeOnDelete();
-            $table->tinyInteger('status')->default(0);
             $table->text('message')->nullable();
             $table->timestamps();
         });

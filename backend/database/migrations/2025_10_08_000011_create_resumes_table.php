@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('city');
             $table->string('country');
             $table->string('education');
+            $table->tinyInteger('employment_type')->default(0);
             $table->string('phone')->nullable();
             $table->text('about')->nullable();
             $table->foreignId('profession_id')->nullable()->constrained('professions');

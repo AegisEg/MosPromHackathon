@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Casts\DateTimeImmutableCast;
+use App\Enums\EmploymentType;
 use Illuminate\Database\Eloquent\Model;
 
 class Resume extends Model
@@ -16,6 +17,7 @@ class Resume extends Model
         'city',
         'country',
         'education',
+        'employment_type',
         'phone',
         'about',
         'profession_id',
@@ -24,6 +26,7 @@ class Resume extends Model
     ];
 
     protected $casts = [ // phpcs:ignore
+        'employment_type' => EmploymentType::class,
         'date_of_birth' => DateTimeImmutableCast::class,
         'created_at'    => DateTimeImmutableCast::class,
         'updated_at'    => DateTimeImmutableCast::class,
