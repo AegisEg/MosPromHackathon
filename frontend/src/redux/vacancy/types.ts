@@ -25,14 +25,17 @@ export interface BackendVacancyData {
     description?: string;
     company_id?: number;
     profession_id?: number;
-    employment_type?: number;
-    experience_wide?: number;
+    company_name?: string;
+    profession?: string;
+    employment_type?: string;
+    experience_wide?: string;
     salary_from?: number;
     salary_to?: number;
     status?: boolean;
     created_at?: string;
     updated_at?: string;
-    skills?: number[];
+    skills?: string[];
+    responds_count?: number;
 }
 
 // Данные в Redux с маппингом в camelCase
@@ -43,14 +46,17 @@ export interface VacancyData {
     description?: string;
     companyId?: number;
     professionId?: number;
-    employmentType?: EmploymentType;
-    experienceWide?: ExperienceLevel;
+    companyName?: string;
+    profession?: string;
+    employmentType?: string;
+    experienceWide?: string;
     salaryFrom?: number;
     salaryTo?: number;
     status?: boolean;
     createdAt?: string;
     updatedAt?: string;
-    skills?: number[];
+    skills?: string[];
+    respondsCount?: number;
 }
 
 // Payload для создания вакансии
@@ -59,12 +65,12 @@ export interface CreateVacancyPayload {
     description: string;
     companyId: number;
     professionId: number;
-    employmentType: EmploymentType;
-    experienceWide: ExperienceLevel;
+    employmentType: string;
+    experienceWide: string;
     salaryFrom: number;
     salaryTo: number;
     status: boolean;
-    skills: number[];
+    skills: string[];
 }
 
 // Payload для обновления вакансии
@@ -74,12 +80,12 @@ export interface UpdateVacancyPayload {
     description?: string;
     companyId?: number;
     professionId?: number;
-    employmentType?: EmploymentType;
-    experienceWide?: ExperienceLevel;
+    employmentType?: string;
+    experienceWide?: string;
     salaryFrom?: number;
     salaryTo?: number;
     status?: boolean;
-    skills?: number[];
+    skills?: string[];
 }
 
 // Состояние Redux для вакансий

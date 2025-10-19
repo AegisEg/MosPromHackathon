@@ -86,5 +86,100 @@
                 }
             }
         }
+        &__body {
+            margin: 0 180px;
+            
+            .inner-wrapper {
+                margin-bottom: 40px;
+                
+                &_title {
+                    font-weight: 600;
+                    font-size: 24px;
+                    line-height: 120%;
+                    color: #393649;
+                    margin-bottom: 20px;
+                    border-bottom: 2px solid #D00E46;
+                    padding-bottom: 8px;
+                }
+                
+                &_text {
+                    font-weight: 400;
+                    font-size: 16px;
+                    line-height: 150%;
+                    color: #393649;
+                    
+                    &-item {
+                        background: #f8f9fa;
+                        border: 1px solid #e5e5e5;
+                        border-radius: 12px;
+                        padding: 20px;
+                        margin-bottom: 16px;
+                        transition: all 0.2s ease;
+                        
+                        &:hover {
+                            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+                            transform: translateY(-2px);
+                        }
+                        
+                        &:last-child {
+                            margin-bottom: 0;
+                        }
+                        
+                        &-company {
+                            font-weight: 600;
+                            font-size: 18px;
+                            color: #D00E46;
+                            margin-bottom: 8px;
+                        }
+                        
+                        &-position {
+                            font-weight: 500;
+                            font-size: 16px;
+                            color: #393649;
+                            margin-bottom: 8px;
+                        }
+                        
+                        &-date {
+                            font-weight: 400;
+                            font-size: 14px;
+                            color: #8E8E93;
+                            margin-bottom: 12px;
+                        }
+                        
+                        &-description {
+                            font-weight: 400;
+                            font-size: 14px;
+                            color: #666666;
+                            line-height: 140%;
+                            background: #ffffff;
+                            padding: 12px;
+                            border-radius: 8px;
+                            border-left: 3px solid #D00E46;
+                        }
+                        
+                        &-institution {
+                            font-weight: 600;
+                            font-size: 18px;
+                            color: #D00E46;
+                            margin-bottom: 8px;
+                        }
+                        
+                        &-degree {
+                            font-weight: 500;
+                            font-size: 16px;
+                            color: #393649;
+                            margin-bottom: 4px;
+                        }
+                        
+                        &-specialization {
+                            font-weight: 400;
+                            font-size: 14px;
+                            color: #666666;
+                            margin-bottom: 8px;
+                        }
+                    }
+                }
+            }
+        }
     }
 }

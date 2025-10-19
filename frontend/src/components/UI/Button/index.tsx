@@ -6,6 +6,7 @@ export enum ButtonType {
   RED = 'red',
   BLACK = 'black',
   GRAY = 'gray',
+  OUTLINE = 'outline',
   SECONDARY = 'secondary',
   DANGER = 'danger',
 }

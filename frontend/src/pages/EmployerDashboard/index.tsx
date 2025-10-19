@@ -29,7 +29,7 @@ const EmployerDashboard: React.FC = () => {
         {
             icon: <WorkIcon />,
             title: "Ваши вакансии",
-            onClick: () => console.log('Ваши вакансии')
+            onClick: () => navigate('/lk/vacancies')
         },
         {
             icon: <SchoolIcon />,

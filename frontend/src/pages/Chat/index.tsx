@@ -10,7 +10,7 @@ import { mockChats, mockChatMessages } from '../../data/chat-data';
 import type { Message, ChatItem, ChatMessages } from '../../types/chat.types';
 
 function Chat() {
-  const [activeChatId, setActiveChatId] = useState<number>(1);
+  const [activeChatId, setActiveChatId] = useState<number>(13);
   const [messageText, setMessageText] = useState<string>('');
   const [searchText, setSearchText] = useState<string>('');
   const messagesContainerRef = useRef<HTMLDivElement>(null);
@@ -92,7 +92,11 @@ function Chat() {
                     onClick={() => setActiveChatId(chat.id)}
                   >
                     <div className="chat-item_avatar">
-                      <img src={chat.avatar || user} alt={chat.name} />
+                      {chat.avatar && typeof chat.avatar === 'string' && chat.avatar.startsWith('🤖') ? (
+                        <div className="chat-item_avatar-emoji">{chat.avatar}</div>
+                      ) : (
+                        <img src={chat.avatar || user} alt={chat.name} />
+                      )}
                       {chat.online && <span className="chat-item_online"></span>}
                     </div>
                     <div className="chat-item_content">
@@ -125,7 +129,11 @@ function Chat() {
                 <div className="chat-header">
                   <div className="chat-header_info">
                     <div className="chat-header_avatar">
-                      <img src={activeChat.avatar || user} alt={activeChat.name} />
+                      {activeChat.avatar && typeof activeChat.avatar === 'string' && activeChat.avatar.startsWith('🤖') ? (
+                        <div className="chat-header_avatar-emoji">{activeChat.avatar}</div>
+                      ) : (
+                        <img src={activeChat.avatar || user} alt={activeChat.name} />
+                      )}
                       {activeChat.online && <span className="chat-header_online"></span>}
                     </div>
                     <div className="chat-header_details">
@@ -148,12 +156,18 @@ function Chat() {
                         >
                           {message.sender === 'other' && (
                             <div className="message_avatar">
-                              <img src={activeChat.avatar || user} alt="Avatar" />
+                              {activeChat.avatar && typeof activeChat.avatar === 'string' && activeChat.avatar.startsWith('🤖') ? (
+                                <div className="message_avatar-emoji">{activeChat.avatar}</div>
+                              ) : (
+                                <img src={activeChat.avatar || user} alt="Avatar" />
+                              )}
                             </div>
                           )}
                           <div className="message_content">
                             <div className="message_bubble">
-                              <p className="message_text">{message.text}</p>
+                              <div className="message_text" style={{ whiteSpace: 'pre-line' }}>
+                                {message.text}
+                              </div>
                             </div>
                             <span className="message_time">{message.time}</span>
                           </div>

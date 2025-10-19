@@ -1,0 +1,192 @@
+.vacancy-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 24px 20px;
+    background: #ffffff;
+    border: 2px solid #C7C7CC;
+    border-radius: 8px;
+    margin-bottom: 16px;
+    transition: all 0.2s ease;
+    cursor: pointer;
+
+    &:hover {
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    // Стили для неактивных карточек
+    &:not(.vacancy-card--active) {
+        background: #FFE8F0;
+    }
+
+    // Стили для активных карточек (по умолчанию)
+    &--active {
+        background: #ffffff;
+    }
+
+    &__content {
+        flex: 1;
+    }
+
+    &__status {
+        display: flex;
+        margin-bottom: 12px;
+        justify-content: space-between;
+        &-active,
+        &-inactive {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 12px;
+            font-weight: 400;   
+        }
+        &-actions { 
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+        &-action-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+        }
+        &-action-item-text {
+            font-size: 12px;
+            font-weight: 600;   
+            color: #393649;
+        }
+
+        &-action-item-text--red {
+            color: #D00E46;
+        }
+        &-active {
+            color: #8E8E93;
+        }
+
+        &-inactive {
+            color: #D00E46;
+        }
+
+        &-published-date {
+            color: #C7C7CC;
+            font-weight: 400;
+            font-size: 12px;
+        }
+    }
+
+    &__status-actions {
+        display: flex;
+        flex-direction: row;
+        align-items: flex-end;
+        gap: 8px;
+    }
+
+    &__buttons {
+        display: flex;
+        gap: 8px;
+    }
+
+    &__edit-btn,
+    &__delete-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 32px;
+        height: 32px;
+        border: 2px solid #e5e5e5;
+        border-radius: 6px;
+        background: #ffffff;
+        color: #666666;
+        cursor: pointer;
+        transition: all 0.2s ease;
+
+        &:hover {
+            background: #f5f5f5;
+            border-color: #d5d5d5;
+        }
+
+        svg {
+            color: currentColor;
+        }
+    }
+
+    &__edit-btn {
+        &:hover {
+            color: #007bff;
+            border-color: #007bff;
+        }
+    }
+
+    &__delete-btn {
+        &:hover {
+            color: #dc3545;
+            border-color: #dc3545;
+        }
+    }
+
+    &__title {
+        font-size: 18px;
+        font-weight: 500;
+        color: #393649;
+        margin-bottom: 12px;
+        line-height: 12px;
+    }
+
+    &__salary {
+        font-size: 16px;
+        font-weight: 400;
+        color: #C7C7CC;
+        margin-bottom: 6px;
+        line-height: 12px;
+    }
+
+    &__region {
+        font-weight: 500;
+        font-size: 16px;
+        line-height: 12px;
+        color: #393649;
+        
+        &-value {
+            font-size: 16px;
+            font-weight: 400;
+            color: #C7C7CC;
+        }
+    }
+    &__responses {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        min-width: 80px;
+    }
+
+    &__responses-label {
+        font-size: 16px;
+        color: #8E8E93;
+        font-weight: 500;
+    }
+
+    &__responses-count {
+        display: inline-block;
+        padding: 4px;
+        border-radius: 40px;
+        font-size: 12px;
+        font-weight: 600;
+        background: #8E8E93;
+        color: #ffffff;
+        text-align: center;
+        min-width: 24px;
+        &.active {
+            background: #D00E46;
+        }
+    }
+    .vacancy-card__responses {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 12px;
+    }
+}

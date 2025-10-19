@@ -208,7 +208,9 @@ const ResumeEdit: React.FC = () => {
     useEffect(() => {
         dispatch(getProfessionsAction());
         if (resumeId) {
-            dispatch(getResumeAction(parseInt(resumeId)));
+            dispatch(getResumeAction(parseInt(resumeId))).unwrap().catch(() => {
+                navigate('/not-found');
+            });
         }
     }, [dispatch, resumeId]);
 
@@ -216,7 +218,9 @@ const ResumeEdit: React.FC = () => {
     useEffect(() => {
         if (currentResume) {
             console.log(currentResume);
-;            setFormData({
+            const professionId = professions.find(p => p.name === currentResume.profession)?.id;
+
+            const newFormData = {
                 id: currentResume.id || 0,
                 dateOfBirth: currentResume.dateOfBirth || '',
                 city: currentResume.city || '',
@@ -224,20 +228,23 @@ const ResumeEdit: React.FC = () => {
                 education: typeof currentResume.education === 'string' ? currentResume.education : '',
                 phone: currentResume.phone || '',
                 about: currentResume.about || '',
-                professionId: currentResume.professionId || 0,
+                professionId: professionId || 0,
                 salary: currentResume.salary || 0,
                 status: currentResume.status ?? true,
                 skills: currentResume.skills || [],
                 educations: currentResume.educations || [],
                 experiences: currentResume.experiences || [],
-            });
+            };
+            
+            setFormData(newFormData);
             
             // Загружаем навыки для выбранной профессии
-            if (currentResume.professionId) {
-                dispatch(getProfessionSkillsAction(currentResume.professionId));
+            if (professionId) {
+                dispatch(getProfessionSkillsAction(professionId));
             }
         }
     }, [currentResume, dispatch]);
+
 
     // Функции для работы с формой
     const handleInputChange = (field: keyof UpdateResumePayload, value: any) => {
@@ -420,6 +427,13 @@ const ResumeEdit: React.FC = () => {
         );
     }
 
+
+    // Проверяем, есть ли профессия в списке
+    const selectedProfession = professions.find(p => p.id === formData.professionId);
+    
+    // Проверяем, есть ли образование в списке
+    const selectedEducation = educationOptions.find(opt => opt.value === formData.education);
+
     return (
         <div className="resume-edit">
             <div className="container">
@@ -460,11 +474,12 @@ const ResumeEdit: React.FC = () => {
                                     onChange={(value) => handleInputChange('phone', value)}
                                 />
                                 <Select
+                                    key={`education-${formData.education}`}
                                     label="Образование"
                                     options={educationOptions}
                                     value={formData.education ? {
                                         value: formData.education,
-                                        label: educationOptions.find(opt => opt.value === formData.education)?.label || ''
+                                        label: formData.education
                                     } : undefined}
                                     onChange={handleEducationChange}
                                     placeholder="Выберите образование"
@@ -477,15 +492,20 @@ const ResumeEdit: React.FC = () => {
                             <div className="inner-wrapper_title">Профессиональная информация</div>
                             <div className="resume-edit__grid">
                                 <Select
+                                    key={`profession-${formData.professionId}`}
                                     label="Профессия"
                                     options={professions.map(prof => ({
                                         value: prof.id.toString(),
                                         label: prof.name
                                     }))}
-                                    value={formData.professionId ? {
-                                        value: formData.professionId.toString(),
-                                        label: professions.find(p => p.id === formData.professionId)?.name || ''
-                                    } : undefined}
+                                    value={(() => {
+                                        const professionValue = formData.professionId ? {
+                                            value: formData.professionId.toString(),
+                                            label: professions.find(p => p.id === formData.professionId)?.name || ''
+                                        } : undefined;
+                                        console.log('Profession Select Value:', professionValue);
+                                        return professionValue;
+                                    })()}
                                     onChange={handleProfessionChange}
                                     placeholder="Выберите профессию"
                                 />
@@ -504,7 +524,6 @@ const ResumeEdit: React.FC = () => {
                             </div>
                         </div>
 
-                        {/* Навыки */}
                         {(formData.professionId && formData.professionId > 0 && currentProfessionSkills.length > 0) ? (
                             <div className="inner-wrapper">
                                 <div className="inner-wrapper_title">Навыки</div>
