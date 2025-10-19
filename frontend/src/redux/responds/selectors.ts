@@ -31,3 +31,16 @@ export const selectBestMatchesStatus = (state: RootState, vacancyId: number) =>
 
 export const selectBestMatchesError = (state: RootState, vacancyId: number) => 
     state.responds.bestMatches[vacancyId]?.error || null;
+
+// Селекторы для AI совпадений
+export const selectAIMatchesByVacancy = (state: RootState, vacancyId: number) => 
+    state.responds.aiMatches[vacancyId] || { status: 'NOT_LOADING' as const, data: [], error: null };
+
+export const selectAIMatchesData = (state: RootState, vacancyId: number) => 
+    state.responds.aiMatches[vacancyId]?.data || [];
+
+export const selectAIMatchesStatus = (state: RootState, vacancyId: number) => 
+    state.responds.aiMatches[vacancyId]?.status || 'NOT_LOADING' as const;
+
+export const selectAIMatchesError = (state: RootState, vacancyId: number) => 
+    state.responds.aiMatches[vacancyId]?.error || null;

@@ -1,5 +1,5 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
-import { getRespondsByVacancy, updateRespondStatus, getBestMatches, RespondData, BestMatchData } from '../../api/responds';
+import { getRespondsByVacancy, updateRespondStatus, getBestMatches, getAIMatches, RespondData, BestMatchData, AIMatchData } from '../../api/responds';
 
 // Получить отклики на вакансию
 export const getRespondsByVacancyAction = createAsyncThunk(
@@ -36,6 +36,21 @@ export const getBestMatchesAction = createAsyncThunk(
             return { vacancyId, bestMatches: response.top_matches };
         } catch (error: any) {
             return rejectWithValue(error.response?.data?.error?.message || 'Ошибка при получении лучших совпадений');
+        }
+    }
+);
+
+// Получить AI совпадения для вакансии
+export const getAIMatchesAction = createAsyncThunk(
+    'responds/getAIMatchesAction',
+    async (vacancyId: number, { rejectWithValue }) => {
+        try {
+            const response = await getAIMatches(vacancyId);
+            console.log('Redux action - AI matches response:', response);
+            console.log('Redux action - AI matches array:', response.ai_matches);
+            return { vacancyId, aiMatches: response.ai_matches };
+        } catch (error: any) {
+            return rejectWithValue(error.response?.data?.error?.message || 'Ошибка при получении AI совпадений');
         }
     }
 );

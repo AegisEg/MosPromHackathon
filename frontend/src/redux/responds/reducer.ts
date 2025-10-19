@@ -4,12 +4,14 @@ import {
     getRespondsByVacancyAction,
     updateRespondStatusAction,
     getBestMatchesAction,
+    getAIMatchesAction,
 } from './actions';
 import { LoadStatus } from '../../utils/types';
 
 const initialState: RespondsState = {
     responds: {},
     bestMatches: {},
+    aiMatches: {},
     updateStatus: {
         status: LoadStatus.NOT_LOADING,
         error: null,
@@ -59,7 +61,7 @@ const respondsReducer = createReducer(initialState, (builder) => {
                 if (vacancyResponds.data) {
                     const respondIndex = vacancyResponds.data.findIndex(respond => respond.id === respondId);
                     if (respondIndex !== -1) {
-                        vacancyResponds.data[respondIndex].respondStatus = status;
+                        (vacancyResponds.data[respondIndex] as any).respond_status = status;
                     }
                 }
             });
@@ -93,6 +95,31 @@ const respondsReducer = createReducer(initialState, (builder) => {
         .addCase(getBestMatchesAction.rejected, (state, action) => {
             const vacancyId = action.meta.arg;
             state.bestMatches[vacancyId] = {
+                status: LoadStatus.ERROR,
+                data: [],
+                error: action.payload as string,
+            };
+        })
+        // getAIMatchesAction
+        .addCase(getAIMatchesAction.pending, (state, action) => {
+            const vacancyId = action.meta.arg;
+            state.aiMatches[vacancyId] = {
+                status: LoadStatus.IN_PROGRESS,
+                data: [],
+                error: null,
+            };
+        })
+        .addCase(getAIMatchesAction.fulfilled, (state, action) => {
+            const { vacancyId, aiMatches } = action.payload;
+            state.aiMatches[vacancyId] = {
+                status: LoadStatus.SUCCESS,
+                data: aiMatches,
+                error: null,
+            };
+        })
+        .addCase(getAIMatchesAction.rejected, (state, action) => {
+            const vacancyId = action.meta.arg;
+            state.aiMatches[vacancyId] = {
                 status: LoadStatus.ERROR,
                 data: [],
                 error: action.payload as string,

@@ -19,7 +19,7 @@ export interface RespondData {
     experience_time: number;
     experiences: ExperienceData[];
     skills: SkillData[];
-    respondStatus?: string; // Добавим это поле для фронтенда
+    respond_status?: string; // Статус отклика с бэкенда
     message?: string;
     createdAt?: string;
 }
@@ -126,6 +126,48 @@ export const getBestMatches = (vacancyId: number): Promise<BestMatchesResponse> 
         })
         .catch((error) => {
             console.error('Get best matches error:', error);
+            throw error;
+        });
+};
+
+// Интерфейс для AI совпадений
+export interface AIMatchData {
+    id: number;
+    profession: string;
+    first_name: string;
+    middle_name?: string;
+    last_name: string;
+    date_of_birth?: string;
+    country?: string;
+    city?: string;
+    status: boolean;
+    respond_id?: number;
+    respond_status?: string;
+    opinion: string; // Мнение ИИ о кандидате
+    rating: number; // Рейтинг от ИИ
+}
+
+// Интерфейс для ответа API AI совпадений
+export interface AIMatchesResponse {
+    total: number;
+    ai_matches: AIMatchData[];
+}
+
+// Получить AI совпадения для вакансии
+export const getAIMatches = (vacancyId: number): Promise<AIMatchesResponse> => {
+    return api
+        .get(`responds/best-matches-ai/${vacancyId}`)
+        .then((response) => {
+            console.log('AI matches API response:', response.data);
+            // API возвращает данные напрямую в поле data как массив
+            const aiMatchesArray = response.data.data || [];
+            return { 
+                total: aiMatchesArray.length, 
+                ai_matches: aiMatchesArray 
+            };
+        })
+        .catch((error) => {
+            console.error('Get AI matches error:', error);
             throw error;
         });
 };

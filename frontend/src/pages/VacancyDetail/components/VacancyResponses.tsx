@@ -2,10 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { useTypedDispatch, RootState } from '../../../redux/store';
-import { getRespondsByVacancyAction, updateRespondStatusAction, getBestMatchesAction } from '../../../redux/responds/actions';
-import { selectRespondsData, selectRespondsStatus, selectRespondsError, selectBestMatchesData, selectBestMatchesStatus, selectBestMatchesError } from '../../../redux/responds/selectors';
+import { getRespondsByVacancyAction, updateRespondStatusAction, getBestMatchesAction, getAIMatchesAction } from '../../../redux/responds/actions';
+import { selectRespondsData, selectRespondsStatus, selectRespondsError, selectBestMatchesData, selectBestMatchesStatus, selectBestMatchesError, selectAIMatchesData, selectAIMatchesStatus, selectAIMatchesError } from '../../../redux/responds/selectors';
 import { LoadStatus } from '../../../utils/types';
-import { RespondData, BestMatchData } from '../../../api/responds';
+import { RespondData, BestMatchData, AIMatchData } from '../../../api/responds';
 import Loader from '../../../components/default/Loader';
 import './VacancyResponses.scss';
 import Button, { ButtonType } from '../../../components/UI/Button';
@@ -16,6 +16,7 @@ interface VacancyResponsesProps {
 
 interface Response {
     id: number;
+    respondId?: number; // ID отклика для поиска AI совпадений
     candidateName: string;
     position: string;
     salary?: number;
@@ -34,9 +35,23 @@ const VacancyResponses: React.FC<VacancyResponsesProps> = ({ vacancyId }) => {
     const bestMatches = useSelector((state: RootState) => selectBestMatchesData(state, vacancyId));
     const bestMatchesStatus = useSelector((state: RootState) => selectBestMatchesStatus(state, vacancyId));
     const bestMatchesError = useSelector((state: RootState) => selectBestMatchesError(state, vacancyId));
+    
+    const aiMatches = useSelector((state: RootState) => selectAIMatchesData(state, vacancyId));
+    const aiMatchesStatus = useSelector((state: RootState) => selectAIMatchesStatus(state, vacancyId));
+    const aiMatchesError = useSelector((state: RootState) => selectAIMatchesError(state, vacancyId));
 
     const [selectedFilters, setSelectedFilters] = useState<string[]>(['new']);
     const [showReports, setShowReports] = useState<{ [respondId: number]: boolean }>({});
+    const [showAIReports, setShowAIReports] = useState<{ [respondId: number]: boolean }>({});
+
+    // Маппинг русских статусов на английские ключи фильтров
+    const statusMapping: { [key: string]: string } = {
+        'Новый': 'new',
+        'В рассмотрении': 'considering', 
+        'Интервью': 'interview', // Интервью - отдельный статус
+        'Предложение работы': 'offer',
+        'Нанят': 'hired'
+    };
 
 
     useEffect(() => {
@@ -47,6 +62,24 @@ const VacancyResponses: React.FC<VacancyResponsesProps> = ({ vacancyId }) => {
     const formatSalary = (salary?: number) => {
         if (!salary) return 'Зарплата не указана';
         return `${salary.toLocaleString()} Р`;
+    };
+
+    // Функция для определения CSS класса статуса
+    const getStatusClass = (status: string) => {
+        switch (status) {
+            case 'Новый':
+                return 'new';
+            case 'В рассмотрении':
+                return 'considering';
+            case 'Интервью':
+                return 'interview';
+            case 'Предложение работы':
+                return 'offer';
+            case 'Нанят':
+                return 'hired';
+            default:
+                return 'new';
+        }
     };
 
     // Функция для обработки фильтров
@@ -60,20 +93,35 @@ const VacancyResponses: React.FC<VacancyResponsesProps> = ({ vacancyId }) => {
 
 
 
+        // Отладочная информация
+        console.log('Responds data:', responds);
+        if (Array.isArray(responds)) {
+            console.log('Respond statuses:', responds.map(r => ({ id: r.id, respond_status: (r as any).respond_status, name: `${r.last_name} ${r.first_name}` })));
+        }
+        console.log('AI Matches data:', aiMatches);
+        if (Array.isArray(aiMatches)) {
+            console.log('AI Matches respond_ids:', aiMatches.map(m => ({ id: m.id, respond_id: m.respond_id, name: `${m.last_name} ${m.first_name}` })));
+        }
+
         // Преобразуем данные откликов в формат для отображения
-        const responses: Response[] = Array.isArray(responds) ? responds.map((respond: RespondData) => ({
-            id: respond.id,
-            candidateName: `${respond.last_name} ${respond.first_name} ${respond.middle_name || ''}`.trim(),
-            position: respond.profession,
-            salary: respond.salary,
-            region: `${respond.city || 'Город не указан'}, ${respond.country || 'Страна не указана'}`,
-            status: 'new' // Пока что все отклики имеют статус "новый"
-        })) : [];
+        const responses: Response[] = Array.isArray(responds) ? responds.map((respond: RespondData) => {
+            console.log('Processing respond:', { id: respond.id, respond_id: (respond as any).respond_id, name: `${respond.last_name} ${respond.first_name}` });
+            return {
+                id: respond.id,
+                respondId: (respond as any).respond_id, // Добавляем respond_id для поиска AI совпадений
+                candidateName: `${respond.last_name} ${respond.first_name} ${respond.middle_name || ''}`.trim(),
+                position: respond.profession,
+                salary: respond.salary,
+                region: `${respond.city || 'Город не указан'}, ${respond.country || 'Страна не указана'}`,
+                status: (respond as any).respond_status || 'new' // Используем реальный статус из API
+            };
+        }) : [];
 
         // Фильтруем отклики по выбранным фильтрам
-        const filteredResponses = responses.filter(response => 
-            selectedFilters.includes(response.status)
-        );
+        const filteredResponses = responses.filter(response => {
+            const filterKey = statusMapping[response.status] || 'new';
+            return selectedFilters.includes(filterKey);
+        });
 
 
     const handleStatusUpdate = async (respondId: number, newStatus: string) => {
@@ -94,6 +142,15 @@ const VacancyResponses: React.FC<VacancyResponsesProps> = ({ vacancyId }) => {
         }
     };
 
+    const handleGetAIMatches = async () => {
+        try {
+            await dispatch(getAIMatchesAction(vacancyId)).unwrap();
+        } catch (error) {
+            console.error('Ошибка при получении AI совпадений:', error);
+            alert('Ошибка при получении AI совпадений');
+        }
+    };
+
     const handleShowReport = (respondId: number) => {
         setShowReports(prev => ({
             ...prev,
@@ -101,8 +158,26 @@ const VacancyResponses: React.FC<VacancyResponsesProps> = ({ vacancyId }) => {
         }));
     };
 
+    const handleShowAIReport = (respondId: number) => {
+        setShowAIReports(prev => ({
+            ...prev,
+            [respondId]: !prev[respondId]
+        }));
+    };
+
     const getBestMatchForRespond = (respondId: number): BestMatchData | null => {
         return bestMatches.find(match => match.id === respondId) || null;
+    };
+
+    const getAIMatchForRespond = (respondId: number): AIMatchData | null => {
+        console.log('Looking for AI match for respondId:', respondId);
+        console.log('Available AI matches:', aiMatches);
+        console.log('AI matches respond_ids:', aiMatches.map(m => ({ id: m.id, respond_id: m.respond_id })));
+        
+        const match = aiMatches.find(match => match.respond_id === respondId);
+        console.log('Found AI match:', match);
+        
+        return match || null;
     };
 
     const handleOpenResume = (resumeId: number) => {
@@ -247,6 +322,17 @@ const VacancyResponses: React.FC<VacancyResponsesProps> = ({ vacancyId }) => {
                         <span className="vacancy-responses__filter-label considering">В рассмотрении</span>
                     </div>
                     <div 
+                        className={`vacancy-responses__filter ${selectedFilters.includes('interview') ? 'active' : ''}`}
+                        onClick={() => handleFilterChange('interview')}
+                    >
+                        <input 
+                            type="checkbox" 
+                            checked={selectedFilters.includes('interview')}
+                            onChange={() => handleFilterChange('interview')}
+                        />
+                        <span className="vacancy-responses__filter-label interview">Интервью</span>
+                    </div>
+                    <div 
                         className={`vacancy-responses__filter ${selectedFilters.includes('offer') ? 'active' : ''}`}
                         onClick={() => handleFilterChange('offer')}
                     >
@@ -280,10 +366,11 @@ const VacancyResponses: React.FC<VacancyResponsesProps> = ({ vacancyId }) => {
                     </Button>
                     <Button 
                         variant={ButtonType.RED}
-                        onClick={() => {}}
+                        onClick={handleGetAIMatches}
                         className="vacancy-responses__action-button"
+                        disabled={aiMatchesStatus === LoadStatus.IN_PROGRESS}
                     >
-                        Помощь ИИ
+                        {aiMatchesStatus === LoadStatus.IN_PROGRESS ? 'Загрузка...' : 'Помощь ИИ'}
                     </Button>
                 </div>
             </div>
@@ -312,7 +399,9 @@ const VacancyResponses: React.FC<VacancyResponsesProps> = ({ vacancyId }) => {
 
                                 <div className="vacancy-responses__actions">
                                     <div className="vacancy-responses__status">
-                                        <span className="vacancy-responses__status-badge status-hired">Новый</span>
+                                        <span className={`vacancy-responses__status-badge status-${getStatusClass(response.status)}`}>
+                                            {response.status}
+                                        </span>
                                     </div>
                                     <div className="vacancy-responses__action-buttons">
                                         {getBestMatchForRespond(response.id) && (
@@ -323,6 +412,18 @@ const VacancyResponses: React.FC<VacancyResponsesProps> = ({ vacancyId }) => {
                                                 {showReports[response.id] ? 'Скрыть отчет' : 'Показать отчет'}
                                             </button>
                                         )}
+                                        {(() => {
+                                            const aiMatch = getAIMatchForRespond(response.respondId || response.id);
+                                            console.log(`Checking AI match for response ${response.id} (respondId: ${response.respondId}):`, aiMatch);
+                                            return aiMatch && (
+                                                <button 
+                                                    className="vacancy-responses__action-button-ai-report"
+                                                    onClick={() => handleShowAIReport(response.id)}
+                                                >
+                                                    {showAIReports[response.id] ? 'Скрыть отчёт ИИ' : 'Просмотреть отчёт ИИ'}
+                                                </button>
+                                            );
+                                        })()}
                                     <button 
                                         className="vacancy-responses__action-button-resume"
                                         onClick={() => handleOpenResume(response.id)}
@@ -397,6 +498,31 @@ const VacancyResponses: React.FC<VacancyResponsesProps> = ({ vacancyId }) => {
                                                             {match.match_details.employment_type_match ? '✅ Совпадает' : '❌ Не совпадает'}
                                                         </p>
                                                     </div>
+                                                </div>
+                                            );
+                                        })()}
+                                    </div>
+                                </div>
+                            )}
+                            {showAIReports[response.id] && getAIMatchForRespond(response.respondId || response.id) && (
+                                <div className="vacancy-responses__ai-report">
+                                    <div className="vacancy-responses__ai-report-header">
+                                        <h4>🤖 Отчёт ИИ о кандидате</h4>
+                                        <span className="vacancy-responses__ai-rating">
+                                            Рейтинг ИИ: {getAIMatchForRespond(response.respondId || response.id)?.rating}/10
+                                        </span>
+                                    </div>
+                                    <div className="vacancy-responses__ai-report-content">
+                                        {(() => {
+                                            const aiMatch = getAIMatchForRespond(response.respondId || response.id);
+                                            if (!aiMatch) return null;
+                                            
+                                            return (
+                                                <div className="vacancy-responses__ai-opinion">
+                                                    <h5>Мнение ИИ:</h5>
+                                                    <p className="vacancy-responses__ai-text">
+                                                        {aiMatch.opinion}
+                                                    </p>
                                                 </div>
                                             );
                                         })()}
