@@ -105,11 +105,11 @@ class RespondAndInteractionAction
      * @throws RespondNotFoundException
      */
     public function bestMatchResumesByVacancyWithSmart(int $vacancyId): array {
-        $sortedResumes = $this->bestMatchResumesByVacancy($vacancyId);
+        $resumes = $this->bestMatchResumesByVacancy($vacancyId);
 
         $vacancy = Vacancies::with(['skills', 'profession'])->find($vacancyId);
         // Возвращаем топ-10 наиболее подходящих резюме
-        $topResumes = $sortedResumes->take(10)->map(function ($item) use ($vacancy) {
+        $topResumes = $resumes->take(10)->map(function ($item) use ($vacancy) {
             $resume = $item['resume'];
 
             return [
@@ -170,29 +170,6 @@ class RespondAndInteractionAction
         $sortedResumes = $scoredResumes->sortByDesc('score');
 
         // Возвращаем топ-5 наиболее подходящих резюме
-        $topResumes = $sortedResumes->take(5)->map(function ($item) {
-            $resume = $item['resume'];
-
-            return [
-                'id'            => $resume->id,
-                'profession'    => $resume->profession->name,
-                'first_name'    => $resume->user->first_name,
-                'middle_name'   => $resume->user->middle_name,
-                'last_name'     => $resume->user->last_name,
-                'date_of_birth' => $resume->date_of_birth?->format('d.m.Y'),
-                'country'       => $resume->country,
-                'city'          => $resume->city,
-                'status'        => $resume->status,
-                'match_score'   => round($item['score'], 2),
-                'match_details' => $item['match_details'],
-            ];
-        });
-
-        return [
-            'total'       => $topResumes->count(),
-            'top_matches' => $topResumes->values()->toArray(),
-        ];
-
         return $sortedResumes;
     }
 
