@@ -68,13 +68,33 @@ class ChatController extends Controller
         $text  = (string) $requestData['text'];
         $files = $request->file('files') ?? [];
 
-        $message = (new ChatAction())->sendMessage($id, $text, $files, $user);
+        try {
+            $message = (new ChatAction())->sendMessage($id, $text, $files, $user);
 
-        return (new ParentResponse(
-            data: $message->toArray(),
-            httpStatus: 200,
-            status: StatusEnum::OK,
-        ))->toResponse();
+            return (new ParentResponse(
+                data: $message->toArray(),
+                httpStatus: 200,
+                status: StatusEnum::OK,
+            ))->toResponse();
+        } catch (ForbiddenChatException $e) {
+            return (new ParentResponse(
+                data: [],
+                httpStatus: 403,
+                status: StatusEnum::FAIL,
+            ))->toResponse();
+        } catch (ChatNotFoundException $e) {
+            return (new ParentResponse(
+                data: [],
+                httpStatus: 404,
+                status: StatusEnum::FAIL,
+            ))->toResponse();
+        } catch (Throwable $e) {
+            return (new ParentResponse(
+                data: [],
+                httpStatus: 500,
+                status: StatusEnum::FAIL,
+            ))->toResponse();
+        }
     }
 
     public function updateChatMessages(int $chatId, Request $request) {

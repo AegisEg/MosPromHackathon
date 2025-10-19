@@ -113,10 +113,17 @@ class ChatAction
     }
 
     public function sendMessage(int $chatId, string $text, array $files, User $user): ChatMessageDTO {
-        $chat = Chat::find($chatId);
+        $chat = Chat::with(['respond.resume', 'respond.vacancy'])->find($chatId);
 
         if (!$chat) {
             throw new ChatNotFoundException();
+        }
+
+        // Проверяем доступ пользователя к чату
+        $companyUserId = $chat->respond->vacancy->company->user_id ?? null;
+
+        if (($chat->respond->resume->user_id ?? null) !== $user->id && $companyUserId !== $user->id) {
+            throw new ForbiddenChatException();
         }
         try {
             DB::beginTransaction();
@@ -124,6 +131,10 @@ class ChatAction
                 'user_id' => $user->id,
                 'text'    => $text,
             ]);
+            
+            // Перезагружаем сообщение для получения правильных дат
+            $message->refresh();
+            
             $filesDTO = [];
 
             foreach ($files as $file) {
@@ -148,10 +159,18 @@ class ChatAction
             throw $e;
         }
 
+        // Безопасное получение даты создания
+        $createdAt = $message->created_at;
+        if ($createdAt instanceof \DateTimeImmutable) {
+            $createdAtString = $createdAt->format(\DateTime::ATOM);
+        } else {
+            $createdAtString = now()->format(\DateTime::ATOM);
+        }
+
         return new ChatMessageDTO(
             id: $message->id,
             text: $message->text,
-            createdAt: (string) $message->created_at,
+            createdAt: $createdAtString,
             userId: $user->id,
             userName: $user->last_name.' '.$user->first_name,
             files: $filesDTO,

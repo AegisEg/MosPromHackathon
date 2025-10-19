@@ -6,23 +6,32 @@ import MoreVertIcon from '@mui/icons-material/MoreVert';
 import SearchIcon from '@mui/icons-material/Search';
 import user from '../../assets/user.png';
 import Input from '../../components/UI/Input';
-import { mockChats, mockChatMessages } from '../../data/chat-data';
-import type { Message, ChatItem, ChatMessages } from '../../types/chat.types';
+import { useChat } from '../../hooks/useChat';
+import { useSelector } from 'react-redux';
+import { selectUserData } from '../../redux/user/selectors';
+import type { ChatItem, ChatMessage } from '../../types/chat.types';
+import Loader from '../../components/default/Loader';
 
 function Chat() {
-  const [activeChatId, setActiveChatId] = useState<number>(13);
   const [messageText, setMessageText] = useState<string>('');
   const [searchText, setSearchText] = useState<string>('');
   const messagesContainerRef = useRef<HTMLDivElement>(null);
 
-  // Данные чатов из mock-файла
-  const chats: ChatItem[] = mockChats;
+  // Получаем данные текущего пользователя
+  const { data: currentUser } = useSelector(selectUserData);
 
-  // Сообщения для разных чатов из mock-файла
-  const chatMessages: ChatMessages = mockChatMessages;
+  // Используем хук для работы с чатом
+  const {
+    chats,
+    messages,
+    loading,
+    error,
+    sendMessage,
+    activeChatId,
+    setActiveChatId,
+  } = useChat();
 
   const activeChat = chats.find((chat) => chat.id === activeChatId);
-  const messages = chatMessages[activeChatId] || [];
 
   // Автоматическая прокрутка к последнему сообщению внутри контейнера
   const scrollToBottom = () => {
@@ -40,11 +49,14 @@ function Chat() {
     return () => clearTimeout(timer);
   }, [activeChatId, messages.length]);
 
-  const handleSendMessage = () => {
-    if (messageText.trim()) {
-      // Здесь будет логика отправки сообщения
-      console.log('Отправка сообщения:', messageText);
-      setMessageText('');
+  const handleSendMessage = async () => {
+    if (messageText.trim() && activeChatId) {
+      try {
+        await sendMessage({ text: messageText });
+        setMessageText('');
+      } catch (err) {
+        console.error('Ошибка отправки сообщения:', err);
+      }
     }
   };
 
@@ -56,12 +68,35 @@ function Chat() {
   };
 
   const filteredChats = chats.filter((chat) =>
-    chat.name.toLowerCase().includes(searchText.toLowerCase())
+    chat.title.toLowerCase().includes(searchText.toLowerCase())
   );
+
+  // Автоматически выбираем первый чат, если нет активного
+  useEffect(() => {
+    if (chats.length > 0 && !activeChatId) {
+      setActiveChatId(chats[0].id);
+    }
+  }, [chats, activeChatId, setActiveChatId]);
+
+  // Показываем загрузку, если данные пользователя еще не загружены или идет загрузка чатов/сообщений
+  if (!currentUser || (loading && (chats.length === 0 || messages.length === 0))) {
+    return (
+      <div className="chat-page">
+        <div className="container">
+          <Loader />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="chat-page">
       <div className="container">
+        {error && (
+          <div className="chat-error">
+            <p>{error}</p>
+          </div>
+        )}
         <div className="chat-container">
           {/* Левая панель - список чатов */}
           <div className="chat-sidebar">
@@ -92,23 +127,15 @@ function Chat() {
                     onClick={() => setActiveChatId(chat.id)}
                   >
                     <div className="chat-item_avatar">
-                      {chat.avatar && typeof chat.avatar === 'string' && chat.avatar.startsWith('🤖') ? (
-                        <div className="chat-item_avatar-emoji">{chat.avatar}</div>
-                      ) : (
-                        <img src={chat.avatar || user} alt={chat.name} />
-                      )}
-                      {chat.online && <span className="chat-item_online"></span>}
+                      <img src={user} alt={chat.title} />
                     </div>
                     <div className="chat-item_content">
                       <div className="chat-item_header">
-                        <h3 className="chat-item_name">{chat.name}</h3>
-                        <span className="chat-item_time">{chat.time}</span>
+                        <h3 className="chat-item_name">{chat.title}</h3>
+                        <span className="chat-item_time">Сейчас</span>
                       </div>
                       <div className="chat-item_footer">
                         <p className="chat-item_message">{chat.lastMessage}</p>
-                        {chat.unread && chat.unread > 0 && (
-                          <span className="chat-item_unread">{chat.unread}</span>
-                        )}
                       </div>
                     </div>
                   </div>
@@ -129,18 +156,11 @@ function Chat() {
                 <div className="chat-header">
                   <div className="chat-header_info">
                     <div className="chat-header_avatar">
-                      {activeChat.avatar && typeof activeChat.avatar === 'string' && activeChat.avatar.startsWith('🤖') ? (
-                        <div className="chat-header_avatar-emoji">{activeChat.avatar}</div>
-                      ) : (
-                        <img src={activeChat.avatar || user} alt={activeChat.name} />
-                      )}
-                      {activeChat.online && <span className="chat-header_online"></span>}
+                      <img src={user} alt={activeChat.title} />
                     </div>
                     <div className="chat-header_details">
-                      <h2 className="chat-header_name">{activeChat.name}</h2>
-                      <p className="chat-header_status">
-                        {activeChat.online ? 'В сети' : 'Не в сети'}
-                      </p>
+                      <h2 className="chat-header_name">{activeChat.title}</h2>
+                      <p className="chat-header_status">Чат</p>
                     </div>
                   </div>
                 </div>
@@ -149,30 +169,45 @@ function Chat() {
                 <div className="chat-messages" ref={messagesContainerRef}>
                   {messages.length > 0 ? (
                     <>
-                      {messages.map((message) => (
-                        <div
-                          key={message.id}
-                          className={`message ${message.sender === 'user' ? 'message-user' : 'message-other'}`}
-                        >
-                          {message.sender === 'other' && (
-                            <div className="message_avatar">
-                              {activeChat.avatar && typeof activeChat.avatar === 'string' && activeChat.avatar.startsWith('🤖') ? (
-                                <div className="message_avatar-emoji">{activeChat.avatar}</div>
-                              ) : (
-                                <img src={activeChat.avatar || user} alt="Avatar" />
-                              )}
-                            </div>
-                          )}
+                      {messages.map((message) => {
+                        const isCurrentUser = message.user?.id === currentUser?.id;
+                        return (
+                          <div
+                            key={message.id}
+                            className={`message ${isCurrentUser ? 'message-user' : 'message-other'}`}
+                          >
+                            {!isCurrentUser && (
+                              <div className="message_avatar">
+                                <img src={user} alt="Avatar" />
+                              </div>
+                            )}
                           <div className="message_content">
                             <div className="message_bubble">
                               <div className="message_text" style={{ whiteSpace: 'pre-line' }}>
                                 {message.text}
                               </div>
+                              {message.files && message.files.length > 0 && (
+                                <div className="message_files">
+                                  {message.files.map((file, index) => (
+                                    <div key={index} className="message_file">
+                                      <a href={file.path} target="_blank" rel="noopener noreferrer">
+                                        {file.originalName || 'Файл'}
+                                      </a>
+                                    </div>
+                                  ))}
+                                </div>
+                              )}
                             </div>
-                            <span className="message_time">{message.time}</span>
+                            <span className="message_time">
+                              {new Date(message.createdAt).toLocaleTimeString('ru-RU', {
+                                hour: '2-digit',
+                                minute: '2-digit'
+                              })}
+                            </span>
                           </div>
                         </div>
-                      ))}
+                        );
+                      })}
                     </>
                   ) : (
                     <div className="chat-messages-empty">
