@@ -53,7 +53,7 @@ class SemanticSearchService
                 "completionOptions" => [
                     "stream" => false,
                     "temperature" => 0.6,
-                    "maxTokens" => "2000",
+                    "maxTokens" => "41591",
                     "reasoningOptions" => [
                         "mode" => "DISABLED"
                     ]

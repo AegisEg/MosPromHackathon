@@ -77,7 +77,7 @@ class RespondAndInteractionAction
         });
 
         $result = [
-            'total'   => $responds->count(),
+            'total'   =>$resumes->count(),
             'resumes' => $resumes->toArray(),
         ];
 
@@ -171,8 +171,8 @@ class RespondAndInteractionAction
         // Сортируем по убыванию оценки совпадения
         $sortedResumes = $scoredResumes->sortByDesc('score');
 
-        // Возвращаем топ-5 наиболее подходящих резюме
-        return $sortedResumes;
+        // Возвращаем топ-10 наиболее подходящих резюме
+        return $sortedResumes->take(10);
     }
 
     public function bestMatchResumesByVacancyWithAI(int $vacancyId): array {

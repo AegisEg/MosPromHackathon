@@ -16,7 +16,8 @@ class SkillsSeeder extends Seeder
         // Специализированные навыки для каждой профессии
         $professionSkills = [
             'Программист' => [
-                'PHP', 'JavaScript', 'Python', 'C#', 'Java', 'Git', 'Docker', 'MySQL', 'Laravel', 'React'
+                'PHP', 'JavaScript', 'Python', 'C#', 'Java', 'Git', 'Docker', 'MySQL', 'Laravel', 'React', 'PostgreSQL',
+                'C++', 'Python', 'Ruby', 'Swift', 'Kotlin', 'Scala', 'Go', 'Rust', 'TypeScript', 'HTML', 'CSS', 'SQL',
             ],
             'Менеджер по продажам' => [
                 'CRM системы', 'Переговоры', 'Презентации', 'Анализ рынка', 'Работа с клиентами', 
