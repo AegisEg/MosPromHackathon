@@ -35,6 +35,7 @@ class DatabaseSeeder extends Seeder
 
             // Стажировки
             InternshipsSeeder::class,
+            InternshipRespondsSeeder::class,
 
             // Отклики, чаты и сообщения
             RespondsSeeder::class,

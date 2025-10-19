@@ -7,19 +7,10 @@ use App\Domain\RespondAndInteraction\Application\Action\RespondAndInteractionAct
 use App\Domain\RespondAndInteraction\Application\Exceptions\ForbiddenRespondException;
 use App\Domain\RespondAndInteraction\Application\Exceptions\RespondNotFoundException;
 use App\Domain\Company\Application\Exceptions\NotFoundCompanyException;
-use App\Domain\Resume\Application\Action\ResumeAction;
-use App\Domain\Resume\Application\Exception\ForbiddenResumeException;
-use App\Domain\Resume\Application\Exception\NotFoundResumeException;
-use App\Domain\Vacancy\Application\Exceptions\ForbiddenVacancyException;
-use App\Domain\Vacancy\Application\Exceptions\VacancyNotFoundException;
-use App\Domain\Resume\Presentation\Requests\ResumeRequest;
-use App\Domain\Resume\Presentation\Requests\ResumeUpdateRequest;
 use App\Domain\SharedKernel\Responses\Error;
 use App\Domain\SharedKernel\Responses\ParentResponse;
 use App\Domain\SharedKernel\Responses\StatusEnum;
 use App\Http\Controllers\Controller;
-use App\Models\Resume;
-use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Throwable;
@@ -27,6 +18,7 @@ use Throwable;
 class RespondAndInteractionController extends Controller
 {
     private RespondAndInteractionAction $respondAndInteractionAction;
+
     public function __construct() {
         $this->respondAndInteractionAction = new RespondAndInteractionAction();
     }
@@ -35,6 +27,7 @@ class RespondAndInteractionController extends Controller
         $user = $request->user();
         try {
             $responds = $this->respondAndInteractionAction->getRespondsByVacancy($user, $vacancyId);
+
             return (new ParentResponse(
                 data: ['responds' => $responds],
                 httpStatus: 200,
@@ -43,9 +36,10 @@ class RespondAndInteractionController extends Controller
         } catch (ForbiddenRespondException $e) {
             $debugInfo = [
                 'error' => $e->getMessage(),
-                'file' => $e->getFile(),
-                'line' => $e->getLine(),
+                'file'  => $e->getFile(),
+                'line'  => $e->getLine(),
             ];
+
             return (new ParentResponse(
                 error: new Error(code: $e->getCode(), message: $e->getMessage()),
                 httpStatus: 403,
@@ -55,9 +49,10 @@ class RespondAndInteractionController extends Controller
         } catch (RespondNotFoundException $e) {
             $debugInfo = [
                 'error' => $e->getMessage(),
-                'file' => $e->getFile(),
-                'line' => $e->getLine(),
+                'file'  => $e->getFile(),
+                'line'  => $e->getLine(),
             ];
+
             return (new ParentResponse(
                 error: new Error(code: $e->getCode(), message: $e->getMessage()),
                 httpStatus: 404,
@@ -66,9 +61,10 @@ class RespondAndInteractionController extends Controller
         } catch (Throwable $e) {
             $debugInfo = [
                 'error' => $e->getMessage(),
-                'file' => $e->getFile(),
-                'line' => $e->getLine(),
+                'file'  => $e->getFile(),
+                'line'  => $e->getLine(),
             ];
+
             return (new ParentResponse(
                 error: new Error(code: $e->getCode(), message: $e->getMessage()),
                 httpStatus: 500,
@@ -78,10 +74,11 @@ class RespondAndInteractionController extends Controller
     }
 
     public function updateStatus(int $respondId, Request $request): JsonResponse {
-        $user = $request->user();
+        $user   = $request->user();
         $status = $request->input('status');
         try {
             $this->respondAndInteractionAction->updateRespondStatus($user, $respondId, $status);
+
             return (new ParentResponse(
                 data: ['respond_id' => $respondId],
                 httpStatus: 204,
@@ -90,9 +87,10 @@ class RespondAndInteractionController extends Controller
         } catch (ForbiddenRespondException $e) {
             $debugInfo = [
                 'error' => $e->getMessage(),
-                'file' => $e->getFile(),
-                'line' => $e->getLine(),
+                'file'  => $e->getFile(),
+                'line'  => $e->getLine(),
             ];
+
             return (new ParentResponse(
                 error: new Error(code: $e->getCode(), message: $e->getMessage()),
                 httpStatus: 403,
@@ -102,9 +100,10 @@ class RespondAndInteractionController extends Controller
         } catch (RespondNotFoundException $e) {
             $debugInfo = [
                 'error' => $e->getMessage(),
-                'file' => $e->getFile(),
-                'line' => $e->getLine(),
+                'file'  => $e->getFile(),
+                'line'  => $e->getLine(),
             ];
+
             return (new ParentResponse(
                 error: new Error(code: $e->getCode(), message: $e->getMessage()),
                 httpStatus: 404,
@@ -114,9 +113,10 @@ class RespondAndInteractionController extends Controller
         } catch (Throwable $e) {
             $debugInfo = [
                 'error' => $e->getMessage(),
-                'file' => $e->getFile(),
-                'line' => $e->getLine(),
+                'file'  => $e->getFile(),
+                'line'  => $e->getLine(),
             ];
+
             return (new ParentResponse(
                 error: new Error(code: $e->getCode(), message: $e->getMessage()),
                 httpStatus: 500,
@@ -131,11 +131,13 @@ class RespondAndInteractionController extends Controller
         try {
             // Проверяем, что пользователь является владельцем вакансии
             $vacancy = \App\Models\Vacancies::find($vacancyId);
+
             if (!$vacancy || $vacancy->user_id !== $user->id) {
                 throw new ForbiddenRespondException();
             }
 
             $bestMatches = $this->respondAndInteractionAction->bestMatchResumesByVacancyWithSmart($vacancyId);
+
             return (new ParentResponse(
                 data: $bestMatches,
                 httpStatus: 200,
@@ -144,9 +146,10 @@ class RespondAndInteractionController extends Controller
         } catch (ForbiddenRespondException $e) {
             $debugInfo = [
                 'error' => $e->getMessage(),
-                'file' => $e->getFile(),
-                'line' => $e->getLine(),
+                'file'  => $e->getFile(),
+                'line'  => $e->getLine(),
             ];
+
             return (new ParentResponse(
                 error: new Error(code: $e->getCode(), message: $e->getMessage()),
                 httpStatus: 403,
@@ -156,9 +159,10 @@ class RespondAndInteractionController extends Controller
         } catch (NotFoundCompanyException $e) {
             $debugInfo = [
                 'error' => $e->getMessage(),
-                'file' => $e->getFile(),
-                'line' => $e->getLine(),
+                'file'  => $e->getFile(),
+                'line'  => $e->getLine(),
             ];
+
             return (new ParentResponse(
                 error: new Error(code: $e->getCode(), message: $e->getMessage()),
                 httpStatus: 404,
@@ -168,9 +172,10 @@ class RespondAndInteractionController extends Controller
         } catch (RespondNotFoundException $e) {
             $debugInfo = [
                 'error' => $e->getMessage(),
-                'file' => $e->getFile(),
-                'line' => $e->getLine(),
+                'file'  => $e->getFile(),
+                'line'  => $e->getLine(),
             ];
+
             return (new ParentResponse(
                 error: new Error(code: $e->getCode(), message: $e->getMessage()),
                 httpStatus: 404,
@@ -180,9 +185,10 @@ class RespondAndInteractionController extends Controller
         } catch (Throwable $e) {
             $debugInfo = [
                 'error' => $e->getMessage(),
-                'file' => $e->getFile(),
-                'line' => $e->getLine(),
+                'file'  => $e->getFile(),
+                'line'  => $e->getLine(),
             ];
+
             return (new ParentResponse(
                 error: new Error(code: $e->getCode(), message: $e->getMessage()),
                 httpStatus: 500,

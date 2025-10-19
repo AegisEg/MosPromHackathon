@@ -10,9 +10,11 @@ return new class () extends Migration {
      * Run the migrations.
      */
     public function up(): void {
-        Schema::create('industries', function (Blueprint $table) {
+        Schema::create('internship_responds', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
+            $table->foreignId('internship_id')->constrained('internships')->cascadeOnDelete();
+            $table->foreignId('company_id')->constrained('companies')->cascadeOnDelete();
+            $table->text('message')->nullable();
             $table->timestamps();
         });
     }
@@ -21,6 +23,6 @@ return new class () extends Migration {
      * Reverse the migrations.
      */
     public function down(): void {
-        Schema::dropIfExists('industries');
+        Schema::dropIfExists('internship_responds');
     }
 };
