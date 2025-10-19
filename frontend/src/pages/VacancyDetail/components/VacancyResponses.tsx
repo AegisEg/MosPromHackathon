@@ -82,6 +82,26 @@ const VacancyResponses: React.FC<VacancyResponsesProps> = ({ vacancyId }) => {
         }
     };
 
+    // Функция для получения AI матча по ID отклика
+    const getAIMatchForRespond = (respondId: number): AIMatchData | null => {
+        console.log('Looking for AI match for respondId:', respondId);
+        console.log('Available AI matches:', aiMatches);
+        console.log('AI matches respond_ids:', aiMatches.map(m => ({ id: m.id, respond_id: m.respond_id })));
+        
+        const match = aiMatches.find(match => match.respond_id === respondId);
+        console.log('Found AI match:', match);
+        
+        return match || null;
+    };
+
+    // Функция для определения цвета на основе процента совпадения
+    const getMatchScoreColor = (percentage: number): string => {
+        if (percentage >= 80) return '#28a745'; // Зеленый для высоких процентов
+        if (percentage >= 60) return '#ffc107'; // Желтый для средних процентов
+        if (percentage >= 40) return '#fd7e14'; // Оранжевый для низких процентов
+        return '#dc3545'; // Красный для очень низких процентов
+    };
+
     // Функция для обработки фильтров
     const handleFilterChange = (filter: string) => {
         setSelectedFilters(prev => 
@@ -121,6 +141,24 @@ const VacancyResponses: React.FC<VacancyResponsesProps> = ({ vacancyId }) => {
         const filteredResponses = responses.filter(response => {
             const filterKey = statusMapping[response.status] || 'new';
             return selectedFilters.includes(filterKey);
+        });
+
+        // Сортируем отклики по рейтингу ИИ (если есть AI матчи)
+        const sortedResponses = filteredResponses.sort((a, b) => {
+            const aiMatchA = getAIMatchForRespond(a.respondId || a.id);
+            const aiMatchB = getAIMatchForRespond(b.respondId || b.id);
+            
+            // Если у обоих есть рейтинг ИИ, сортируем по убыванию (высший рейтинг первым)
+            if (aiMatchA && aiMatchB) {
+                return aiMatchB.rating - aiMatchA.rating;
+            }
+            
+            // Если рейтинг есть только у одного, он идет первым
+            if (aiMatchA && !aiMatchB) return -1;
+            if (!aiMatchA && aiMatchB) return 1;
+            
+            // Если у обоих нет рейтинга, сохраняем исходный порядок
+            return 0;
         });
 
 
@@ -169,16 +207,6 @@ const VacancyResponses: React.FC<VacancyResponsesProps> = ({ vacancyId }) => {
         return bestMatches.find(match => match.id === respondId) || null;
     };
 
-    const getAIMatchForRespond = (respondId: number): AIMatchData | null => {
-        console.log('Looking for AI match for respondId:', respondId);
-        console.log('Available AI matches:', aiMatches);
-        console.log('AI matches respond_ids:', aiMatches.map(m => ({ id: m.id, respond_id: m.respond_id })));
-        
-        const match = aiMatches.find(match => match.respond_id === respondId);
-        console.log('Found AI match:', match);
-        
-        return match || null;
-    };
 
     const handleOpenResume = (resumeId: number) => {
         navigate(`/resume/${resumeId}`);
@@ -375,7 +403,7 @@ const VacancyResponses: React.FC<VacancyResponsesProps> = ({ vacancyId }) => {
                 </div>
             </div>
             <div className="vacancy-responses__list">
-                {filteredResponses.map((response) => {
+                {sortedResponses.map((response) => {
                     return (
                         <div key={response.id}>
                             <div className="vacancy-responses__item">
@@ -386,7 +414,9 @@ const VacancyResponses: React.FC<VacancyResponsesProps> = ({ vacancyId }) => {
                                         </div>
                                     </div>
                                     <div className="vacancy-responses__info">
-                                        <h4 className="vacancy-responses__name">{response.candidateName}</h4>
+                                        <div className="vacancy-responses__name-row">
+                                            <h4 className="vacancy-responses__name">{response.candidateName}</h4>
+                                        </div>
                                         <p className="vacancy-responses__position">{response.position}</p>
                                         <p className="vacancy-responses__salary">
                                             Зарплатные ожидания - <span className="vacancy-responses__salary-value">{formatSalary(response.salary)}</span>
@@ -437,7 +467,12 @@ const VacancyResponses: React.FC<VacancyResponsesProps> = ({ vacancyId }) => {
                                 <div className="vacancy-responses__report">
                                     <div className="vacancy-responses__report-header">
                                         <h4>Отчет о кандидате</h4>
-                                        <span className="vacancy-responses__match-score">
+                                        <span 
+                                            className="vacancy-responses__match-score"
+                                            style={{ 
+                                                color: getMatchScoreColor(getBestMatchForRespond(response.id)?.match_score || 0)
+                                            }}
+                                        >
                                             Совпадение: {getBestMatchForRespond(response.id)?.match_score}%
                                         </span>
                                     </div>

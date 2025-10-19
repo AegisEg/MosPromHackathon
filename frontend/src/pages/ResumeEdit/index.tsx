@@ -231,7 +231,7 @@ const ResumeEdit: React.FC = () => {
                 professionId: professionId || 0,
                 salary: currentResume.salary || 0,
                 status: currentResume.status ?? true,
-                skills: currentResume.skills || [],
+                skills: currentResume.skills?.map(skill => typeof skill === 'object' ? skill.id : skill) || [],
                 educations: currentResume.educations || [],
                 experiences: currentResume.experiences || [],
             };

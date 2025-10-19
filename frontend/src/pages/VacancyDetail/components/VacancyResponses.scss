@@ -18,6 +18,20 @@
         gap: 12px;
     }
 
+    &__sort-info {
+        margin-bottom: 16px;
+        padding: 8px 12px;
+        background: #f8f9fa;
+        border-radius: 8px;
+        border-left: 4px solid #667eea;
+    }
+
+    &__sort-text {
+        font-size: 14px;
+        color: #666666;
+        font-weight: 500;
+    }
+
     &__filter {
         display: flex;
         align-items: center;
@@ -102,12 +116,32 @@
         flex: 1;
     }
 
+    &__name-row {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 4px;
+    }
+
     &__name {
         font-size: 18px;
         font-weight: 500;
         line-height: 12px;
         color: #393649;
         margin-bottom: 12px;
+    }
+
+    &__ai-rating-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        padding: 4px 8px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border-radius: 12px;
+        font-size: 12px;
+        font-weight: 600;
+        white-space: nowrap;
     }
 
     &__position {
@@ -295,12 +329,12 @@
         }
 
         &.report {
-            background: #dc3545;
+            background: #D00E46;
             color: #ffffff;
-            border-color: #dc3545;
+            border-color: #D00E46;
 
             &:hover {
-                background: #c82333;
+                background: #b91c3c;
             }
         }
     }
@@ -310,7 +344,7 @@
         padding: 16px;
         background: #f8f9fa;
         border-radius: 8px;
-        border-left: 4px solid #dc3545;
+        border-left: 4px solid #D00E46;
 
         h5 {
             font-size: 14px;
@@ -338,10 +372,10 @@
 
     &__action-button-report {
         padding: 8px 16px;
-        border: 1px solid #007bff;
+        border: 1px solid #D00E46;
         border-radius: 6px;
         background: #ffffff;
-        color: #007bff;
+        color: #D00E46;
         font-size: 12px;
         font-weight: 500;
         cursor: pointer;
@@ -349,7 +383,8 @@
         margin-right: 8px;
 
         &:hover {
-            background: #e7f3ff;
+            background: #fdf2f2;
+            border-color: #b91c3c;
         }
     }
 
@@ -359,7 +394,7 @@
         background: #f8f9fa;
         border: 1px solid #e5e5e5;
         border-radius: 8px;
-        border-left: 4px solid #007bff;
+        border-left: 4px solid #D00E46;
     }
 
     &__report-header {
@@ -379,10 +414,10 @@
     &__match-score {
         font-size: 14px;
         font-weight: 600;
-        color: #007bff;
-        background: #e7f3ff;
         padding: 4px 8px;
         border-radius: 4px;
+        background: rgba(255, 255, 255, 0.8);
+        border: 1px solid rgba(0, 0, 0, 0.1);
     }
 
     &__report-content {
@@ -420,8 +455,8 @@
 
     &__skill-tag {
         padding: 4px 8px;
-        background: #e7f3ff;
-        color: #007bff;
+        background: #fdf2f2;
+        color: #D00E46;
         border-radius: 4px;
         font-size: 12px;
         font-weight: 500;
@@ -461,11 +496,11 @@
     &__ai-report {
         margin-top: 16px;
         padding: 20px;
-        background: linear-gradient(135deg, #f8f9fa 0%, #e3f2fd 100%);
+        background: linear-gradient(135deg, #f8f9fa 0%, #fdf2f2 100%);
         border: 1px solid #e5e5e5;
         border-radius: 8px;
-        border-left: 4px solid #ff6b35;
-        box-shadow: 0 2px 8px rgba(255, 107, 53, 0.1);
+        border-left: 4px solid #D00E46;
+        box-shadow: 0 2px 8px rgba(208, 14, 70, 0.1);
     }
 
     &__ai-report-header {
@@ -488,11 +523,11 @@
     &__ai-rating {
         font-size: 14px;
         font-weight: 600;
-        color: #ff6b35;
-        background: #fff3e0;
+        color: #D00E46;
+        background: #fdf2f2;
         padding: 4px 8px;
         border-radius: 4px;
-        border: 1px solid #ffcc80;
+        border: 1px solid #fecaca;
     }
 
     &__ai-report-content {
@@ -520,7 +555,7 @@
     }
 
     &__action-button-ai-report {
-        background: #ff6b35;
+        background: #D00E46;
         color: white;
         border: none;
         padding: 8px 16px;
@@ -532,7 +567,7 @@
         margin-right: 8px;
 
         &:hover {
-            background: #e55a2b;
+            background: #b91c3c;
             transform: translateY(-1px);
         }
 

@@ -254,7 +254,7 @@ function Resume() {
               <div className="skills-list">
                 {safeResume.skills.map((skill, index) => (
                   <div className="skill-item" key={index}>
-                    {safeRender(skill, `Навык #${index + 1}`)}
+                    {typeof skill === 'object' && skill.name ? skill.name : safeRender(skill, `Навык #${index + 1}`)}
                   </div>
                 ))}
               </div>

@@ -1,6 +1,6 @@
 import api from "..";
 import { ResumeData, BackendResumeData, CreateResumePayload, UpdateResumePayload } from "../../redux/resume/types";
-import { mapBackendResumeDataToRedux, mapResumeDataToBackend } from "../../utils/resumeDataMapper";
+import { mapBackendResumeDataToRedux, mapCreateResumePayloadToBackend, mapUpdateResumePayloadToBackend } from "../../utils/resumeDataMapper";
 import { ResumeResponse } from "./types";
 
 export const getResumeById = (id: number): Promise<ResumeData> => {
@@ -55,7 +55,7 @@ export const getUserResumes = (): Promise<ResumeData[]> => {
 };
 
 export const createResume = (payload: CreateResumePayload): Promise<ResumeResponse> => {
-    const backendPayload = mapResumeDataToBackend(payload);
+    const backendPayload = mapCreateResumePayloadToBackend(payload);
     
     return api
         .post('resume/store', backendPayload)
@@ -70,7 +70,7 @@ export const createResume = (payload: CreateResumePayload): Promise<ResumeRespon
 
 export const updateResume = (payload: UpdateResumePayload): Promise<ResumeResponse> => {
     const { id, ...updateData } = payload;
-    const backendPayload = mapResumeDataToBackend(updateData);
+    const backendPayload = mapUpdateResumePayloadToBackend(updateData);
     
     return api
         .patch(`resume/update/${id}`, backendPayload)
