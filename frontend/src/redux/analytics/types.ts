@@ -19,7 +19,7 @@ export interface AnalyticsState {
   // Данные для компании
   averageCountResponds: number | null;
   averageMedianSalaryResponds: SalaryData | null;
-  respondsStatusStats: RespondStats | null;
+  respondsStatusStats: RespondStats[] | null;
   averageAgeResponds: number | null;
   respondsTimeline: TimelineData[];
   
@@ -204,7 +204,7 @@ export interface FetchRespondsStatusStatsRequestAction {
 
 export interface FetchRespondsStatusStatsSuccessAction {
   type: AnalyticsActionTypes.FETCH_RESPONDS_STATUS_STATS_SUCCESS;
-  payload: RespondStats;
+  payload: RespondStats[];
   [key: string]: any;
 }
 

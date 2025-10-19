@@ -132,7 +132,7 @@ export const fetchRespondsStatusStatsRequest = (): FetchRespondsStatusStatsReque
   type: AnalyticsActionTypes.FETCH_RESPONDS_STATUS_STATS_REQUEST,
 });
 
-export const fetchRespondsStatusStatsSuccess = (data: any): FetchRespondsStatusStatsSuccessAction => ({
+export const fetchRespondsStatusStatsSuccess = (data: any[]): FetchRespondsStatusStatsSuccessAction => ({
   type: AnalyticsActionTypes.FETCH_RESPONDS_STATUS_STATS_SUCCESS,
   payload: data,
 });

@@ -173,12 +173,18 @@ const Analytics: React.FC = () => {
     }
   };
 
+
   // Подготовка данных для статусов откликов
-  const statusData = respondsStatusStats ? [
-    { name: 'Ожидают', value: respondsStatusStats.pending, color: '#D00E46' },
-    { name: 'Приняты', value: respondsStatusStats.accepted, color: '#D00E46' },
-    { name: 'Отклонены', value: respondsStatusStats.rejected, color: '#D00E46' },
+  const statusData = respondsStatusStats && Array.isArray(respondsStatusStats) ? [
+    { name: 'Ожидают', value: respondsStatusStats.find(item => item.status === 0)?.count || 0, color: '#D00E46' },
+    { name: 'Приняты', value: respondsStatusStats.find(item => item.status === 1)?.count || 0, color: '#D00E46' },
+    { name: 'Отклонены', value: respondsStatusStats.find(item => item.status === 2)?.count || 0, color: '#D00E46' },
   ] : [];
+
+  // Вычисляем общее количество откликов
+  const totalResponds = respondsStatusStats && Array.isArray(respondsStatusStats) 
+    ? respondsStatusStats.reduce((sum, item) => sum + item.count, 0) 
+    : 0;
 
   const isLoading = user?.data?.role === 'admin' 
     ? (topProfessionsLoading || topSkillsLoading || salaryDataLoading || experienceDataLoading)
@@ -341,7 +347,7 @@ const Analytics: React.FC = () => {
               <>
                 {/* Общая статистика */}
                 <div className="analytics-section section-full">
-                  <h2 className="section-title">Общая статистика</h2>
+                  <h2 className="section-title">Общая статистика</h2>             
                   {averageCountRespondsError || respondsStatusStatsError ? (
                     <div className="error">
                       {averageCountRespondsError && `Ошибка: ${averageCountRespondsError}`}
@@ -349,26 +355,30 @@ const Analytics: React.FC = () => {
                     </div>
                   ) : (
                     <div className="salary-stats">
-                      {averageCountResponds !== null && (
+                      {averageCountResponds !== null && averageCountResponds !== undefined && (
                         <div className="stat-card">
                           <h3>Среднее количество откликов</h3>
                           <div className="stat-value">{formatCount(averageCountResponds)}</div>
                         </div>
                       )}
                       
-                      {respondsStatusStats && (
+                      {respondsStatusStats && Array.isArray(respondsStatusStats) && (
                         <>
                           <div className="stat-card">
                             <h3>Всего откликов</h3>
-                            <div className="stat-value">{formatCount(respondsStatusStats.total)}</div>
+                            <div className="stat-value">{formatCount(totalResponds)}</div>
                           </div>
                           <div className="stat-card">
                             <h3>Ожидают</h3>
-                            <div className="stat-value">{formatCount(respondsStatusStats.pending)}</div>
+                            <div className="stat-value">{formatCount(respondsStatusStats.find(item => item.status === 0)?.count || 0)}</div>
                           </div>
                           <div className="stat-card">
                             <h3>Приняты</h3>
-                            <div className="stat-value">{formatCount(respondsStatusStats.accepted)}</div>
+                            <div className="stat-value">{formatCount(respondsStatusStats.find(item => item.status === 1)?.count || 0)}</div>
+                          </div>
+                          <div className="stat-card">
+                            <h3>Отклонены</h3>
+                            <div className="stat-value">{formatCount(respondsStatusStats.find(item => item.status === 2)?.count || 0)}</div>
                           </div>
                         </>
                       )}
@@ -438,7 +448,7 @@ const Analytics: React.FC = () => {
                   <h2 className="section-title">Средний возраст откликов</h2>
                   {averageAgeRespondsError ? (
                     <div className="error">Ошибка: {averageAgeRespondsError}</div>
-                  ) : averageAgeResponds !== null ? (
+                  ) : averageAgeResponds !== null && averageAgeResponds !== undefined ? (
                     <div className="salary-stats">
                       <div className="stat-card">
                         <h3>Средний возраст</h3>

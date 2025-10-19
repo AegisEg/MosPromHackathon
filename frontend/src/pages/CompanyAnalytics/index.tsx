@@ -92,11 +92,16 @@ const CompanyAnalytics: React.FC = () => {
   };
 
   // Подготовка данных для статусов откликов
-  const statusData = respondsStatusStats ? [
-    { name: 'Ожидают', value: respondsStatusStats.pending, color: '#FFB3BA' },
-    { name: 'Приняты', value: respondsStatusStats.accepted, color: '#BAFFC9' },
-    { name: 'Отклонены', value: respondsStatusStats.rejected, color: '#FFB3BA' },
+  const statusData = respondsStatusStats && Array.isArray(respondsStatusStats) ? [
+    { name: 'Ожидают', value: respondsStatusStats.find(item => item.status === 0)?.count || 0, color: '#FFB3BA' },
+    { name: 'Приняты', value: respondsStatusStats.find(item => item.status === 1)?.count || 0, color: '#BAFFC9' },
+    { name: 'Отклонены', value: respondsStatusStats.find(item => item.status === 2)?.count || 0, color: '#FFB3BA' },
   ] : [];
+
+  // Вычисляем общее количество откликов
+  const totalResponds = respondsStatusStats && Array.isArray(respondsStatusStats) 
+    ? respondsStatusStats.reduce((sum, item) => sum + item.count, 0) 
+    : 0;
 
   const isLoading = averageCountRespondsLoading || 
     averageMedianSalaryRespondsLoading || 
@@ -139,10 +144,10 @@ const CompanyAnalytics: React.FC = () => {
 
               {respondsStatusStatsError ? (
                 <div className="error">Ошибка: {respondsStatusStatsError}</div>
-              ) : respondsStatusStats ? (
+              ) : respondsStatusStats && Array.isArray(respondsStatusStats) ? (
                 <div className="stat-card success">
                   <h3>Всего откликов</h3>
-                  <div className="stat-value">{formatCount(respondsStatusStats.total)}</div>
+                  <div className="stat-value">{formatCount(totalResponds)}</div>
                 </div>
               ) : null}
             </div>
