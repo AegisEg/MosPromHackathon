@@ -33,7 +33,7 @@ export const getUserResumes = (): Promise<ResumeData[]> => {
                 education: resume.education,
                 phone: resume.phone,
                 about: resume.about,
-                professionId: resume.profession_id,
+                professionId: resume.profession_id || (resume.profession ? parseInt(resume.profession) : 0),
                 profession: resume.profession, // Добавляем название профессии
                 salary: resume.salary,
                 status: resume.status,

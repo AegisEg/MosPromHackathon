@@ -36,6 +36,14 @@ const snakeToCamelCase = (obj: any): any => {
 export const mapBackendResumeDataToRedux = (backendData: BackendResumeData): ResumeData => {
     const mappedData = snakeToCamelCase(backendData) as ResumeData;
     
+    // Преобразуем profession в professionId (если profession - это строка с ID)
+    if (mappedData.profession && typeof mappedData.profession === 'string') {
+        const professionId = parseInt(mappedData.profession);
+        if (!isNaN(professionId)) {
+            mappedData.professionId = professionId;
+        }
+    }
+    
     // Преобразуем skills из массива объектов в массив ID
     if (mappedData.skills && Array.isArray(mappedData.skills)) {
         mappedData.skills = mappedData.skills.map((skill: any) => {
