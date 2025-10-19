@@ -9,6 +9,7 @@ import searchReducer from './search/reducer';
 import resumeReducer from './resume/reducer';
 import internshipReducer from './internship/reducer';
 import respondReducer from './respond/reducer';
+import respondsReducer from './responds/reducer';
 
 export const rootReducer = combineReducers({
   settings: SettingReduces,
@@ -20,4 +21,5 @@ export const rootReducer = combineReducers({
   resume: resumeReducer,
   internship: internshipReducer,
   respond: respondReducer,
+  responds: respondsReducer,
 });

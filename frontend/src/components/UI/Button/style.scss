@@ -52,6 +52,14 @@
         }
     }
 
+
+    &.outline {
+        border: 1px solid #393649;
+        background: transparent;
+        color: #393649;
+        font-weight: 500;
+        font-size: 18px;
+    }
     &.secondary {
         background: #6c757d;
         border: 1px solid #6c757d;

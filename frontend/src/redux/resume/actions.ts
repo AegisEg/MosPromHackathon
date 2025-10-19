@@ -1,6 +1,6 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { 
-    getResume, 
+    getResumeById, 
     getUserResumes,
     createResume, 
     updateResume, 
@@ -38,20 +38,19 @@ export const getResumeAction = createAsyncThunk<
     'resume/getResume',
     async (id, { rejectWithValue }) => {
         try {
-            const response = await getResume(id);
+            const response = await getResumeById(id);
             return response;
         } catch (error: any) {
             return rejectWithValue(error.response?.data?.message || 'Ошибка при получении резюме');
         }
     }
 );
-
 // Создать резюме
 export const createResumeAction = createAsyncThunk<
     { resumeId: number },
     CreateResumePayload,
     { rejectValue: string }
->(
+>(  
     'resume/createResume',
     async (payload, { rejectWithValue }) => {
         try {
@@ -96,3 +95,4 @@ export const deleteResumeAction = createAsyncThunk<
         }
     }
 );
+

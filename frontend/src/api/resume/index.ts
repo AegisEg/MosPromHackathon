@@ -3,12 +3,16 @@ import { ResumeData, BackendResumeData, CreateResumePayload, UpdateResumePayload
 import { mapBackendResumeDataToRedux, mapResumeDataToBackend } from "../../utils/resumeDataMapper";
 import { ResumeResponse } from "./types";
 
-export const getResume = (id: number): Promise<ResumeData> => {
+export const getResumeById = (id: number): Promise<ResumeData> => {
     return api
         .get(`resume/show/${id}`)
         .then((response) => {
+            console.log('Raw API response:', response.data);
             const backendData = response.data.data;
-            return mapBackendResumeDataToRedux(backendData);
+            console.log('Backend data before mapping:', backendData);
+            const mappedData = mapBackendResumeDataToRedux(backendData);
+            console.log('Mapped data:', mappedData);
+            return mappedData;
         })
         .catch((error) => {
             console.error('Get resume error:', error);
@@ -78,7 +82,6 @@ export const updateResume = (payload: UpdateResumePayload): Promise<ResumeRespon
             throw error;
         });
 };
-
 export const deleteResume = (id: number): Promise<void> => {
     return api
         .delete(`resume/delete/${id}`)
@@ -90,3 +93,4 @@ export const deleteResume = (id: number): Promise<void> => {
             throw error;
         });
 };
+
