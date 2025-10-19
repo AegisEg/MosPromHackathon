@@ -125,7 +125,7 @@ const EmployerDashboard: React.FC = () => {
                                         </svg>
                                     </div>
                                     <div className="stat-card__info">
-                                        <div className="stat-card__value">0</div>
+                                        <div className="stat-card__value">2</div>
                                         <div className="stat-card__label">Вакансий</div>
                                     </div>
                                 </div>
@@ -142,7 +142,7 @@ const EmployerDashboard: React.FC = () => {
                                         </svg>
                                     </div>
                                     <div className="stat-card__info">
-                                        <div className="stat-card__value">0</div>
+                                        <div className="stat-card__value">15</div>
                                         <div className="stat-card__label">Кандидатов</div>
                                     </div>
                                 </div>
@@ -157,7 +157,7 @@ const EmployerDashboard: React.FC = () => {
                                         </svg>
                                     </div>
                                     <div className="stat-card__info">
-                                        <div className="stat-card__value">0</div>
+                                        <div className="stat-card__value">4</div>
                                         <div className="stat-card__label">Приглашено</div>
                                     </div>
                                 </div>
@@ -172,7 +172,7 @@ const EmployerDashboard: React.FC = () => {
                                         </svg>
                                     </div>
                                     <div className="stat-card__info">
-                                        <div className="stat-card__value">0</div>
+                                        <div className="stat-card__value">126</div>
                                         <div className="stat-card__label">Просмотров</div>
                                     </div>
                                 </div>
