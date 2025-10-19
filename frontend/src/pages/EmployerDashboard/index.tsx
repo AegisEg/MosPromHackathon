@@ -44,7 +44,7 @@ const EmployerDashboard: React.FC = () => {
         {
             icon: <CalendarIcon />,
             title: "Производственный календарь",
-            onClick: () => console.log('Производственный календарь')
+            onClick: () => navigate('/calendar')
         },
         {
             icon: <SmartToyIcon />,

@@ -6,7 +6,6 @@
     line-height: 26px;
     letter-spacing: 0.46px;
     cursor: pointer;
-    transition: all 0.3s ease;
     display: flex;
     align-items: center;
     gap: 4px;
@@ -61,10 +60,6 @@
             color: #fff;
         }
 
-        &:hover:not(:disabled) {
-            background: #5a6268;
-            border-color: #545b62;
-        }
     }
 
     &.danger {
@@ -75,10 +70,6 @@
             color: #fff;
         }
 
-        &:hover:not(:disabled) {
-            background: #c82333;
-            border-color: #bd2130;
-        }
     }
 
     &, * {

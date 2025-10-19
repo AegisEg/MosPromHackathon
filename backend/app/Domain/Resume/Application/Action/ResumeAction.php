@@ -39,7 +39,8 @@ class ResumeAction {
                 'about' => $resume->about,
                 'salary' => $resume->salary,
                 'status' => $resume->status,
-                'education' => $resume->educations->map(function ($education) {
+                'education' => $resume->education,
+                'educations' => $resume->educations->map(function ($education) {
                         return [
                             'id' => $education->id,
                             'institution_name' => $education->institution_name,
@@ -101,7 +102,8 @@ class ResumeAction {
             'about' => $resume->about,
             'salary' => $resume->salary,
             'status' => $resume->status,
-            'education' => $resume->educations->map(function ($education) {
+            'education' => $resume->education,
+            'educations' => $resume->educations->map(function ($education) {
                     return [
                         'id' => $education->id,
                         'institution_name' => $education->institution_name,
@@ -168,7 +170,8 @@ class ResumeAction {
                 'about' => $resume->about,
                 'salary' => $resume->salary,
                 'status' => $resume->status,
-                'education' => $resume->educations->map(function ($education) {
+                'education' => $resume->education,
+                'educations' => $resume->educations->map(function ($education) {
                     return [
                         'id' => $education->id,
                         'institution' => $education->institution,

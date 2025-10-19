@@ -2,7 +2,8 @@ import * as React from 'react';
 import './style.scss';
 import * as datepicker from "@zag-js/date-picker"
 import { useMachine, normalizeProps } from "@zag-js/react"
-import { useId, useState } from "react"
+import { useId, useState, useEffect, useCallback, useMemo, useRef } from "react"
+import { CalendarDate, parseDate } from "@internationalized/date"
 
 interface DateProps {
   label?: string;
@@ -16,6 +17,47 @@ interface DateProps {
   error?: string;
   className?: string;
   dateFormat?: 'DD.MM.YYYY' | 'MM.DD.YYYY' | 'YYYY-MM-DD';
+}
+
+// Функция для парсинга строки даты в объект для datepicker
+function parseDateString(dateString: string, format: string): CalendarDate[] | undefined {
+  if (!dateString) return undefined;
+  
+  try {
+    let day: number, month: number, year: number;
+    
+    switch (format) {
+      case 'MM.DD.YYYY':
+        const [monthStr, dayStr, yearStr] = dateString.split('.');
+        day = parseInt(dayStr);
+        month = parseInt(monthStr);
+        year = parseInt(yearStr);
+        break;
+      case 'YYYY-MM-DD':
+        const [yearStr2, monthStr2, dayStr2] = dateString.split('-');
+        day = parseInt(dayStr2);
+        month = parseInt(monthStr2);
+        year = parseInt(yearStr2);
+        break;
+      case 'DD.MM.YYYY':
+      default:
+        const [dayStr3, monthStr3, yearStr3] = dateString.split('.');
+        day = parseInt(dayStr3);
+        month = parseInt(monthStr3);
+        year = parseInt(yearStr3);
+        break;
+    }
+    
+    if (isNaN(day) || isNaN(month) || isNaN(year)) {
+      return undefined;
+    }
+    
+    // Создаем CalendarDate объект
+    const calendarDate = new CalendarDate(year, month, day);
+    return [calendarDate];
+  } catch (error) {
+    return undefined;
+  }
 }
 
 export default function DateInput({
@@ -32,38 +74,65 @@ export default function DateInput({
   dateFormat = 'DD.MM.YYYY',
 }: DateProps) {
   const [isFocused, setIsFocused] = useState<boolean>(false);
+  const prevValueRef = useRef<string | undefined>(value);
+
+  // Мемоизируем обработчик изменения значения
+  const handleValueChange = useCallback((details: any) => {
+    const dateValue = details.value;
+    if (dateValue && dateValue.length > 0) {
+      const d = dateValue[0];
+      const day = String(d.day).padStart(2, '0');
+      const month = String(d.month).padStart(2, '0');
+      const year = d.year;
+      
+      let formattedDate = '';
+      switch (dateFormat) {
+        case 'MM.DD.YYYY':
+          formattedDate = `${month}.${day}.${year}`;
+          break;
+        case 'YYYY-MM-DD':
+          formattedDate = `${year}-${month}-${day}`;
+          break;
+        case 'DD.MM.YYYY':
+        default:
+          formattedDate = `${day}.${month}.${year}`;
+      }
+      
+      onChange?.(formattedDate);
+    }
+  }, [onChange, dateFormat]);
+
+  // Мемоизируем начальное значение
+  const initialValue = useMemo(() => {
+    return value ? parseDateString(value, dateFormat) : undefined;
+  }, [value, dateFormat]);
 
   const service = useMachine(datepicker.machine, { 
     id: useId(),
     locale: 'ru-RU',
     disabled,
-    onValueChange(details: any) {
-      const dateValue = details.value;
-      if (dateValue && dateValue.length > 0) {
-        const d = dateValue[0];
-        const day = String(d.day).padStart(2, '0');
-        const month = String(d.month).padStart(2, '0');
-        const year = d.year;
-        
-        let formattedDate = '';
-        switch (dateFormat) {
-          case 'MM.DD.YYYY':
-            formattedDate = `${month}.${day}.${year}`;
-            break;
-          case 'YYYY-MM-DD':
-            formattedDate = `${year}-${month}-${day}`;
-            break;
-          case 'DD.MM.YYYY':
-          default:
-            formattedDate = `${day}.${month}.${year}`;
-        }
-        
-        onChange?.(formattedDate);
-      }
-    },
+    value: initialValue,
+    onValueChange: handleValueChange,
   });
 
   const api = datepicker.connect(service, normalizeProps);
+
+  // Синхронизация значения при изменении внешнего value
+  useEffect(() => {
+    // Проверяем, изменилось ли значение
+    if (prevValueRef.current !== value) {
+      prevValueRef.current = value;
+      
+      if (value) {
+        const parsedValue = parseDateString(value, dateFormat);
+        if (parsedValue) {
+          api.setValue(parsedValue);
+        }
+      } else {
+        api.clearValue();
+      }
+    }
+  }, [value, dateFormat]);
 
   const hasValue = api.value && api.value.length > 0;
 
@@ -76,11 +145,21 @@ export default function DateInput({
     className,
   ].filter(Boolean).join(' ');
 
-  const handleWrapperClick = () => {
+  const handleWrapperClick = useCallback(() => {
     if (!disabled) {
       api.setOpen(true);
     }
-  };
+  }, [disabled, api]);
+
+  const handleFocus = useCallback(() => {
+    setIsFocused(true);
+    onFocus?.();
+  }, [onFocus]);
+
+  const handleBlur = useCallback(() => {
+    setIsFocused(false);
+    onBlur?.();
+  }, [onBlur]);
 
   return (
     <div className={dateClasses}>
@@ -95,8 +174,8 @@ export default function DateInput({
             className="custom-date__field"
             {...api.getInputProps({ index: 0 })} 
             placeholder={placeholder}
-            onFocus={() => { setIsFocused(true); onFocus?.(); }}
-            onBlur={() => { setIsFocused(false); onBlur?.(); }}
+            onFocus={handleFocus}
+            onBlur={handleBlur}
           />
           <button 
             type="button"
@@ -194,6 +273,19 @@ export default function DateInput({
                             type="button"
                             className="custom-date__calendar-day"
                             {...api.getDayTableCellTriggerProps({ value })}
+                            onClick={(e) => {
+                              // Принудительно обрабатываем клик по дате из другого месяца
+                              if (value && !api.isUnavailable(value)) {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                e.nativeEvent.stopImmediatePropagation();
+                                api.setValue([value]);
+                                // Закрываем меню после выбора даты
+                                setTimeout(() => {
+                                  api.setOpen(false);
+                                }, 100);
+                              }
+                            }}
                           >
                             {value?.day || ''}
                           </button>

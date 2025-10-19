@@ -12,13 +12,154 @@ import {
 import { selectProfessionsData, selectCurrentProfessionSkillsData } from '../../redux/profession/selectors';
 import { getProfessionsAction, getProfessionSkillsAction } from '../../redux/profession/actions';
 import { LoadStatus } from '../../utils/types';
-import { CreateResumePayload } from '../../redux/resume/types';
+import { CreateResumePayload, EducationData, ExperienceData } from '../../redux/resume/types';
 import Loader from '../../components/default/Loader';
 import Button, { ButtonType } from '../../components/UI/Button';
 import Input from '../../components/UI/Input';
 import Select from '../../components/UI/Select';
-import Checkbox from '../../components/UI/Checkbox';
+import Textarea from '../../components/UI/Textarea';
+import DateInput from '../../components/UI/DateInput';
+import { showSuccessToast, showErrorToast } from '../../utils/toast';
+import { Add as AddIcon, Delete as DeleteIcon } from '@mui/icons-material';
 import './style.scss';
+
+// Функция для преобразования даты из формата YYYY-MM-DD в DD.MM.YYYY
+const formatDateForInput = (dateString: string | undefined): string => {
+    if (!dateString) return '';
+    
+    // Если дата уже в формате DD.MM.YYYY, возвращаем как есть
+    if (dateString.includes('.')) return dateString;
+    
+    // Если дата в формате YYYY-MM-DD, преобразуем в DD.MM.YYYY
+    if (dateString.includes('-')) {
+        const [year, month, day] = dateString.split('-');
+        return `${day}.${month}.${year}`;
+    }
+    
+    return dateString;
+};
+
+// Функция для преобразования даты из формата DD.MM.YYYY в YYYY-MM-DD для отправки на сервер
+const formatDateForServer = (dateString: string, isBirthDate: boolean = false): string => {
+    if (!dateString) return '';
+    
+    let formattedDate = '';
+    
+    // Если дата в формате DD.MM.YYYY, преобразуем в YYYY-MM-DD
+    if (dateString.includes('.')) {
+        const [day, month, year] = dateString.split('.');
+        formattedDate = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+    } else if (dateString.includes('-')) {
+        formattedDate = dateString;
+    } else {
+        return '';
+    }
+    
+    // Проверяем корректность даты
+    const date = new Date(formattedDate);
+    if (isNaN(date.getTime())) {
+        return ''; // Некорректная дата
+    }
+    
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // Сбрасываем время для корректного сравнения
+    
+    // Для даты рождения проверяем, что она не в будущем
+    if (isBirthDate && date > today) {
+        return ''; // Дата рождения не может быть в будущем
+    }
+    
+    // Проверяем, что дата не слишком далеко в будущем (более 10 лет)
+    const currentYear = new Date().getFullYear();
+    if (date.getFullYear() > currentYear + 10) {
+        return ''; // Дата слишком далеко в будущем
+    }
+    
+    return formattedDate;
+};
+
+// Функция для преобразования данных фронтенда в формат, ожидаемый бэкендом
+const transformDataForBackend = (formData: CreateResumePayload) => {
+    // Проверяем и форматируем дату рождения
+    const birthDate = formatDateForServer(formData.dateOfBirth || '', true);
+    if (!birthDate) {
+        throw new Error('Дата рождения некорректна или в будущем');
+    }
+
+    // Преобразуем основные поля в snake_case
+    const backendData: any = {
+        date_of_birth: birthDate,
+        city: formData.city || '',
+        country: formData.country || '',
+        phone: formData.phone || '',
+        about: formData.about || '',
+        profession_id: formData.professionId || 0,
+        education: typeof formData.education === 'string' ? formData.education : '',
+        salary: formData.salary || 0,
+        status: formData.status ?? true,
+        skills: formData.skills?.filter(skill => typeof skill === 'number') || [],
+    };
+
+    // Преобразуем образование в snake_case
+    if (formData.educations && formData.educations.length > 0) {
+        backendData.educations = formData.educations
+            .filter(edu => edu.institutionName && edu.institutionName.trim() !== '') // Фильтруем только с заполненным названием
+            .map(edu => {
+                const startDate = formatDateForServer(edu.startDate || '');
+                const endDate = formatDateForServer(edu.endDate || '');
+                
+                // Проверяем, что дата окончания не раньше даты начала
+                if (startDate && endDate && new Date(endDate) < new Date(startDate)) {
+                    return {
+                        institution_name: edu.institutionName || '',
+                        degree: edu.degree || '',
+                        specialization: edu.specialization || '',
+                        start_date: startDate,
+                        end_date: '' // Очищаем некорректную дату окончания
+                    };
+                }
+                
+                return {
+                    institution_name: edu.institutionName || '',
+                    degree: edu.degree || '',
+                    specialization: edu.specialization || '',
+                    start_date: startDate,
+                    end_date: endDate
+                };
+            });
+    }
+
+    // Преобразуем опыт работы в snake_case
+    if (formData.experiences && formData.experiences.length > 0) {
+        backendData.experiences = formData.experiences
+            .filter(exp => exp.companyName && exp.companyName.trim() !== '' && exp.position && exp.position.trim() !== '') // Фильтруем только с заполненными обязательными полями
+            .map(exp => {
+                const startDate = formatDateForServer(exp.startDate || '');
+                const endDate = formatDateForServer(exp.endDate || '');
+                
+                // Проверяем, что дата окончания не раньше даты начала
+                if (startDate && endDate && new Date(endDate) < new Date(startDate)) {
+                    return {
+                        company_name: exp.companyName || '',
+                        position: exp.position || '',
+                        start_date: startDate,
+                        end_date: '', // Очищаем некорректную дату окончания
+                        description: exp.description || ''
+                    };
+                }
+                
+                return {
+                    company_name: exp.companyName || '',
+                    position: exp.position || '',
+                    start_date: startDate,
+                    end_date: endDate,
+                    description: exp.description || ''
+                };
+            });
+    }
+
+    return backendData;
+};
 
 const ResumeCreate: React.FC = () => {
     const dispatch = useTypedDispatch();
@@ -45,6 +186,14 @@ const ResumeCreate: React.FC = () => {
         educations: [],
         experiences: [],
     });
+
+    // Варианты образования
+    const educationOptions = [
+        { value: 'неоконченное среднее', label: 'Неоконченное среднее' },
+        { value: 'среднее', label: 'Среднее' },
+        { value: 'неоконченное высшее', label: 'Неоконченное высшее' },
+        { value: 'высшее', label: 'Высшее' }
+    ];
 
     // Загружаем профессии при монтировании
     useEffect(() => {
@@ -86,6 +235,14 @@ const ResumeCreate: React.FC = () => {
         }
     };
 
+    const handleEducationChange = (option: any) => {
+        if (option && option.value) {
+            handleInputChange('education', option.value);
+        } else {
+            handleInputChange('education', '');
+        }
+    };
+
     const handleSkillToggle = (skillId: number) => {
         setFormData(prev => ({
             ...prev,
@@ -95,39 +252,126 @@ const ResumeCreate: React.FC = () => {
         }));
     };
 
+    // Функции для работы с образованием
+    const addEducation = () => {
+        const newEducation: Omit<EducationData, 'id' | 'resumeId' | 'createdAt' | 'updatedAt'> = {
+            institutionName: '',
+            degree: '',
+            specialization: '',
+            startDate: '',
+            endDate: ''
+        };
+        setFormData(prev => ({
+            ...prev,
+            educations: [...(prev.educations || []), newEducation]
+        }));
+    };
+
+    const updateEducation = (index: number, field: keyof Omit<EducationData, 'id' | 'resumeId' | 'createdAt' | 'updatedAt'>, value: string) => {
+        setFormData(prev => ({
+            ...prev,
+            educations: prev.educations?.map((edu, i) => 
+                i === index ? { 
+                    ...edu, 
+                    [field]: (field === 'startDate' || field === 'endDate') ? formatDateForServer(value) : value 
+                } : edu
+            ) || []
+        }));
+    };
+
+    const removeEducation = (index: number) => {
+        setFormData(prev => ({
+            ...prev,
+            educations: prev.educations?.filter((_, i) => i !== index) || []
+        }));
+    };
+
+    // Функции для работы с опытом работы
+    const addExperience = () => {
+        const newExperience: Omit<ExperienceData, 'id' | 'resumeId' | 'createdAt' | 'updatedAt'> = {
+            companyName: '',
+            position: '',
+            startDate: '',
+            endDate: '',
+            description: ''
+        };
+        setFormData(prev => ({
+            ...prev,
+            experiences: [...(prev.experiences || []), newExperience]
+        }));
+    };
+
+    const updateExperience = (index: number, field: keyof Omit<ExperienceData, 'id' | 'resumeId' | 'createdAt' | 'updatedAt'>, value: string) => {
+        setFormData(prev => ({
+            ...prev,
+            experiences: prev.experiences?.map((exp, i) => 
+                i === index ? { 
+                    ...exp, 
+                    [field]: (field === 'startDate' || field === 'endDate') ? formatDateForServer(value) : value 
+                } : exp
+            ) || []
+        }));
+    };
+
+    const removeExperience = (index: number) => {
+        setFormData(prev => ({
+            ...prev,
+            experiences: prev.experiences?.filter((_, i) => i !== index) || []
+        }));
+    };
+
     // Функция создания резюме
     const handleCreateResume = async () => {
         if (!formData.dateOfBirth.trim()) {
-            alert('Дата рождения обязательна');
+            showErrorToast('Дата рождения обязательна');
             return;
         }
         if (!formData.city.trim()) {
-            alert('Город обязателен');
+            showErrorToast('Город обязателен');
             return;
         }
         if (!formData.country.trim()) {
-            alert('Страна обязательна');
+            showErrorToast('Страна обязательна');
             return;
         }
         if (!formData.phone.trim()) {
-            alert('Телефон обязателен');
+            showErrorToast('Телефон обязателен');
             return;
         }
         if (!formData.about.trim()) {
-            alert('Информация о себе обязательна');
+            showErrorToast('Информация о себе обязательна');
             return;
         }
         if (formData.professionId === 0) {
-            alert('Выберите профессию');
+            showErrorToast('Выберите профессию');
             return;
         }
 
+        // Проверяем дату рождения
+        if (formData.dateOfBirth) {
+            const birthDate = formatDateForServer(formData.dateOfBirth, true);
+            if (!birthDate) {
+                showErrorToast('Дата рождения не может быть в будущем или некорректна');
+                return;
+            }
+        }
+
         try {
-            await dispatch(createResumeAction(formData)).unwrap();
-            alert('Резюме успешно создано');
+            // Преобразуем данные в формат, ожидаемый бэкендом
+            const backendData = transformDataForBackend(formData);
+            
+            // Логируем данные для отладки
+            console.log('Отправляемые данные на бэкенд:', JSON.stringify(backendData, null, 2));
+
+            await dispatch(createResumeAction(backendData)).unwrap();
+            showSuccessToast('Резюме успешно создано');
             navigate('/lk'); // Перенаправляем в личный кабинет
-        } catch (error) {
-            alert(createResumeError || 'Ошибка при создании резюме');
+        } catch (error: any) {
+            if (error.message === 'Дата рождения некорректна или в будущем') {
+                showErrorToast('Дата рождения не может быть в будущем или некорректна');
+            } else {
+                showErrorToast(createResumeError || 'Ошибка при создании резюме');
+            }
         }
     };
   
@@ -150,30 +394,39 @@ const ResumeCreate: React.FC = () => {
                             <div className="inner-wrapper_title">Основная информация</div>
                             <div className="resume-create__grid">
                                 <Input
-                                    label="Дата рождения"
-                                    type="date"
-                                    value={formData.dateOfBirth}
-                                    onChange={(value) => handleInputChange('dateOfBirth', value)}
+                                    label="Телефон"
+                                    placeholder="+7 (999) 123-45-67"
+                                    mask="+7 (000) 000-00-00"
+                                    type="tel"
+                                    value={formData.phone}
+                                    onChange={(value) => handleInputChange('phone', value)}
                                 />
-                                <Input
-                                    label="Город"
-                                    value={formData.city}
-                                    onChange={(value) => handleInputChange('city', value)}
+                                <DateInput
+                                    label="Дата рождения"
+                                    value={formatDateForInput(formData.dateOfBirth)}
+                                    onChange={(value) => handleInputChange('dateOfBirth', formatDateForServer(value))}
                                 />
                                 <Input
                                     label="Страна"
+                                    placeholder="Россия"
                                     value={formData.country}
                                     onChange={(value) => handleInputChange('country', value)}
                                 />
                                 <Input
-                                    label="Телефон"
-                                    value={formData.phone}
-                                    onChange={(value) => handleInputChange('phone', value)}
+                                    label="Город"
+                                    placeholder="Москва"
+                                    value={formData.city}
+                                    onChange={(value) => handleInputChange('city', value)}
                                 />
-                                <Input
+                                <Select
                                     label="Образование"
-                                    value={formData.education}
-                                    onChange={(value) => handleInputChange('education', value)}
+                                    options={educationOptions}
+                                    value={formData.education ? {
+                                        value: formData.education,
+                                        label: educationOptions.find(opt => opt.value === formData.education)?.label || ''
+                                    } : undefined}
+                                    onChange={handleEducationChange}
+                                    placeholder="Выберите образование"
                                 />
                             </div>
                         </div>
@@ -198,6 +451,7 @@ const ResumeCreate: React.FC = () => {
                                 <Input
                                     label="Желаемая зарплата"
                                     type="number"
+                                    placeholder="100000"
                                     value={formData.salary?.toString() || ''}
                                     onChange={(value) => handleInputChange('salary', parseInt(value) || 0)}
                                 />
@@ -208,34 +462,177 @@ const ResumeCreate: React.FC = () => {
                         {formData.professionId > 0 && currentProfessionSkills.length > 0 && (
                             <div className="inner-wrapper">
                                 <div className="inner-wrapper_title">Навыки</div>
-                                <div className="skills-section">
-                                    <div className="skills-section__checkboxes">
-                                        {currentProfessionSkills.map(skill => (
-                                            <Checkbox
-                                                key={skill.id}
-                                                label={skill.name}
-                                                checked={formData.skills?.includes(skill.id) || false}
-                                                onChange={() => handleSkillToggle(skill.id)}
-                                            />
-                                        ))}
-                                    </div>
-                                </div>
+                                <Select
+                                    label="Выберите навыки"
+                                    options={currentProfessionSkills.map(skill => ({
+                                        value: skill.id.toString(),
+                                        label: skill.name
+                                    }))}
+                                    value={formData.skills?.map(skillId => {
+                                        const skill = currentProfessionSkills.find(s => s.id === skillId);
+                                        return skill ? {
+                                            value: skill.id.toString(),
+                                            label: skill.name
+                                        } : null;
+                                    }).filter((item): item is { value: string; label: string } => item !== null) || []}
+                                    onChange={(selectedOptions: any) => {
+                                        const skillIds = selectedOptions ? selectedOptions.map((option: any) => parseInt(option.value)) : [];
+                                        handleInputChange('skills', skillIds);
+                                    }}
+                                    isMulti={true}
+                                    placeholder="Выберите навыки"
+                                    closeMenuOnSelect={false}
+                                />
                             </div>
                         )}
+
+                        {/* Образование */}
+                        <div className="inner-wrapper">
+                            <div className="inner-wrapper_title">
+                                Образование
+                                <Button
+                                    variant={ButtonType.GRAY}
+                                    onClick={addEducation}
+                                >
+                                    <AddIcon />
+                                    Добавить образование
+                                </Button>
+                            </div>
+                            {formData.educations && formData.educations.length > 0 ? (
+                                <div className="items-list">
+                                    {formData.educations.map((education, index) => (
+                                        <div key={index} className="item-card">
+                                            <div className="item-card__header">
+                                                <h4>Образование {index + 1}</h4>
+                                                <Button
+                                                    variant={ButtonType.DANGER}
+                                                    onClick={() => removeEducation(index)}
+                                                >
+                                                    <DeleteIcon />
+                                                </Button>
+                                            </div>
+                                            <div className="item-card__grid">
+                                                <div className="item-card__row">
+                                                    <Input
+                                                        label="Учебное заведение"
+                                                        placeholder="МГУ им. М.В. Ломоносова"
+                                                        value={education.institutionName || ''}
+                                                        onChange={(value) => updateEducation(index, 'institutionName', value)}
+                                                    />
+                                                    <Input
+                                                        label="Степень"
+                                                        placeholder="Бакалавр"
+                                                        value={education.degree || ''}
+                                                        onChange={(value) => updateEducation(index, 'degree', value)}
+                                                    />
+                                                    <Input
+                                                        label="Специализация"
+                                                        placeholder="Информатика и вычислительная техника"
+                                                        value={education.specialization || ''}
+                                                        onChange={(value) => updateEducation(index, 'specialization', value)}
+                                                    />
+                                                </div>
+                                                <div className="item-card__row">
+                                                    <DateInput
+                                                        label="Дата начала"
+                                                        value={formatDateForInput(education.startDate)}
+                                                        onChange={(value) => updateEducation(index, 'startDate', value)}
+                                                    />
+                                                    <DateInput
+                                                        label="Дата окончания"
+                                                        value={formatDateForInput(education.endDate)}
+                                                        onChange={(value) => updateEducation(index, 'endDate', value)}
+                                                    />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            ) : (
+                                <p className="empty-state">Добавьте информацию об образовании</p>
+                            )}
+                        </div>
+
+                        {/* Опыт работы */}
+                        <div className="inner-wrapper">
+                            <div className="inner-wrapper_title">
+                                Опыт работы
+                                <Button
+                                    variant={ButtonType.GRAY}
+                                    onClick={addExperience}
+                                >
+                                    <AddIcon />
+                                    Добавить опыт
+                                </Button>
+                            </div>
+                            {formData.experiences && formData.experiences.length > 0 ? (
+                                <div className="items-list">
+                                    {formData.experiences.map((experience, index) => (
+                                        <div key={index} className="item-card">
+                                            <div className="item-card__header">
+                                                <h4>Опыт работы {index + 1}</h4>
+                                                <Button
+                                                    variant={ButtonType.DANGER}
+                                                    onClick={() => removeExperience(index)}
+                                                >
+                                                    <DeleteIcon />
+                                                </Button>
+                                            </div>
+                                            <div className="item-card__grid">
+                                                <div className="item-card__row">
+                                                    <Input
+                                                        label="Компания"
+                                                        placeholder="ООО Рога и копыта"
+                                                        value={experience.companyName || ''}
+                                                        onChange={(value) => updateExperience(index, 'companyName', value)}
+                                                    />
+                                                    <Input
+                                                        label="Должность"
+                                                        placeholder="Frontend разработчик"
+                                                        value={experience.position || ''}
+                                                        onChange={(value) => updateExperience(index, 'position', value)}
+                                                    />
+                                                </div>
+                                                <div className="item-card__row">
+                                                    <DateInput
+                                                        label="Дата начала"
+                                                        value={formatDateForInput(experience.startDate)}
+                                                        onChange={(value) => updateExperience(index, 'startDate', value)}
+                                                    />
+                                                    <DateInput
+                                                        label="Дата окончания"
+                                                        value={formatDateForInput(experience.endDate)}
+                                                        onChange={(value) => updateExperience(index, 'endDate', value)}
+                                                    />
+                                                </div>
+                                                <div className="item-card__full-width">
+                                                    <Textarea
+                                                        label="Описание обязанностей"
+                                                        placeholder="Опишите ваши обязанности и достижения на этой должности..."
+                                                        value={experience.description || ''}
+                                                        onChange={(value) => updateExperience(index, 'description', value)}
+                                                        rows={3}
+                                                    />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            ) : (
+                                <p className="empty-state">Добавьте информацию об опыте работы</p>
+                            )}
+                        </div>
 
                         {/* О себе */}
                         <div className="inner-wrapper">
                             <div className="inner-wrapper_title">О себе</div>
-                            <div className="form-group">
-                                <label className="textarea-label">О себе</label>
-                                <textarea
-                                    className="textarea-input"
-                                    value={formData.about}
-                                    onChange={(e) => handleInputChange('about', e.target.value)}
-                                    rows={4}
-                                    placeholder="Расскажите о себе, своих навыках и опыте..."
-                                />
-                            </div>
+                            <Textarea
+                                label="О себе"
+                                placeholder="Расскажите о себе, своих навыках и опыте работы..."
+                                value={formData.about}
+                                onChange={(value) => handleInputChange('about', value)}
+                                rows={4}
+                            />
                         </div>
 
                         {/* Кнопки действий */}
