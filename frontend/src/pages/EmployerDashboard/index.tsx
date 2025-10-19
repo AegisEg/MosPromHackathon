@@ -39,7 +39,7 @@ const EmployerDashboard: React.FC = () => {
         {
             icon: <BarChartIcon />,
             title: "Аналитика",
-            onClick: () => console.log('Аналитика')
+            onClick: () => navigate('/lk/analytics')
         },
         {
             icon: <CalendarIcon />,

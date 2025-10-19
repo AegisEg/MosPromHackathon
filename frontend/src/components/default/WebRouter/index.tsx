@@ -25,6 +25,7 @@ const CreateVacancyPage = React.lazy(() => import('../../../pages/CreateVacancy/
 const EditVacancyPage = React.lazy(() => import('../../../pages/EditVacancy/'));
 const VacancyDetailPage = React.lazy(() => import('../../../pages/VacancyDetail/'));
 const CalendarPage = React.lazy(() => import('../../../pages/Calendar/'));
+const AnalyticsPage = React.lazy(() => import('../../../pages/Analytics/'));
 
 function renderFallback() {
   return <Loader />;
@@ -209,6 +210,13 @@ function AppRoutes() {
             <Suspense fallback={renderFallback()}>
               <ProtectedRoute>
                 <CalendarPage />
+              </ProtectedRoute>
+            </Suspense>
+          } />
+          <Route path="/lk/analytics" element={
+            <Suspense fallback={renderFallback()}>
+              <ProtectedRoute>
+                <AnalyticsPage />
               </ProtectedRoute>
             </Suspense>
           } />
