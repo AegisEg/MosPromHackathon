@@ -191,4 +191,70 @@ class RespondAndInteractionController extends Controller
             ))->toResponse();
         }
     }
+
+    public function bestMatchesAI(int $vacancyId, Request $request): JsonResponse {
+        $user = $request->user();
+        try {
+            // Проверяем, что пользователь является владельцем вакансии
+            $vacancy = \App\Models\Vacancies::find($vacancyId);
+            if (!$vacancy || $vacancy->user_id !== $user->id) {
+                throw new ForbiddenRespondException();
+            }
+
+            $this->respondAndInteractionAction->bestMatchResumesByVacancyWithAI($vacancyId);
+            return (new ParentResponse(
+                data: ['vacancy_id' => $vacancyId],
+                httpStatus: 200,
+                status: StatusEnum::OK,
+            ))->toResponse();
+        } catch (ForbiddenRespondException $e) {
+            $debugInfo = [
+                'error' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ];
+            return (new ParentResponse(
+                error: new Error(code: $e->getCode(), message: $e->getMessage()),
+                httpStatus: 403,
+                status: StatusEnum::FAIL,
+                debugInfo: $debugInfo,
+            ))->toResponse();
+        } catch (NotFoundCompanyException $e) {
+            $debugInfo = [
+                'error' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ];
+            return (new ParentResponse(
+                error: new Error(code: $e->getCode(), message: $e->getMessage()),
+                httpStatus: 404,
+                status: StatusEnum::FAIL,
+                debugInfo: $debugInfo,
+            ))->toResponse();
+        } catch (RespondNotFoundException $e) {
+            $debugInfo = [
+                'error' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ];
+            return (new ParentResponse(
+                error: new Error(code: $e->getCode(), message: $e->getMessage()),
+                httpStatus: 404,
+                status: StatusEnum::FAIL,
+                debugInfo: $debugInfo,
+            ))->toResponse();
+        } catch (Throwable $e) {
+            $debugInfo = [
+                'error' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ];
+            return (new ParentResponse(
+                error: new Error(code: $e->getCode(), message: $e->getMessage()),
+                httpStatus: 500,
+                status: StatusEnum::FAIL,
+                debugInfo: $debugInfo,
+            ))->toResponse();
+        }
+    }
 }

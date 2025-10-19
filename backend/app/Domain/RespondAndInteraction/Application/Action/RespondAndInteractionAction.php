@@ -173,19 +173,14 @@ class RespondAndInteractionAction {
         return $sortedResumes;
     }
 
-    public function bestMatchResumesByVacancyWithAI(int $vacancyId): array {
+    public function bestMatchResumesByVacancyWithAI(int $vacancyId): void {
+        
+        $resumes = $this->bestMatchResumesByVacancy($vacancyId);
+
         $vacancy = Vacancies::with(['skills', 'profession'])->find($vacancyId);
         if (!$vacancy) {
             throw new NotFoundCompanyException();
         }
-
-        $responds = Responds::where('vacancy_id', $vacancyId)->get();
-        if ($responds->isEmpty()) {
-            throw new RespondNotFoundException();
-        }
-        
-        // TODO: Implement AI-based matching logic
-        // return $this->bestMatchResumesByVacancy($vacancyId);
     }
 
 }
