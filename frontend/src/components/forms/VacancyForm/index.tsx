@@ -9,7 +9,7 @@ import { selectProfessionsData, selectProfessionsStatus } from '../../../redux/p
 import { selectCurrentVacancyData, selectCurrentVacancyStatus } from '../../../redux/vacancy/selectors';
 import { LoadStatus } from '../../../utils/types';
 import Button, { ButtonType } from '../../UI/Button';
-import { getSkills } from '../../../api/skills';
+import { getProfessionSkills } from '../../../api/profession';
 import { BackendSkillData } from '../../../redux/profession/types';
 import Loader from '../../default/Loader';
 import './styles.scss';
@@ -51,7 +51,6 @@ const VacancyForm: React.FC<VacancyFormProps> = ({ vacancyId, onSuccess, onCance
     useEffect(() => {
         dispatch(getCompaniesAction());
         dispatch(getProfessionsAction());
-        loadSkills();
         
         if (isEditMode && vacancyId) {
             dispatch(getVacancyByIdAction(vacancyId));
@@ -60,6 +59,9 @@ const VacancyForm: React.FC<VacancyFormProps> = ({ vacancyId, onSuccess, onCance
 
     useEffect(() => {
         if (isEditMode && currentVacancy) {
+            console.log('Загружена вакансия для редактирования:', currentVacancy);
+            console.log('ProfessionId вакансии:', currentVacancy.professionId);
+            
             setFormData({
                 title: currentVacancy.title || '',
                 description: currentVacancy.description || '',
@@ -72,15 +74,24 @@ const VacancyForm: React.FC<VacancyFormProps> = ({ vacancyId, onSuccess, onCance
                 status: currentVacancy.status ?? true,
                 skills: currentVacancy.skills || []
             });
+            
+            // Загружаем навыки для профессии при редактировании
+            if (currentVacancy.professionId && currentVacancy.professionId > 0) {
+                console.log('Загружаем навыки для профессии:', currentVacancy.professionId);
+                loadSkills(currentVacancy.professionId);
+            }
         }
     }, [isEditMode, currentVacancy]);
 
-    const loadSkills = async () => {
+    const loadSkills = async (professionId: number) => {
         try {
-            const skills = await getSkills();
+            console.log('Загружаем навыки для профессии:', professionId);
+            const skills = await getProfessionSkills(professionId);
+            console.log('Загружены навыки:', skills);
             setAvailableSkills(skills);
         } catch (error) {
             console.error('Ошибка при загрузке навыков:', error);
+            setAvailableSkills([]);
         }
     };
 
@@ -89,6 +100,13 @@ const VacancyForm: React.FC<VacancyFormProps> = ({ vacancyId, onSuccess, onCance
         // Очищаем ошибку при изменении поля
         if (errors[field]) {
             setErrors(prev => ({ ...prev, [field]: '' }));
+        }
+        
+        // Если изменилась профессия, загружаем навыки для неё
+        if (field === 'professionId' && typeof value === 'number' && value > 0) {
+            loadSkills(value);
+            // Очищаем выбранные навыки при смене профессии
+            setFormData(prev => ({ ...prev, skills: [] }));
         }
     };
 
@@ -343,15 +361,25 @@ const VacancyForm: React.FC<VacancyFormProps> = ({ vacancyId, onSuccess, onCance
                         </label>
                         <div className="skills-section">
                             <div className="skills-grid">
-                                {availableSkills.map(skill => (
-                                    <div
-                                        key={skill.id}
-                                        className={`skill-tag ${formData.skills.includes(skill.name) ? 'selected' : ''}`}
-                                        onClick={() => handleSkillToggle(skill.name)}
-                                    >
-                                        {skill.name}
+                                {formData.professionId === 0 ? (
+                                    <div style={{ color: '#666', fontStyle: 'italic' }}>
+                                        Сначала выберите профессию
                                     </div>
-                                ))}
+                                ) : availableSkills.length > 0 ? (
+                                    availableSkills.map(skill => (
+                                        <div
+                                            key={skill.id}
+                                            className={`skill-tag ${formData.skills.includes(skill.name) ? 'selected' : ''}`}
+                                            onClick={() => handleSkillToggle(skill.name)}
+                                        >
+                                            {skill.name}
+                                        </div>
+                                    ))
+                                ) : (
+                                    <div style={{ color: '#666', fontStyle: 'italic' }}>
+                                        Загрузка навыков...
+                                    </div>
+                                )}
                             </div>
                             {errors.skills && <span className="error-message">{errors.skills}</span>}
                         </div>
